@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/UllingMvpSample.iml" filepath="$PROJECT_DIR$/UllingMvpSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examplearchitecture/examplearchitecture.iml" filepath="$PROJECT_DIR$/examplearchitecture/examplearchitecture.iml" />
+      <module fileurl="file://$PROJECT_DIR$/googlemodule/googlemodule.iml" filepath="$PROJECT_DIR$/googlemodule/googlemodule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ullinglibcore/ullinglibcore.iml" filepath="$PROJECT_DIR$/ullinglibcore/ullinglibcore.iml" />
+    </modules>
+  </component>
+</project>
