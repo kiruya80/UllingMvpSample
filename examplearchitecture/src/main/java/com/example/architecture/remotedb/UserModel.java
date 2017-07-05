@@ -1,10 +1,9 @@
-package com.example.architecture.repository;
+package com.example.architecture.remotedb;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
-import com.example.architecture.model.enty.User;
-import com.example.architecture.remoteData.Webservice;
+import com.example.architecture.enty.User;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,13 +22,13 @@ import retrofit2.Response;
  * 기져온 데이터는 livedata에 담아 옵져버로 전달 애기티비에서 업데이트뷰를 한다
  *
  */
-public class UserRepository {
-    private Webservice webservice;
+public class UserModel {
+    private GetUserInfoApi getUserInfo;
 
     public LiveData<User> getUser(String userId) {
         // This is not an optimal implementation, we'll fix it below
         final MutableLiveData<User> data = new MutableLiveData<>();
-        webservice.getUser(userId).enqueue(new Callback<User>() {
+        getUserInfo.getUser(userId).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 // error case is left out for brevity

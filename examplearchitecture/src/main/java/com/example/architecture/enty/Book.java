@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.example.architecture.model;
+package com.example.architecture.enty;
 
-import android.arch.persistence.room.TypeConverter;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
-import java.util.Date;
-
-public class DateConverter {
-    @TypeConverter
-    public static Date toDate(Long timestamp) {
-        return timestamp == null ? null : new Date(timestamp);
-    }
-
-    @TypeConverter
-    public static Long toTimestamp(Date date) {
-        return date == null ? null : date.getTime();
-    }
+@Entity
+public class Book {
+    public @PrimaryKey
+    String id;
+    public String title;
 }

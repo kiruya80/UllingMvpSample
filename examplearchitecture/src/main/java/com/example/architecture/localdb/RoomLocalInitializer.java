@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.architecture.model;
+package com.example.architecture.localdb;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -24,19 +24,23 @@ import com.ulling.lib.core.util.QcLog;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DatabaseInitializer {
+/**
+ * local 데이터 베이스
+ * ㄴ room
+ */
+public class RoomLocalInitializer {
 
     // Simulate a blocking operation delaying each Loan insertion with a delay:
     private static final int DELAY_MILLIS = 500;
 
-    public static void populateAsync(final AppDatabase db) {
+    public static void populateAsync(final RoomLocalData db) {
         QcLog.e("populateAsync == ");
 
         PopulateDbAsync task = new PopulateDbAsync(db);
         task.execute();
     }
 
-    public static void populateSync(@NonNull final AppDatabase db) {
+    public static void populateSync(@NonNull final RoomLocalData db) {
         populateWithTestData(db);
     }
 
@@ -70,7 +74,7 @@ public class DatabaseInitializer {
 //        return user;
 //    }
 
-    private static void populateWithTestData(AppDatabase db) {
+    private static void populateWithTestData(RoomLocalData db) {
 //        QcLog.e("populateWithTestData == ");
 //        db.loanModel().deleteAll();
 //        db.userModel().deleteAll();
@@ -118,9 +122,9 @@ public class DatabaseInitializer {
 
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
-        private final AppDatabase mDb;
+        private final RoomLocalData mDb;
 
-        PopulateDbAsync(AppDatabase db) {
+        PopulateDbAsync(RoomLocalData db) {
             mDb = db;
         }
 
