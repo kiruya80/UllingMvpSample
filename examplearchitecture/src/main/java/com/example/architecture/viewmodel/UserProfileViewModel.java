@@ -48,6 +48,7 @@ public class UserProfileViewModel extends AndroidViewModel {
     }
     public void getUserInfo(String userId) {
         user = mDatabaseModel.getUserInfo(false, "");
+
 //        if (user != null) {
 //            // local
 //            userList = mDb.userDao().findLoansByNameAfter("Mike", getYesterdayDate());
