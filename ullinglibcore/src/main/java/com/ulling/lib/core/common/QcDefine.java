@@ -13,6 +13,8 @@ public class QcDefine {
      */
     public static final boolean DEBUG_FLAG = true;
 
+    //    public final static boolean IS_REAL = true;// true 상용, false 개발
+//    protected static final String URL = (IS_REAL ? REAL_CONN : DEV_CONN);
 //    public static final String SP_APP_NAME = "";
     public static final String SP_COMPANNY = "ULLING";
 

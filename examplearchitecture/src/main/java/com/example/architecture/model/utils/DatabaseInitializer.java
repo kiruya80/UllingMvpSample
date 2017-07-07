@@ -29,6 +29,9 @@ import com.ulling.lib.core.util.QcLog;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * db 초기화클래스
+ */
 public class DatabaseInitializer {
 
     // Simulate a blocking operation delaying each Loan insertion with a delay:
@@ -77,6 +80,10 @@ public class DatabaseInitializer {
 
     private static void populateWithTestData(RoomLocalData db) {
         QcLog.e("populateWithTestData == ");
+        if (db == null) {
+            QcLog.e("db null == ");
+            return;
+        }
         db.loanModel().deleteAll();
         db.userModel().deleteAll();
         db.bookModel().deleteAll();

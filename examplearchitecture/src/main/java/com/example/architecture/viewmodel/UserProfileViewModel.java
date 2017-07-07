@@ -1,16 +1,22 @@
 package com.example.architecture.viewmodel;
 
 import android.app.Application;
+import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
 
+import com.example.architecture.enty.LoanWithUserAndBook;
 import com.example.architecture.enty.User;
 import com.example.architecture.model.DatabaseModel;
 import com.example.architecture.model.utils.DatabaseInitializer;
 import com.ulling.lib.core.util.QcLog;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
 import static com.example.architecture.model.DatabaseModel.DB_TYPE_REMOTE_RETROFIT;
@@ -30,6 +36,9 @@ public class UserProfileViewModel extends AndroidViewModel {
     public LiveData<String> getLoansResult() {
         return mLoansResult;
     }
+    public LiveData<String> getRemoteDBLoansResult() {
+        return mLoansResult;
+    }
     public LiveData<User> getUser() {
         return this.user;
     }
@@ -43,8 +52,13 @@ public class UserProfileViewModel extends AndroidViewModel {
 
     }
 
+    /**
+     * DB 초기 생성
+     * 데이터에 옵져버 연결
+     */
     public void createDb() {
         DatabaseInitializer.populateAsync(mDatabaseModel.getlocalData());
+        subscribeToDbChanges();
     }
     public void getUserInfo(String userId) {
         user = mDatabaseModel.getUserInfo(false, "");
@@ -58,6 +72,29 @@ public class UserProfileViewModel extends AndroidViewModel {
 //        }
     }
 
+
+    private void subscribeToDbChanges() {
+        QcLog.e("subscribeToDbChanges == ");
+        LiveData<List<LoanWithUserAndBook>> loans = mDatabaseModel.loanModel().findLoansByNameAfter("Mike", getYesterdayDate());
+        // Instead of exposing the list of Loans, we can apply a transformation and expose Strings.
+        mLoansResult = Transformations.map(loans,
+                new Function<List<LoanWithUserAndBook>, String>() {
+                    @Override
+                    public String apply(List<LoanWithUserAndBook> loansWithUserAndBook) {
+                        QcLog.e("apply == ");
+                        StringBuilder sb = new StringBuilder();
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",
+                                Locale.US);
+                        for (LoanWithUserAndBook loan : loansWithUserAndBook) {
+                            sb.append(String.format("%s\n  (Returned: %s)\n",
+                                    loan.bookTitle,
+                                    simpleDateFormat.format(loan.endTime)));
+                        }
+                        return sb.toString();
+                    }
+                });
+
+    }
 
     private Date getYesterdayDate() {
         QcLog.e("getYesterdayDate == ");

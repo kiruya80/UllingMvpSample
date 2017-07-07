@@ -2,18 +2,15 @@ package com.example.architecture.model;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.os.AsyncTask;
-import android.util.Log;
 
-import com.example.architecture.enty.Book;
-import com.example.architecture.enty.Loan;
+import com.example.architecture.enty.BookDao;
+import com.example.architecture.enty.LoanDao;
 import com.example.architecture.enty.User;
+import com.example.architecture.enty.UserDao;
 import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.remotedb.RetrofitRemoteData;
 import com.ulling.lib.core.util.QcLog;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,13 +29,12 @@ public class DatabaseModel {
     private LiveData<User> user;
     private LiveData<List<User>> userList;
 
-    private RoomLocalData mDb;
 
     private Application mApplication;
 
     public void onCleared() {
         QcLog.e("onCleared == ");
-        mDb.close();
+        localData.close();
     }
     public DatabaseModel(Application application) {
         mApplication = application;
@@ -59,8 +55,18 @@ public class DatabaseModel {
         return localData;
     }
 
+    public UserDao userModel() {
+        return localData.userModel();
+    }
+    public BookDao bookModel() {
+        return localData.bookModel();
+    }
+    public LoanDao loanModel() {
+        return localData.loanModel();
+    }
+
     public void initLocalRoom( ) {
-        mDb = RoomLocalData.getInMemoryDatabase(mApplication);
+        localData = RoomLocalData.getInMemoryDatabase(mApplication);
     }
     public void initRemoteRetrofit() {
         RetrofitRemoteData.getRetrofitClient();
@@ -69,7 +75,7 @@ public class DatabaseModel {
     public LiveData<User> getUserInfo(boolean local, String userId) {
         LiveData<User> user = null;
         if (local) {
-            user = mDb.userModel().load(userId);
+            user = localData.userModel().load(userId);
         } else {
 //            MutableLiveData<User> data = RetrofitRemoteData.getUserInfo(userId);
         }
