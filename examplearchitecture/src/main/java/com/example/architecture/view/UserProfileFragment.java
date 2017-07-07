@@ -57,6 +57,12 @@ public class UserProfileFragment extends BaseQLifecycleFragment {
         View view = inflater.inflate(R.layout.user_profile, container, false);
         books_tv = (TextView) view.findViewById(R.id.books_tv);
         button = (Button) view.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                QcLog.e("button == ");
+            }
+        });
         return view;
     }
 
@@ -95,6 +101,4 @@ public class UserProfileFragment extends BaseQLifecycleFragment {
     @Override
     public void stopAnimation() {
     }
-
-
 }
