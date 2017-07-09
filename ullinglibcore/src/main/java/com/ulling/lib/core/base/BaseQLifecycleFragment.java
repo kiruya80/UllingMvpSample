@@ -6,6 +6,7 @@ import android.arch.lifecycle.LifecycleFragment;
  * Created by P100651 on 2017-07-04.
  */
 public abstract class BaseQLifecycleFragment extends LifecycleFragment {
+    public String TAG = getClass().getSimpleName();
     /**
      * 데이터 초기화
      */

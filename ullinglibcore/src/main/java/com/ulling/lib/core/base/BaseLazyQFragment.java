@@ -1,6 +1,7 @@
 package com.ulling.lib.core.base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +10,10 @@ import android.view.ViewGroup;
 import com.ulling.lib.core.util.QcLog;
 
 public abstract class BaseLazyQFragment extends BaseQLifecycleFragment {
-    //    private String TAG = getClass().getSimpleName();
+    public Context qCon;
     protected abstract int getFragmentLayoutId();
 
-    protected abstract int initData();
+    protected abstract void initData();
 
     protected void setupView(View view) {
     }
@@ -49,6 +50,7 @@ public abstract class BaseLazyQFragment extends BaseQLifecycleFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         QcLog.i("onViewCreated == ");
+        qCon = getActivity().getApplicationContext();
         initData();
         fetchData();
     }

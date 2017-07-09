@@ -16,9 +16,6 @@
 
 package com.example.architecture.localdb;
 
-import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.Calendar;
@@ -36,15 +33,36 @@ public class RoomLocalInitializer {
     public static void populateAsync(final RoomLocalData db) {
         QcLog.e("populateAsync == ");
 
-        PopulateDbAsync task = new PopulateDbAsync(db);
-        task.execute();
+//        PopulateDbAsync task = new PopulateDbAsync(db);
+//        task.execute();
     }
 
-    public static void populateSync(@NonNull final RoomLocalData db) {
-        populateWithTestData(db);
-    }
-
-//    private static void addLoan(final AppDatabase db, final String id,
+//    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
+//
+//        private final RoomLocalData mDb;
+//
+//        PopulateDbAsync(RoomLocalData db) {
+//            mDb = db;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(final Void... params) {
+//            populateWithTestData(mDb);
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            super.onPostExecute(aVoid);
+//            QcLog.e("onPostExecute == ");
+//        }
+//    }
+//
+//    public static void populateSync(@NonNull final RoomLocalData db) {
+//        populateWithTestData(db);
+//    }
+//
+//    private static void addLoan(final RoomLocalData db, final String id,
 //                                final User user, final Book book, Date from, Date to) {
 //        Loan loan = new Loan();
 //        loan.id = id;
@@ -55,7 +73,7 @@ public class RoomLocalInitializer {
 //        db.loanModel().insertLoan(loan);
 //    }
 //
-//    private static Book addBook(final AppDatabase db, final String id, final String title) {
+//    private static Book addBook(final RoomLocalData db, final String id, final String title) {
 //        Book book = new Book();
 //        book.id = id;
 //        book.title = title;
@@ -63,7 +81,7 @@ public class RoomLocalInitializer {
 //        return book;
 //    }
 //
-//    private static User addUser(final AppDatabase db, final String id, final String name,
+//    private static User addUser(final RoomLocalData db, final String id, final String name,
 //                                final String lastName, final int age) {
 //        User user = new User();
 //        user.id = id;
@@ -73,8 +91,8 @@ public class RoomLocalInitializer {
 //        db.userModel().insertUser(user);
 //        return user;
 //    }
-
-    private static void populateWithTestData(RoomLocalData db) {
+//
+//    private static void populateWithTestData(RoomLocalData db) {
 //        QcLog.e("populateWithTestData == ");
 //        db.loanModel().deleteAll();
 //        db.userModel().deleteAll();
@@ -112,32 +130,12 @@ public class RoomLocalInitializer {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-    }
+//    }
 
     private static Date getTodayPlusDays(int daysAgo) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE, daysAgo);
         return calendar.getTime();
     }
-
-    private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
-
-        private final RoomLocalData mDb;
-
-        PopulateDbAsync(RoomLocalData db) {
-            mDb = db;
-        }
-
-        @Override
-        protected Void doInBackground(final Void... params) {
-            populateWithTestData(mDb);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            QcLog.e("onPostExecute == ");
-        }
-    }
 }
+

@@ -10,12 +10,38 @@
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:orientation="vertical">
+    <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
+            android:id="@+id/getButton"
+            android:layout_width="0px"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="init data"/>
+            android:text="Get"/>
+
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Add"/>
+
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Delete"/>
+    </LinearLayout>
+        <TextView
+            android:id="@+id/section_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <ScrollView
             android:id="@+id/scrollView"
@@ -28,14 +54,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"/>
-
-                <TextView
-                    android:id="@+id/books_tv"
+                    android:id="@+id/tvUsers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="8dp"/>

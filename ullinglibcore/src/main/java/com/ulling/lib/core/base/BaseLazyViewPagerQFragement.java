@@ -1,6 +1,7 @@
 package com.ulling.lib.core.base;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.ulling.lib.core.util.QcLog;
@@ -10,6 +11,8 @@ import com.ulling.lib.core.util.QcLog;
  * 페이져 이동시 현재 페이지인 경우만 데이터 및 뷰표시
  */
 public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
+    protected static final String ARG_SECTION_NUMBER = "section_number";
+    protected int section_number;
     private boolean isViewPrepared;
     private boolean hasFetchData;
 
@@ -28,9 +31,12 @@ public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        QcLog.i("setUserVisibleHint == " + isVisibleToUser);
+        QcLog.i("setUserVisibleHint == " + section_number + " , " + isVisibleToUser);
         if (isVisibleToUser) {
+            // 현재 페이지
             lazyFetchDataIfPrepared();
+        } else {
+            // 감춰진다
         }
     }
 
@@ -43,6 +49,13 @@ public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
         super.onViewCreated(view, savedInstanceState);
         isViewPrepared = true;
         lazyFetchDataIfPrepared();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        section_number = getArguments().getInt(ARG_SECTION_NUMBER);
+
     }
 
     private void lazyFetchDataIfPrepared() {

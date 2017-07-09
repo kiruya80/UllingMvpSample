@@ -1,31 +1,41 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.architecture.R;
+import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.UserProfileViewModel;
-import com.ulling.lib.core.base.BaseQLifecycleFragment;
+import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcPreferences;
+import com.ulling.lib.core.util.QcToast;
+
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by P100651 on 2017-07-04.
  */
-public class UserProfileFragment extends BaseQLifecycleFragment {
-    private static final String ARG_SECTION_NUMBER = "section_number";
+public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     private static final String UID_KEY = "uid";
     private UserProfileViewModel viewModel;
     private String userId;
-    private int section_number;
-    private TextView books_tv;
-    private Button button;
+    private TextView tvUsers;
+    private Button getButton;
+    private Button addButton;
+    private Button deleteButton;
+    private int nThreads = 2;
+    String APP_NAME;
 
     public UserProfileFragment() {
     }
@@ -43,51 +53,135 @@ public class UserProfileFragment extends BaseQLifecycleFragment {
     }
 
     @Override
+    protected int getFragmentLayoutId() {
+        return R.layout.user_profile;
+    }
+
+    @Override
+    protected void setup(View view) {
+        tvUsers = (TextView) view.findViewById(R.id.tvUsers);
+        getButton = (Button) view.findViewById(R.id.getButton);
+        getButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                QcLog.e("getUser == ");
+                viewModel.getAllUsers();
+            }
+        });
+        addButton = (Button) view.findViewById(R.id.addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                QcLog.e("addUser == ");
+                viewModel.addUserDao(randomUser());
+            }
+        });
+        deleteButton = (Button) view.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Random random = new Random();
+                int ranIndex = random.nextInt(100);
+                QcLog.e("deleteUser == " + ranIndex);
+//                viewModel.deleteUserDao(Integer.toString(ranIndex));
+                viewModel.deleteUserDaoAsyncTask(Integer.toString(ranIndex));
+
+            }
+        });
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         userId = getArguments().getString(UID_KEY);
-        section_number = getArguments().getInt(ARG_SECTION_NUMBER);
+
+    }
+
+    @Override
+    protected void initData() {
+        QcLog.e("initData == ");
+        qCon = getActivity().getApplicationContext();
+        id_ = QcPreferences.getComplexPreferences(qCon, APP_NAME).get("index", 1);
         initViewModel();
         subscribeUiFromViewModel();
+        QcToast.with(qCon, "initData !!", false);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.user_profile, container, false);
-        books_tv = (TextView) view.findViewById(R.id.books_tv);
-        button = (Button) view.findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                QcLog.e("button == ");
-            }
-        });
-        return view;
-    }
-
-
-    @Override
-    public  void initViewModel() {
+    public void initViewModel() {
         QcLog.e("initViewModel == ");
         // 안드로이드가 ViewModel을 생성합니다.
         // ViewModel 최고의 장점은 configurationChanges에서도 살아남는 점입니다!
         // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
-        viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
-        viewModel.createDb();
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
+        }
+    }
+
+    @Override
+    public void lazyFetchData() {
+        QcLog.e("lazyFetchData == ");
 
     }
 
     @Override
     public void subscribeUiFromViewModel() {
         QcLog.e("subscribeUiLoans == ");
-        viewModel.getLoansResult().observe(this, new Observer<String>() {
+//        if (viewModel != null && viewModel.getLoansResult() != null)
+//        viewModel.getLoansResult().observe(this, new Observer<String>() {
+//            @Override
+//            public void onChanged(@Nullable final String result) {
+//                QcLog.e("getLoansResult observe == ");
+//                books_tv.setText(result);
+//            }
+//        });
+//        observerUserResults(viewModel.getUserInfo("1"));
+        observerUserListResults(viewModel.getAllUsers());
+    }
+
+    private void observerUserResults(LiveData<User> userLive) {
+        //observer LiveData
+        userLive.observe(this, new Observer<User>() {
             @Override
-            public void onChanged(@Nullable final String result) {
-                QcLog.e("getLoansResult observe == ");
-                books_tv.setText(result);
+            public void onChanged(@Nullable User user) {
+                QcLog.e("User observe == ");
+                if (user == null) {
+                    return;
+                }
+                tvUsers.setText(user.toString());
             }
         });
+    }
+
+    private void observerUserListResults(LiveData<List<User>> userLive) {
+        //observer LiveData
+        userLive.observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable List<User> allUsers) {
+                QcLog.e("allUsers observe == ");
+                if (allUsers == null) {
+                    return;
+                }
+                tvUsers.setText(allUsers.toString());
+            }
+        });
+    }
+
+    int id_ = 1;
+
+    private User randomUser() {
+        Random random = new Random();
+        int ranIndex = random.nextInt(100);
+
+        User user = new User();
+        user.id = Integer.toString(id_);
+        user.age = ranIndex;
+        user.name = "Jason" + Integer.toString(ranIndex);
+        user.lastName = "Seaver" + Integer.toString(ranIndex);
+        id_++;
+        QcPreferences.getComplexPreferences(qCon, APP_NAME).put("index", id_);
+        return user;
     }
 
     @Override

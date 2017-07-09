@@ -1,12 +1,11 @@
 package com.example.architecture.model;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 
-import com.example.architecture.enty.BookDao;
-import com.example.architecture.enty.LoanDao;
 import com.example.architecture.enty.User;
 import com.example.architecture.enty.UserDao;
+import com.example.architecture.localdb.DatabaseCreator;
 import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.remotedb.RetrofitRemoteData;
 import com.ulling.lib.core.util.QcLog;
@@ -21,84 +20,146 @@ import java.util.List;
  * Created by P100651 on 2017-07-05.
  */
 public class DatabaseModel {
+    /**
+     * local db type
+     */
     public static final int DB_TYPE_LOCAL_ROOM = 0;
-    public static final int DB_TYPE_REMOTE_RETROFIT = 1;
+    /**
+     * remote type
+     */
+    public static final int REMOTE_TYPE_RETROFIT = 0;
+    private final Context qCtx;
+    private int localDbType = DB_TYPE_LOCAL_ROOM;
+    private int remoteType = REMOTE_TYPE_RETROFIT;
+
     private RoomLocalData localData;
     private RetrofitRemoteData remoteData;
 
-    private LiveData<User> user;
-    private LiveData<List<User>> userList;
+    //    private final PersonDAO personDAO;
+    private UserDao userDao = null;
 
 
-    private Application mApplication;
+    public DatabaseModel(Context context, int localDbType, int remoteType) {
+        this.qCtx = context;
+        this.localDbType = localDbType;
+        this.remoteType = remoteType;
+        initLocalDb();
+        initRemoteDb();
+        if (localData != null)
+            userDao = localData.userDatabase();
+    }
+
+    private void initLocalDb() {
+        if (localDbType == DB_TYPE_LOCAL_ROOM) {
+            localData = DatabaseCreator.getRoomLocalData(qCtx);
+        }
+    }
+
+    private void initRemoteDb() {
+        if (remoteType == REMOTE_TYPE_RETROFIT) {
+            RetrofitRemoteData.getRetrofitClient();
+        }
+    }
 
     public void onCleared() {
         QcLog.e("onCleared == ");
-        localData.close();
-    }
-    public DatabaseModel(Application application) {
-        mApplication = application;
+        if (localData != null && localDbType == DB_TYPE_LOCAL_ROOM)
+            localData.close();
     }
 
-    public void initLocalDb(int localDbTypeRoom) {
-        if (localDbTypeRoom == DB_TYPE_LOCAL_ROOM) {
-            initLocalRoom();
-        }
-    }
-    public void initRemoteDb(int localDbTypeRoom) {
-        if (localDbTypeRoom == DB_TYPE_REMOTE_RETROFIT) {
-            initRemoteRetrofit();
-        }
-    }
-
-    public RoomLocalData getlocalData() {
-        return localData;
-    }
-
-    public UserDao userModel() {
-        return localData.userModel();
-    }
-    public BookDao bookModel() {
-        return localData.bookModel();
-    }
-    public LoanDao loanModel() {
-        return localData.loanModel();
-    }
-
-    public void initLocalRoom( ) {
-        localData = RoomLocalData.getInMemoryDatabase(mApplication);
-    }
-    public void initRemoteRetrofit() {
-        RetrofitRemoteData.getRetrofitClient();
-    }
-
-    public LiveData<User> getUserInfo(boolean local, String userId) {
-        LiveData<User> user = null;
-        if (local) {
-            user = localData.userModel().load(userId);
+    public long insertUser(User u) {
+        if (userDao != null) {
+            long resultIndex = userDao.insertUser(u);
+            QcLog.e("insertUser " + resultIndex);
+            return resultIndex;
         } else {
-//            MutableLiveData<User> data = RetrofitRemoteData.getUserInfo(userId);
+            return -1;
         }
-//        // Instead of exposing the list of Loans, we can apply a transformation and expose Strings.
-//        // 옵져버에게 전달하기전 데이터 가공
-//        LiveData<String> userResult = Transformations.map(user,
-//                new Function<User, String>() {
-//                    @Override
-//                    public String apply(User loansWithUserAndBook) {
-//                        QcLog.e("apply == ");
-//                        StringBuilder sb = new StringBuilder();
-////                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",
-////                                Locale.US);
-////                        for (LoanWithUserAndBook loan : loansWithUserAndBook) {
-////                            sb.append(String.format("%s\n  (Returned: %s)\n",
-////                                    loan.bookTitle,
-////                                    simpleDateFormat.format(loan.endTime)));
-////                        }
-//                        return sb.toString();
-//                    }
-//                });
-        return user;
     }
 
+    public int deleteUser(String userId) {
+        if (userDao != null) {
+            int rec = userDao.deleteUser(userId);
+            QcLog.e("deleteUser = " + rec);
+            return rec;
+        } else {
+            return -1;
+        }
+    }
+
+    public LiveData<User> getUserInfo(int userId) {
+        if (userDao != null) {
+            return userDao.loadUserById(userId);
+        } else {
+            return null;
+        }
+    }
+
+    public LiveData<List<User>> getAllUsers() {
+        if (userDao != null) {
+            return userDao.getAllUsers();
+        } else {
+            return null;
+        }
+    }
+
+//    public void addPerson(Person p) {
+//        long rec =  personDAO.insertPerson(p);
+//        Log.d("db insert ","added "+rec);
+//    }
+//
+//    public void updatePerson(Person p) {
+//        personDAO.updatePerson(p);
+//    }
+
+
+//    private LiveData<User> user;
+//    private LiveData<List<User>> userList;
+
+
+//    private Application mApplication;
+//
+////    public DatabaseModel(Application application) {
+////        mApplication = application;
+////    }
+//
+//    public RoomLocalData getlocalData() {
+//        return localData;
+//    }
+//
+//    public void initLocalRoom( ) {
+//        localData = RoomLocalData.getInMemoryDatabase(mApplication);
+//    }
+//    public void initRemoteRetrofit() {
+//        RetrofitRemoteData.getRetrofitClient();
+//    }
+//
+//    public LiveData<User> getUserInfo(boolean local, String userId) {
+//        LiveData<User> user = null;
+//        if (local) {
+//            user = localData.userModel().load(userId);
+//        } else {
+////            MutableLiveData<User> data = RetrofitRemoteData.getUserInfo(userId);
+//        }
+////        // Instead of exposing the list of Loans, we can apply a transformation and expose Strings.
+////        // 옵져버에게 전달하기전 데이터 가공
+////        LiveData<String> userResult = Transformations.map(user,
+////                new Function<User, String>() {
+////                    @Override
+////                    public String apply(User loansWithUserAndBook) {
+////                        QcLog.e("apply == ");
+////                        StringBuilder sb = new StringBuilder();
+//////                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm",
+//////                                Locale.US);
+//////                        for (LoanWithUserAndBook loan : loansWithUserAndBook) {
+//////                            sb.append(String.format("%s\n  (Returned: %s)\n",
+//////                                    loan.bookTitle,
+//////                                    simpleDateFormat.format(loan.endTime)));
+//////                        }
+////                        return sb.toString();
+////                    }
+////                });
+//        return user;
+//    }
 
 }
