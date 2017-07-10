@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -13,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.architecture.R;
+import com.example.architecture.QUllingApplication;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.UserProfileViewModel;
 import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
@@ -22,6 +20,9 @@ import com.ulling.lib.core.util.QcToast;
 
 import java.util.List;
 import java.util.Random;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -101,7 +102,7 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     protected void initData() {
         QcLog.e("initData == ");
         qCon = getActivity().getApplicationContext();
-        id_ = QcPreferences.getComplexPreferences(qCon, APP_NAME).get("index", 1);
+        id_ = QcPreferences.getInstance(qCon, APP_NAME).get("index", 1);
         initViewModel();
         subscribeUiFromViewModel();
         QcToast.with(qCon, "initData !!", false);
@@ -180,7 +181,11 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
         user.name = "Jason" + Integer.toString(ranIndex);
         user.lastName = "Seaver" + Integer.toString(ranIndex);
         id_++;
-        QcPreferences.getComplexPreferences(qCon, APP_NAME).put("index", id_);
+        QcPreferences.getInstance(qCon).put("index", id_);
+
+        QUllingApplication qUllingApplication = (QUllingApplication) qCon.getApplicationContext();
+        qUllingApplication.appQcPreferences.put("index", id_);
+
         return user;
     }
 

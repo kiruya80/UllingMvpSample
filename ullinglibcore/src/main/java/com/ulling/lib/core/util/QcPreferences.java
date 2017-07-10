@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import com.google.gson.reflect.TypeToken;
+import com.ulling.lib.core.R;
 import com.ulling.lib.core.common.QcDefine;
 
 import java.lang.reflect.Type;
@@ -26,10 +27,6 @@ import java.util.Set;
  * @변경이력
  */
 public class QcPreferences {
-    /**
-     * Log - class name
-     */
-//    private static String TAG = "SharedPreferencesHelper";
     private static QcPreferences prefsInstances = null;
     /**
      * preference
@@ -40,13 +37,19 @@ public class QcPreferences {
     private static Gson GSON;
 //	Type typeOfObject = new TypeToken<Object>(){}.getType();
 
-    public static synchronized void init(Context context, String APP_NAME) {
-        prefsInstances = getComplexPreferences(context, APP_NAME);
-        QcLog.e("ComplexPreferences init complete !");
+    public static synchronized void init(Context qCon) {
+        String APP_NAME = qCon.getResources().getString(R.string.app_name);
+        prefsInstances = getInstance(qCon, APP_NAME);
+        QcLog.i("ComplexPreferences init complete !");
     }
 
-    private QcPreferences(Context context, String APP_NAME) {
-        prefs = context.getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
+    public static synchronized void init(Context qCon, String APP_NAME) {
+        prefsInstances = getInstance(qCon, APP_NAME);
+        QcLog.i("ComplexPreferences init complete !");
+    }
+
+    private QcPreferences(Context qCon, String APP_NAME) {
+        prefs = qCon.getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
         editor = prefs.edit();
         GsonBuilder gsonGsonBuilder = new GsonBuilder();
         gsonGsonBuilder.setDateFormat(QcDefine.UTC_DATE_FORMAT);
@@ -55,24 +58,22 @@ public class QcPreferences {
         GSON = gsonGsonBuilder.create();
     }
 
-    public static QcPreferences getComplexPreferences(Context context, String APP_NAME) {
+    public static QcPreferences getInstance(Context qCon) {
         if (prefsInstances == null) {
-            prefsInstances = new QcPreferences(context, APP_NAME);
+            String APP_NAME = qCon.getResources().getString(R.string.app_name);
+            prefsInstances = new QcPreferences(qCon, APP_NAME);
+        }
+        return prefsInstances;
+    }
+    public static QcPreferences getInstance(Context qCon, String APP_NAME) {
+        if (prefsInstances == null) {
+            prefsInstances = new QcPreferences(qCon, APP_NAME);
         }
         return prefsInstances;
     }
 
     public void put(String key, String value) {
         editor.putString(key, value);
-        editor.commit();
-        if (PREFER_LOG_FLAG)
-            QcLog.e("key :" + key + " , value :" + value);
-    }
-
-    public void putSet(String key, ArrayList<String> valueList) {
-        valueList = new ArrayList<String>();
-        Set<String> value = new HashSet<String>(valueList);
-        editor.putStringSet(key, value);
         editor.commit();
         if (PREFER_LOG_FLAG)
             QcLog.e("key :" + key + " , value :" + value);
@@ -134,6 +135,16 @@ public class QcPreferences {
         if (PREFER_LOG_FLAG)
             QcLog.e("key :" + key + " , value :" + prefs.getFloat(key, defValue));
         return prefs.getFloat(key, defValue);
+    }
+
+
+    public void putSet(String key, ArrayList<String> valueList) {
+        valueList = new ArrayList<String>();
+        Set<String> value = new HashSet<String>(valueList);
+        editor.putStringSet(key, value);
+        editor.commit();
+        if (PREFER_LOG_FLAG)
+            QcLog.e("key :" + key + " , value :" + value);
     }
 
     public Object putObject(String key, Object object) {

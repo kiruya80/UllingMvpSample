@@ -1,20 +1,19 @@
 package com.example.architecture;
 
-import android.app.Application;
 import android.content.Context;
 
+import com.ulling.lib.core.base.QbaseApplication;
 import com.ulling.lib.core.util.QcPreferences;
 
 /**
  * Created by KILHO on 2016. 7. 4..
  */
 
-public class UllingApplication extends Application {
-    public String TAG = getClass().getSimpleName();
-
-    private static UllingApplication mInstance;
-    private Context qCtx;
+public class QUllingApplication extends QbaseApplication {
+    private static QUllingApplication mInstance;
+    private Context qCon;
     private String APP_NAME;
+    public QcPreferences appQcPreferences;
 
     @Override
     public void onCreate() {
@@ -40,14 +39,16 @@ public class UllingApplication extends Application {
      */
     private void init() {
         mInstance = this;
-        qCtx =  getApplicationContext();
-        APP_NAME = qCtx.getResources().getString(R.string.app_name);
+        qCon =  getApplicationContext();
+        APP_NAME = qCon.getResources().getString(R.string.app_name);
 //        MyVolley.init(this);
-        QcPreferences.init(qCtx, APP_NAME);
+        QcPreferences.init(qCon);
+        appQcPreferences = QcPreferences.getInstance(qCon);
+//        QcPreferences.init(qCon, APP_NAME);
 //        QcToast.init(this);
     }
 
-    public static synchronized UllingApplication getInstance() {
+    public static synchronized QUllingApplication getInstance() {
         return mInstance;
     }
 
