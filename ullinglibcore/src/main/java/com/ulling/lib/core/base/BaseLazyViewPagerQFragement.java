@@ -11,10 +11,10 @@ import com.ulling.lib.core.util.QcLog;
  * 페이져 이동시 현재 페이지인 경우만 데이터 및 뷰표시
  */
 public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
-    protected static final String ARG_SECTION_NUMBER = "section_number";
-    protected int section_number;
-    private boolean isViewPrepared;
-    private boolean hasFetchData;
+    public static final String ARG_SECTION_NUMBER = "section_number";
+    public int section_number;
+    public boolean isViewPrepared;
+    public boolean hasFetchData;
 
     @Override
     public void onDestroyView() {

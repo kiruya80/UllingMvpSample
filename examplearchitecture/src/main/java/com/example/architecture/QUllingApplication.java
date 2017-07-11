@@ -4,16 +4,15 @@ import android.content.Context;
 
 import com.ulling.lib.core.base.QbaseApplication;
 import com.ulling.lib.core.util.QcPreferences;
+import com.ulling.lib.core.util.QcToast;
 
 /**
  * Created by KILHO on 2016. 7. 4..
  */
-
 public class QUllingApplication extends QbaseApplication {
-    private static QUllingApplication mInstance;
-    private Context qCon;
-    private String APP_NAME;
-    public QcPreferences appQcPreferences;
+    private static QUllingApplication SINGLE_U;
+    public static Context qCon;
+//    public static QcPreferences appQcPreferences;
 
     @Override
     public void onCreate() {
@@ -22,35 +21,32 @@ public class QUllingApplication extends QbaseApplication {
         } catch (ClassNotFoundException e) {
         }
         super.onCreate();
-
         init();
     }
 
     /**
-     *
-     * @MethodName   : init
-     * @Date         : 2015. 3. 15.
-     * @author       : KILHO
-     *
-     * @Method
-     *  ㄴ 초기화
-     *
+     * @MethodName : init
+     * @Date : 2015. 3. 15.
+     * @author : KILHO
+     * @Method ㄴ 초기화
      * @변경이력
      */
-    private void init() {
-        mInstance = this;
-        qCon =  getApplicationContext();
+    private synchronized void init() {
+        SINGLE_U = this;
+        qCon = getApplicationContext();
         APP_NAME = qCon.getResources().getString(R.string.app_name);
 //        MyVolley.init(this);
-        QcPreferences.init(qCon);
-        appQcPreferences = QcPreferences.getInstance(qCon);
-//        QcPreferences.init(qCon, APP_NAME);
-//        QcToast.init(this);
+        QcPreferences.getInstance().getAPP_NAME();
+        QcToast.getInstance().show("Start App : " + QcPreferences.getInstance().getAPP_NAME(), false);
     }
 
     public static synchronized QUllingApplication getInstance() {
-        return mInstance;
+        return SINGLE_U;
     }
-
-
+//    public static synchronized QcPreferences getQcPrefer() {
+//        if (appQcPreferences == null) {
+//            appQcPreferences = QcPreferences.getInstance(qCon, APP_NAME);
+//        }
+//        return appQcPreferences;
+//    }
 }

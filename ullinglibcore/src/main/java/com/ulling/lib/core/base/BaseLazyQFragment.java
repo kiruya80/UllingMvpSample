@@ -11,6 +11,7 @@ import com.ulling.lib.core.util.QcLog;
 
 public abstract class BaseLazyQFragment extends BaseQLifecycleFragment {
     public Context qCon;
+    public String APP_NAME;
     protected abstract int getFragmentLayoutId();
 
     protected abstract void initData();
@@ -52,7 +53,7 @@ public abstract class BaseLazyQFragment extends BaseQLifecycleFragment {
         QcLog.i("onViewCreated == ");
         qCon = getActivity().getApplicationContext();
         initData();
-        fetchData();
+//        fetchData();
     }
 
     @Override

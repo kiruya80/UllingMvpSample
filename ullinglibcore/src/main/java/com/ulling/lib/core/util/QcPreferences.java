@@ -2,7 +2,6 @@
  * Copyright (c) 2016. iUlling Corp.
  * Created By Kil-Ho Choi
  */
-
 package com.ulling.lib.core.util;
 
 import android.content.Context;
@@ -12,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import com.google.gson.reflect.TypeToken;
-import com.ulling.lib.core.R;
+import com.ulling.lib.core.base.QbaseApplication;
 import com.ulling.lib.core.common.QcDefine;
 
 import java.lang.reflect.Type;
@@ -27,7 +26,7 @@ import java.util.Set;
  * @변경이력
  */
 public class QcPreferences {
-    private static QcPreferences prefsInstances = null;
+    private static QcPreferences SINGLE_U = null;
     /**
      * preference
      */
@@ -35,41 +34,73 @@ public class QcPreferences {
     private final SharedPreferences.Editor editor;
     public static final boolean PREFER_LOG_FLAG = QcDefine.DEBUG_FLAG;
     private static Gson GSON;
+    private String APP_NAME;
 //	Type typeOfObject = new TypeToken<Object>(){}.getType();
+//    public static synchronized void init(Context qCon) {
+//        String APP_NAME = qCon.getResources().getString(R.string.app_name);
+//        prefsInstances = getInstance(qCon, APP_NAME);
+//        QcLog.i("ComplexPreferences init complete !");
+//    }
+//    public static synchronized void init(Context qCon, String APP_NAME) {
+//        prefsInstances = getInstance(qCon, APP_NAME);
+//        QcLog.i("ComplexPreferences init complete !");
+//    }
+//    public static synchronized QcPreferences getInstance(Context qCon, String APP_NAME) {
+//        if (prefsInstances == null) {
+//            prefsInstances = new QcPreferences(qCon, APP_NAME);
+//            QcLog.i("ComplexPreferences init complete !");
+//        }
+//        return prefsInstances;
+//    }
+//    private QcPreferences(Context qCon, String APP_NAME) {
+//        QcLog.e("QcPreferences == " +  APP_NAME);
+////        prefs = qCon.getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
+//        prefs = QbaseApplication.getInstance().getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
+//        editor = prefs.edit();
+//        GsonBuilder gsonGsonBuilder = new GsonBuilder();
+//        gsonGsonBuilder.setDateFormat(QcDefine.UTC_DATE_FORMAT);
+//        gsonGsonBuilder.setLongSerializationPolicy(LongSerializationPolicy.STRING);
+//        gsonGsonBuilder.setPrettyPrinting();
+//        GSON = gsonGsonBuilder.create();
+//            QcLog.i("ComplexPreferences init complete !");
+//    }
+//
+//    public static synchronized QcPreferences getInstance(Context qCon) {
+//        QcLog.e("getInstance == " + qCon.getPackageName());
+//        if (prefsInstances == null) {
+////            String APP_NAME = qCon.getResources().getString(R.string.app_name);
+//            String APP_NAME = qCon.getPackageName();
+//            prefsInstances = new QcPreferences(qCon, APP_NAME);
+//        }
+//        QcLog.e("QbaseApplication.getInstance().getPackageName() == " + QbaseApplication.getInstance().getPackageName());
+//        return prefsInstances;
+//    }
 
-    public static synchronized void init(Context qCon) {
-        String APP_NAME = qCon.getResources().getString(R.string.app_name);
-        prefsInstances = getInstance(qCon, APP_NAME);
-        QcLog.i("ComplexPreferences init complete !");
+    public static synchronized QcPreferences getInstance() {
+        if (QbaseApplication.getInstance() == null) {
+            QcLog.i("QcPreferences init failed !");
+            return null;
+        }
+        if (SINGLE_U == null) {
+            SINGLE_U = new QcPreferences();
+        }
+        return SINGLE_U;
     }
 
-    public static synchronized void init(Context qCon, String APP_NAME) {
-        prefsInstances = getInstance(qCon, APP_NAME);
-        QcLog.i("ComplexPreferences init complete !");
-    }
-
-    private QcPreferences(Context qCon, String APP_NAME) {
-        prefs = qCon.getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
+    private QcPreferences() {
+        APP_NAME = QbaseApplication.getInstance().getPackageName();
+        prefs = QbaseApplication.getInstance().getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
         editor = prefs.edit();
         GsonBuilder gsonGsonBuilder = new GsonBuilder();
         gsonGsonBuilder.setDateFormat(QcDefine.UTC_DATE_FORMAT);
         gsonGsonBuilder.setLongSerializationPolicy(LongSerializationPolicy.STRING);
         gsonGsonBuilder.setPrettyPrinting();
         GSON = gsonGsonBuilder.create();
+        QcLog.i("QcPreferences init Success !!" + APP_NAME);
     }
 
-    public static QcPreferences getInstance(Context qCon) {
-        if (prefsInstances == null) {
-            String APP_NAME = qCon.getResources().getString(R.string.app_name);
-            prefsInstances = new QcPreferences(qCon, APP_NAME);
-        }
-        return prefsInstances;
-    }
-    public static QcPreferences getInstance(Context qCon, String APP_NAME) {
-        if (prefsInstances == null) {
-            prefsInstances = new QcPreferences(qCon, APP_NAME);
-        }
-        return prefsInstances;
+    public String getAPP_NAME() {
+        return APP_NAME;
     }
 
     public void put(String key, String value) {
@@ -136,7 +167,6 @@ public class QcPreferences {
             QcLog.e("key :" + key + " , value :" + prefs.getFloat(key, defValue));
         return prefs.getFloat(key, defValue);
     }
-
 
     public void putSet(String key, ArrayList<String> valueList) {
         valueList = new ArrayList<String>();

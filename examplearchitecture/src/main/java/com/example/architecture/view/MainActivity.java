@@ -1,5 +1,6 @@
 package com.example.architecture.view;
 
+import android.arch.lifecycle.LifecycleFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,30 +9,30 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.ulling.lib.core.base.BaseQLifecycleActivity;
+import com.ulling.lib.core.util.QcLog;
 
-public class MainActivity extends AppCompatActivity {
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+import java.util.ArrayList;
+
+public class MainActivity extends BaseQLifecycleActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
+
+    public QUllingApplication qApp;
+    ArrayList<LifecycleFragment> BaseQLifecycleFragmentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(0));
+        BaseQLifecycleFragmentList.add(FireDatabaseFragment.newInstance(1));
+        BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(2));
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -49,8 +50,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
             }
         });
+        qApp = QUllingApplication.getInstance();
     }
 
 //    @Override
@@ -75,26 +78,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return UserProfileFragment.newInstance(position);
+            QcLog.e("getItem == " + position);
+//            return UserProfileFragment.newInstance(position);
+            return BaseQLifecycleFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return BaseQLifecycleFragmentList.size();
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
-        }
+//        @Override
+//        public CharSequence getPageTitle(int position) {
+//            switch (position) {
+//                case 0:
+//                    return "SECTION 1";
+//                case 1:
+//                    return "SECTION 2";
+//                case 2:
+//                    return "SECTION 3";
+//            }
+//            return null;
+//        }
     }
 }

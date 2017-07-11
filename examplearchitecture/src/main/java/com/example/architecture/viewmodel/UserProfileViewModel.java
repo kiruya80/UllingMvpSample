@@ -53,7 +53,7 @@ public class UserProfileViewModel extends AndroidViewModel {
             public void run() {
                 long resultIndex = mDatabaseModel.insertUser(u);
                 QcLog.e("addUser resultIndex == " + resultIndex);
-                QcToast.with(qCon, "add user seccess !! index = " + resultIndex, false);
+                QcToast.getInstance().show( "add user seccess !! index = " + resultIndex, false);
             }
         });
     }
@@ -66,9 +66,9 @@ public class UserProfileViewModel extends AndroidViewModel {
                 int result = mDatabaseModel.deleteUser(userId);
                 QcLog.e("deleteUser userId = " + userId + " , result = " + result);
                 if (result == 1) {
-                    QcToast.with(qCon, "delete user seccess !!", false);
+                  QcToast.getInstance().show("delete user seccess !!", false);
                 } else {
-                    QcToast.with(qCon, "delete user fail !!", false);
+                   QcToast.getInstance().show("delete user fail !!", false);
                 }
             }
         });
@@ -86,9 +86,9 @@ public class UserProfileViewModel extends AndroidViewModel {
                 super.onPostExecute(result);
                 QcLog.e("deleteUser userId = " + userId + " , result = " + result);
                 if (result == 1) {
-                    QcToast.with(qCon, "delete user seccess !!", false);
+                 QcToast.getInstance().show( "delete user seccess !!", false);
                 } else {
-                    QcToast.with(qCon, "delete user fail !!", false);
+             QcToast.getInstance().show( "delete user fail !!", false);
                 }
             }
         }.execute();

@@ -2,54 +2,57 @@
  * Copyright (c) 2016. iUlling Corp.
  * Created By Kil-Ho Choi
  */
-
 package com.ulling.lib.core.util;
 
 import android.content.Context;
 import android.widget.Toast;
 
+import com.ulling.lib.core.base.QbaseApplication;
+
 public class QcToast {
     private static QcToast SINGLE_U;
+    private Toast toast;
+    private Context qCon;
 
-    public static WQcToast with(Context qCon, String toastStr) {
+    public static synchronized QcToast getInstance() {
+        if (QbaseApplication.getInstance() == null) {
+            QcLog.i("QcToast init failed !");
+            return null;
+        }
         if (SINGLE_U == null) {
             SINGLE_U = new QcToast();
         }
-        return SINGLE_U.get(qCon, toastStr, false);
+        return SINGLE_U;
     }
 
-    public static WQcToast with(Context qCon, String toastStr, boolean longDuration) {
-        if (SINGLE_U == null) {
-            SINGLE_U = new QcToast();
+    private QcToast() {
+        if (qCon == null)
+            qCon = QbaseApplication.getInstance().getApplicationContext();
+        if (qCon != null)
+            toast = new Toast(qCon);
+        QcLog.i("QcToast init Success !!");
+    }
+
+    public void show(String toastStr, boolean longDuration) {
+        if (toastStr == null)
+            return;
+        if ("".equals(toastStr))
+            return;
+        if (toast == null) {
+            QcLog.e("toast is null !!");
+            return;
         }
-        return SINGLE_U.get(qCon, toastStr, longDuration);
-    }
-
-    private WQcToast get(Context qCon, String toastStr, boolean longDuration) {
-        return new WQcToast(qCon, toastStr, longDuration);
-    }
-
-    private class WQcToast {
-        private Toast mToast;
-
-        public WQcToast(Context qCon, String toastStr, boolean longDuration) {
-            if (toastStr == null)
-                return;
-            if ("".equals(toastStr))
-                return;
-            try {
-                mToast = new Toast(qCon);
-                mToast.cancel();
-                if (longDuration) {
-                    mToast = Toast.makeText(qCon, toastStr, Toast.LENGTH_LONG);
-                } else {
-                    mToast = Toast.makeText(qCon, toastStr, Toast.LENGTH_SHORT);
-                }
-                mToast.show();
-                QcLog.w("mToast ==");
-            } catch (Exception e) {
-                QcLog.w("Exception ==" + e.toString());
+        try {
+            toast.cancel();
+            if (longDuration) {
+                toast = Toast.makeText(qCon, toastStr, Toast.LENGTH_LONG);
+            } else {
+                toast = Toast.makeText(qCon, toastStr, Toast.LENGTH_SHORT);
             }
+            toast.show();
+            QcLog.w("Toast ==");
+        } catch (Exception e) {
+            QcLog.w("Exception ==" + e.toString());
         }
     }
 }

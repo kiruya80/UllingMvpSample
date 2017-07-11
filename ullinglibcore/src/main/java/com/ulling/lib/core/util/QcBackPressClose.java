@@ -6,61 +6,108 @@ package com.ulling.lib.core.util;
 
 import android.content.Context;
 
+import com.ulling.lib.core.base.QbaseApplication;
+
 /**
  *
  */
 public class QcBackPressClose {
+    private static QcBackPressClose SINGLE_U;
+    private Context qCon;
     private long backKeyPressedTime = 0;
     private static final int BACK_KEY_TIMEOUT = 2000;
-    private static QcBackPressClose SINGLE_U;
 
-    private QcBackPressClose() {
-    }
-
-    public static WQcBackPressClose with(Context qCtx) {
+    public static synchronized QcBackPressClose getInstance() {
+        if (QbaseApplication.getInstance() == null) {
+            QcLog.i("QcBackPressClose init failed !");
+            return null;
+        }
         if (SINGLE_U == null) {
             SINGLE_U = new QcBackPressClose();
         }
-        return SINGLE_U.get(qCtx);
+        return SINGLE_U;
+    }
+    private QcBackPressClose() {
+        if (qCon == null)
+            qCon = QbaseApplication.getInstance().getApplicationContext();
     }
 
-    private WQcBackPressClose get(Context qCtx) {
-        return new WQcBackPressClose(qCtx);
-    }
-
-    public class WQcBackPressClose {
-        private final Context qCtx;
-
-        public WQcBackPressClose(Context qCtx) {
-            this.qCtx = qCtx;
-        }
-
-        public boolean isBackPress(String backKeyMsg) {
-            if (System.currentTimeMillis() > backKeyPressedTime + BACK_KEY_TIMEOUT) {
-                backKeyPressedTime = System.currentTimeMillis();
-                if (qCtx != null) {
-                    QcToast.with(qCtx, backKeyMsg, false);
-                }
-                return false;
-            }
-            if (System.currentTimeMillis() <= backKeyPressedTime + BACK_KEY_TIMEOUT) {
-                return true;
+    public boolean isBackPress(String backKeyMsg) {
+        if (System.currentTimeMillis() > backKeyPressedTime + BACK_KEY_TIMEOUT) {
+            backKeyPressedTime = System.currentTimeMillis();
+            if (qCon != null) {
+//                    QcToast.with(qCtx, backKeyMsg, false);
+                QcToast.getInstance().show(backKeyMsg, false);
             }
             return false;
         }
+        if (System.currentTimeMillis() <= backKeyPressedTime + BACK_KEY_TIMEOUT) {
+            return true;
+        }
+        return false;
+    }
 
-        public boolean isBackPress(int backKeyMsgId) {
-            if (System.currentTimeMillis() > backKeyPressedTime + BACK_KEY_TIMEOUT) {
-                backKeyPressedTime = System.currentTimeMillis();
-                if (qCtx != null) {
-                    QcToast.with(qCtx, qCtx.getResources().getString(backKeyMsgId), false);
-                }
-                return false;
-            }
-            if (System.currentTimeMillis() <= backKeyPressedTime + BACK_KEY_TIMEOUT) {
-                return true;
+    public boolean isBackPress(int backKeyMsgId) {
+        if (System.currentTimeMillis() > backKeyPressedTime + BACK_KEY_TIMEOUT) {
+            backKeyPressedTime = System.currentTimeMillis();
+            if (qCon != null) {
+//                    QcToast.with(qCtx, qCtx.getResources().getString(backKeyMsgId), false);
+                QcToast.getInstance().show(QbaseApplication.getInstance().getResources().getString(backKeyMsgId), false);
             }
             return false;
         }
+        if (System.currentTimeMillis() <= backKeyPressedTime + BACK_KEY_TIMEOUT) {
+            return true;
+        }
+        return false;
     }
+
+//    public static WQcBackPressClose with(Context qCtx) {
+//        if (SINGLE_U == null) {
+//            SINGLE_U = new QcBackPressClose();
+//        }
+//        return SINGLE_U.get(qCtx);
+//    }
+
+//    private WQcBackPressClose get(Context qCtx) {
+//        return new WQcBackPressClose(qCtx);
+//    }
+//
+//    public class WQcBackPressClose {
+//        private final Context qCtx;
+//
+//        public WQcBackPressClose(Context qCtx) {
+//            this.qCtx = qCtx;
+//        }
+//
+//        public boolean isBackPress(String backKeyMsg) {
+//            if (System.currentTimeMillis() > backKeyPressedTime + BACK_KEY_TIMEOUT) {
+//                backKeyPressedTime = System.currentTimeMillis();
+//                if (qCtx != null) {
+////                    QcToast.with(qCtx, backKeyMsg, false);
+//                    QcToast.getInstance().show(backKeyMsg, false);
+//                }
+//                return false;
+//            }
+//            if (System.currentTimeMillis() <= backKeyPressedTime + BACK_KEY_TIMEOUT) {
+//                return true;
+//            }
+//            return false;
+//        }
+//
+//        public boolean isBackPress(int backKeyMsgId) {
+//            if (System.currentTimeMillis() > backKeyPressedTime + BACK_KEY_TIMEOUT) {
+//                backKeyPressedTime = System.currentTimeMillis();
+//                if (qCtx != null) {
+////                    QcToast.with(qCtx, qCtx.getResources().getString(backKeyMsgId), false);
+//                    QcToast.getInstance().show(QbaseApplication.getInstance().getResources().getString(backKeyMsgId), false);
+//                }
+//                return false;
+//            }
+//            if (System.currentTimeMillis() <= backKeyPressedTime + BACK_KEY_TIMEOUT) {
+//                return true;
+//            }
+//            return false;
+//        }
+//    }
 }

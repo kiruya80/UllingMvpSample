@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.architecture.R;
 import com.example.architecture.QUllingApplication;
+import com.example.architecture.R;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.UserProfileViewModel;
 import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
@@ -28,6 +28,7 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
  * Created by P100651 on 2017-07-04.
  */
 public class UserProfileFragment extends BaseLazyViewPagerQFragement {
+    private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private UserProfileViewModel viewModel;
     private String userId;
@@ -36,7 +37,6 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     private Button addButton;
     private Button deleteButton;
     private int nThreads = 2;
-    String APP_NAME;
 
     public UserProfileFragment() {
     }
@@ -86,7 +86,6 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
                 QcLog.e("deleteUser == " + ranIndex);
 //                viewModel.deleteUserDao(Integer.toString(ranIndex));
                 viewModel.deleteUserDaoAsyncTask(Integer.toString(ranIndex));
-
             }
         });
     }
@@ -95,17 +94,16 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         userId = getArguments().getString(UID_KEY);
-
     }
 
     @Override
     protected void initData() {
         QcLog.e("initData == ");
-        qCon = getActivity().getApplicationContext();
-        id_ = QcPreferences.getInstance(qCon, APP_NAME).get("index", 1);
+        qApp = QUllingApplication.getInstance();
+        APP_NAME = QUllingApplication.getAppName();
+        id_ = QcPreferences.getInstance().get("index", 1);
         initViewModel();
-        subscribeUiFromViewModel();
-        QcToast.with(qCon, "initData !!", false);
+        QcToast.getInstance().show("initData !!", false);
     }
 
     @Override
@@ -123,7 +121,7 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     @Override
     public void lazyFetchData() {
         QcLog.e("lazyFetchData == ");
-
+        subscribeUiFromViewModel();
     }
 
     @Override
@@ -174,18 +172,14 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     private User randomUser() {
         Random random = new Random();
         int ranIndex = random.nextInt(100);
-
         User user = new User();
         user.id = Integer.toString(id_);
         user.age = ranIndex;
         user.name = "Jason" + Integer.toString(ranIndex);
         user.lastName = "Seaver" + Integer.toString(ranIndex);
         id_++;
-        QcPreferences.getInstance(qCon).put("index", id_);
-
-        QUllingApplication qUllingApplication = (QUllingApplication) qCon.getApplicationContext();
-        qUllingApplication.appQcPreferences.put("index", id_);
-
+        QcPreferences.getInstance().put("index", id_);
+        QcToast.getInstance().show("Add id = " + id_, false);
         return user;
     }
 

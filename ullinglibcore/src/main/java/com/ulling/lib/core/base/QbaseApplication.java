@@ -1,22 +1,17 @@
 package com.ulling.lib.core.base;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.res.Configuration;
 
-import com.ulling.lib.core.R;
 import com.ulling.lib.core.util.QcLog;
-import com.ulling.lib.core.util.QcPreferences;
 
 /**
  * Created by P100651 on 2017-07-10.
  */
 public class QbaseApplication extends Application {
     //    public String TAG = getClass().getSimpleName();
-    private static QbaseApplication qAppInstance;
-    private Context qCon;
-    public String APP_NAME;
-    public QcPreferences qcPreferences;
+    private static QbaseApplication SINGLE_U;
+    public static String APP_NAME = "";
 
     /**
      * 애플리케이션이 생성될 때 호출된다. 모든 상태변수와 리소스 초기화한다
@@ -40,16 +35,13 @@ public class QbaseApplication extends Application {
      */
     private void init() {
         QcLog.i("QbaseApplication init !");
-        qAppInstance = this;
-        qCon = getApplicationContext();
-        APP_NAME = qCon.getResources().getString(R.string.app_name);
-        QcPreferences.init(qCon);
-        qcPreferences = QcPreferences.getInstance(qCon);
+        SINGLE_U = this;
+//        qcPreferences = QcPreferences.getInstance(qCon);
 //        QcToast.init(this);
     }
 
     public static synchronized QbaseApplication getInstance() {
-        return qAppInstance;
+        return SINGLE_U;
     }
 
     /**
@@ -80,5 +72,9 @@ public class QbaseApplication extends Application {
     public void onLowMemory() {
         super.onLowMemory();
         QcLog.e("QbaseApplication onLowMemory !");
+    }
+
+    public static String getAppName() {
+        return APP_NAME;
     }
 }
