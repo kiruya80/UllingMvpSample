@@ -24,4 +24,7 @@ public class Book {
     public @PrimaryKey
     String id;
     public String title;
+    public Book() {
+
+    }
 }

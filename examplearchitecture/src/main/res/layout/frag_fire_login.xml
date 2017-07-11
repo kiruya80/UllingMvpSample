@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:id="@+id/sign_in_layout"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:gravity="center"
+                  android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_marginTop="40dp"
+            android:text="@string/sign_in"/>
+
+        <Button
+            android:text="AnonymousAuthActivity LogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/AnonymousAuthBtn"/>
+        <Button
+            android:text="CustomAuthActivity LogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/CustomAuthBtn"/>
+        <Button
+            android:text="EmailPasswordActivity LogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/EmailPasswordBtn"/>
+
+
+        <Button
+            android:text="google LogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/googleLogInBtn"/>
+        <Button
+            android:text="facebook LogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/facebookLogInBtn"/>
+        <Button
+            android:text="TwitterLoginActivity LogIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/TwitterLoginBtn"/>
+
+
+    </LinearLayout>
+</RelativeLayout>

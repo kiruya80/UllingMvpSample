@@ -30,15 +30,10 @@ public class MainActivity extends BaseQLifecycleActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(0));
+        BaseQLifecycleFragmentList.add(FireLogInFragment.newInstance(0));
         BaseQLifecycleFragmentList.add(FireDatabaseFragment.newInstance(1));
         BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(2));
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -89,17 +84,17 @@ public class MainActivity extends BaseQLifecycleActivity {
             return BaseQLifecycleFragmentList.size();
         }
 
-//        @Override
-//        public CharSequence getPageTitle(int position) {
-//            switch (position) {
-//                case 0:
-//                    return "SECTION 1";
-//                case 1:
-//                    return "SECTION 2";
-//                case 2:
-//                    return "SECTION 3";
-//            }
-//            return null;
-//        }
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return "LogIn";
+                case 1:
+                    return "Firebase";
+                case 2:
+                    return "LiveData";
+            }
+            return null;
+        }
     }
 }

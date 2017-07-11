@@ -16,13 +16,29 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+
             <Button
                 android:id="@+id/getButton"
                 android:layout_width="0px"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Get Fire"/>
+                android:layout_height="wrap_content"
+                android:text="Get"/>
 
+
+            <Button
+                android:id="@+id/addButton"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Add"/>
+
+
+            <Button
+                android:id="@+id/deleteButton"
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Delete"/>
 
         </LinearLayout>
 

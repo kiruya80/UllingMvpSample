@@ -33,4 +33,7 @@ public class LoanWithUserAndBook {
     public Date startTime;
     @TypeConverters(DateConverter.class)
     public Date endTime;
+    public LoanWithUserAndBook() {
+
+    }
 }

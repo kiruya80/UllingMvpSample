@@ -45,4 +45,7 @@ public class Loan {
     public String bookId;
     @ColumnInfo(name="user_id")
     public String userId;
+    public Loan() {
+
+    }
 }
