@@ -35,6 +35,7 @@ public class UserProfileViewModel extends AndroidViewModel {
     }
 
     public void initViewModel(Context qCon, int nThreads, int dbTypeLocal, int remoteType) {
+        QcLog.e("initViewModel == ");
         this.qCon = qCon;
         this.nThreads = nThreads;
         this.executor = Executors.newFixedThreadPool(nThreads);

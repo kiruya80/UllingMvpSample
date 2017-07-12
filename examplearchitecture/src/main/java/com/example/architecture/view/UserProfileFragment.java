@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -23,6 +20,9 @@ import com.ulling.lib.core.util.QcToast;
 
 import java.util.List;
 import java.util.Random;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -95,6 +95,9 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
         super.onActivityCreated(savedInstanceState);
         userId = getArguments().getString(UID_KEY);
     }
+//(BaseLazyQFragment.java:80) [onPause()]  == onPause ==
+//            07-12 17:27:33.395 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:86) [onStop()]  == onStop ==
+//            07-12 17:27:33.396 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:92) [onDestroyView()]  == onDestroyView ==
 
     @Override
     protected void initData() {

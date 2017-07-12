@@ -21,52 +21,41 @@ import java.util.ArrayList;
 public class MainActivity extends BaseQLifecycleActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-
-    public QUllingApplication qApp;
-    ArrayList<LifecycleFragment> BaseQLifecycleFragmentList = new ArrayList<>();
+    private QUllingApplication qApp;
+    private ArrayList<LifecycleFragment> BaseQLifecycleFragmentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        BaseQLifecycleFragmentList.add(FireLogInFragment.newInstance(0));
-        BaseQLifecycleFragmentList.add(FireDatabaseFragment.newInstance(1));
-        BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(2));
+        setFragment();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
             }
         });
         qApp = QUllingApplication.getInstance();
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    private void setFragment() {
+        BaseQLifecycleFragmentList.add(FireLogInFragment.newInstance(0));
+        BaseQLifecycleFragmentList.add(FireDatabaseFragment.newInstance(1));
+        BaseQLifecycleFragmentList.add(RetrofitFragment.newInstance(2));
+        BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(3));
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private String tabTitles[] = new String[]{"LogIn", "Firebase", "Retrofit", "LiveData"};
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -74,27 +63,17 @@ public class MainActivity extends BaseQLifecycleActivity {
         @Override
         public Fragment getItem(int position) {
             QcLog.e("getItem == " + position);
-//            return UserProfileFragment.newInstance(position);
             return BaseQLifecycleFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return BaseQLifecycleFragmentList.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "LogIn";
-                case 1:
-                    return "Firebase";
-                case 2:
-                    return "LiveData";
-            }
-            return null;
+            return tabTitles[position];
         }
     }
 }
