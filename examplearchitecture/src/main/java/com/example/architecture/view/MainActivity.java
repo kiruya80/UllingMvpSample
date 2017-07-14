@@ -25,7 +25,44 @@ public class MainActivity extends BaseQLifecycleActivity {
     private ArrayList<LifecycleFragment> BaseQLifecycleFragmentList = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void initViewModel() {
+    }
+
+    @Override
+    protected void subscribeUiFromViewModel() {
+    }
+
+    @Override
+    protected void onCreateInitData() {
+    }
+
+    @Override
+    protected void animationResume() {
+    }
+
+    @Override
+    protected void animationPause() {
+    }
+
+    @Override
+    protected void destroyData() {
+    }
+
+    @Override
+    protected int getFragmentLayoutId() {
+        return 0;
+    }
+
+    @Override
+    protected void onCreateSetUpView() {
+    }
+
+    @Override
+    protected void onCreateGetArgument() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setFragment();

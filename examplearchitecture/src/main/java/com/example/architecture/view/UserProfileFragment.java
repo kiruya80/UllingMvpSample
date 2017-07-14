@@ -13,7 +13,7 @@ import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.UserProfileViewModel;
-import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
+import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
@@ -27,7 +27,7 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 /**
  * Created by P100651 on 2017-07-04.
  */
-public class UserProfileFragment extends BaseLazyViewPagerQFragement {
+public class UserProfileFragment extends BaseLazyQLifeFragement {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private UserProfileViewModel viewModel;
@@ -59,7 +59,7 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     }
 
     @Override
-    protected void setup(View view) {
+    protected void initSetupView(View view) {
         tvUsers = (TextView) view.findViewById(R.id.tvUsers);
         getButton = (Button) view.findViewById(R.id.getButton);
         getButton.setOnClickListener(new View.OnClickListener() {
@@ -91,15 +91,6 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        userId = getArguments().getString(UID_KEY);
-    }
-//(BaseLazyQFragment.java:80) [onPause()]  == onPause ==
-//            07-12 17:27:33.395 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:86) [onStop()]  == onStop ==
-//            07-12 17:27:33.396 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:92) [onDestroyView()]  == onDestroyView ==
-
-    @Override
     protected void initData() {
         QcLog.e("initData == ");
         qApp = QUllingApplication.getInstance();
@@ -107,6 +98,29 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
         id_ = QcPreferences.getInstance().get("index", 1);
         initViewModel();
         QcToast.getInstance().show("initData !!", false);
+    }
+
+    @Override
+    protected void initArgument() {
+        super.initArgument();
+        QcLog.e("initArgument == ");
+        userId = getArguments().getString(UID_KEY);
+    }
+
+//(BaseLazyQFragment.java:80) [onPause()]  == onPause ==
+//            07-12 17:27:33.395 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:86) [onStop()]  == onStop ==
+//            07-12 17:27:33.396 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:92) [onDestroyView()]  == onDestroyView ==
+
+    @Override
+    protected void animationResume() {
+    }
+
+    @Override
+    protected void animationPause() {
+    }
+
+    @Override
+    protected void destroyData() {
     }
 
     @Override
@@ -184,17 +198,5 @@ public class UserProfileFragment extends BaseLazyViewPagerQFragement {
         QcPreferences.getInstance().put("index", id_);
         QcToast.getInstance().show("Add id = " + id_, false);
         return user;
-    }
-
-    @Override
-    public void resetData() {
-    }
-
-    @Override
-    public void startAnimation() {
-    }
-
-    @Override
-    public void stopAnimation() {
     }
 }

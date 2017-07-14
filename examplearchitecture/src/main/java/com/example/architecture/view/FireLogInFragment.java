@@ -1,10 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
-import com.google.firebase.database.FirebaseDatabase;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,8 +10,12 @@ import android.widget.Button;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.viewmodel.UserProfileViewModel;
-import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
+import com.google.firebase.database.FirebaseDatabase;
+import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -32,7 +31,7 @@ import com.ulling.lib.core.util.QcLog;
  *
  * http://yookn.tistory.com/244
  */
-public class FireLogInFragment extends BaseLazyViewPagerQFragement implements View.OnClickListener {
+public class FireLogInFragment extends BaseLazyQLifeFragement implements View.OnClickListener {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private UserProfileViewModel viewModel;
@@ -66,7 +65,7 @@ public class FireLogInFragment extends BaseLazyViewPagerQFragement implements Vi
     }
 
     @Override
-    protected void setup(View view) {
+    protected void initSetupView(View view) {
         AnonymousAuthBtn = (Button) view.findViewById(R.id.AnonymousAuthBtn);
         CustomAuthBtn = (Button) view.findViewById(R.id.CustomAuthBtn);
         EmailPasswordBtn = (Button) view.findViewById(R.id.EmailPasswordBtn);
@@ -118,23 +117,8 @@ public class FireLogInFragment extends BaseLazyViewPagerQFragement implements Vi
     }
 
     @Override
-    public void resetData() {
+    protected void destroyData() {
     }
-
-    @Override
-    public void startAnimation() {
-    }
-
-    @Override
-    public void stopAnimation() {
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
 
     @Override
     public void onClick(View v) {

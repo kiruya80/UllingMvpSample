@@ -1,7 +1,6 @@
 package com.ulling.lib.core.base;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.ulling.lib.core.util.QcLog;
@@ -10,7 +9,7 @@ import com.ulling.lib.core.util.QcLog;
  * 뷰페이저용 프레그먼트
  * 페이져 이동시 현재 페이지인 경우만 데이터 및 뷰표시
  */
-public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
+public abstract class BaseLazyQLifeFragement extends BaseQLifeFragment {
     public static final String ARG_SECTION_NUMBER = "section_number";
     public int section_number;
     public boolean isViewPrepared;
@@ -24,11 +23,6 @@ public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
     }
 
     @Override
-    protected void setup(View view) {
-        super.setup(view);
-    }
-
-    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         QcLog.i("setUserVisibleHint == " + section_number + " , " + isVisibleToUser);
@@ -37,11 +31,8 @@ public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
             lazyFetchDataIfPrepared();
         } else {
             // 감춰진다
+            animationPause();
         }
-    }
-
-    protected void lazyFetchData() {
-        QcLog.i("lazyFetchData == ");
     }
 
     @Override
@@ -52,16 +43,17 @@ public abstract class BaseLazyViewPagerQFragement extends BaseLazyQFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void initArgument() {
         section_number = getArguments().getInt(ARG_SECTION_NUMBER);
-
     }
 
     private void lazyFetchDataIfPrepared() {
         if (getUserVisibleHint() && !hasFetchData && isViewPrepared) {
             hasFetchData = true;
             lazyFetchData();
+            animationResume();
         }
     }
+
+    protected abstract void lazyFetchData();
 }

@@ -3,19 +3,18 @@ package com.example.architecture.view;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.viewmodel.UserProfileViewModel;
-import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
+import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
 
 import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
 import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
-public class RetrofitFragment extends BaseLazyViewPagerQFragement implements View.OnClickListener {
+public class RetrofitFragment extends BaseLazyQLifeFragement implements View.OnClickListener {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private UserProfileViewModel viewModel;
@@ -42,14 +41,9 @@ public class RetrofitFragment extends BaseLazyViewPagerQFragement implements Vie
     }
 
     @Override
-    protected void setup(View view) {
+    protected void initSetupView(View view) {
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-//        userId = getArguments().getString(UID_KEY);
-    }
 
     @Override
     protected void initData() {
@@ -79,16 +73,9 @@ public class RetrofitFragment extends BaseLazyViewPagerQFragement implements Vie
     }
 
     @Override
-    public void resetData() {
+    protected void destroyData() {
     }
 
-    @Override
-    public void startAnimation() {
-    }
-
-    @Override
-    public void stopAnimation() {
-    }
 
     @Override
     public void onDestroy() {

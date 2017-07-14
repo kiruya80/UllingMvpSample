@@ -1,18 +1,7 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,26 +10,35 @@ import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.UserProfileViewModel;
-import com.ulling.lib.core.base.BaseLazyViewPagerQFragement;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.Random;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 /**
  * Created by P100651 on 2017-07-04.
- *
- *
+ * <p>
+ * <p>
  * https://firebase.google.com/docs/database/android/start/
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * http://anhana.tistory.com/4
- *
+ * <p>
  * https://github.com/firebase/quickstart-android/tree/master/database
- *
+ * <p>
  * http://yookn.tistory.com/244
  */
-public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
+public class FireDatabaseFragment extends BaseLazyQLifeFragement {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private UserProfileViewModel viewModel;
@@ -56,6 +54,14 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
     private ValueEventListener valueEventListener;
 
     public FireDatabaseFragment() {
+    }
+
+    @Override
+    public void destroyData() {
+        if (databaseReference != null && childEventListener != null)
+            databaseReference.removeEventListener(childEventListener);
+        if (databaseReference != null && valueEventListener != null)
+            databaseReference.removeEventListener(valueEventListener);
     }
 
     /**
@@ -76,7 +82,7 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
     }
 
     @Override
-    protected void setup(View view) {
+    protected void initSetupView(View view) {
         tvUsers = (TextView) view.findViewById(R.id.tvUsers);
         addButton = (Button) view.findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +95,6 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
                 user.setLastName(new Random().nextInt(100) + "_lastname");
                 user.setAge(new Random().nextInt(100));
 //                databaseReference.child("usersData").push().setValue(user);
-
 //                databaseReference.child("usersData").child(user.id).setValue(user);
                 databaseReference.child(user.id).setValue(user);
             }
@@ -97,17 +102,10 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        userId = getArguments().getString(UID_KEY);
-    }
-
-    @Override
     protected void initData() {
         QcLog.e("initData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
-        initViewModel();
     }
 
     @Override
@@ -120,6 +118,21 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
     }
 
     @Override
+    public void subscribeUiFromViewModel() {
+        QcLog.e("subscribeUiLoans == ");
+    }
+
+    @Override
+    protected void initArgument() {
+        QcLog.e("initArgument == ");
+        userId = getArguments().getString(UID_KEY);
+    }
+
+    /**
+     *
+     */
+
+    @Override
     public void lazyFetchData() {
         QcLog.e("lazyFetchData == ");
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -127,7 +140,6 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
 //        databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("usersData");
         initFirebaseDatabase();
-
         QcLog.e("databaseReference.toString() == " + databaseReference.toString());
 //        for (DataSnapshot messageData : dataSnapshot.getChildren()) {
 //            String msg = messageData.getValue().toString();
@@ -136,26 +148,8 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
 //        getSingleAllData();
     }
 
-    @Override
-    public void subscribeUiFromViewModel() {
-        QcLog.e("subscribeUiLoans == ");
-    }
-
-    @Override
-    public void resetData() {
-    }
-
-    @Override
-    public void startAnimation() {
-    }
-
-    @Override
-    public void stopAnimation() {
-    }
-
 
     private void initFirebaseDatabase() {
-
 //        databaseReference.addValueEventListener(new ValueEventListener() {
         valueEventListener = new ValueEventListener() {
             @Override
@@ -275,15 +269,6 @@ public class FireDatabaseFragment extends BaseLazyViewPagerQFragement {
             }
         };
         databaseReference.addChildEventListener(childEventListener);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (databaseReference != null && childEventListener != null)
-            databaseReference.removeEventListener(childEventListener);
-        if (databaseReference != null && valueEventListener != null)
-            databaseReference.removeEventListener(valueEventListener);
     }
 
 }
