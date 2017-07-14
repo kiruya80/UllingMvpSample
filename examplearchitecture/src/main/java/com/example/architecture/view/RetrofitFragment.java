@@ -1,24 +1,26 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
-import com.example.architecture.viewmodel.UserProfileViewModel;
+import com.example.architecture.databinding.FragRetrofitBinding;
+import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 public class RetrofitFragment extends BaseLazyQLifeFragement implements View.OnClickListener {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
-    private UserProfileViewModel viewModel;
+    private RetrofitViewModel viewModel;
     private int nThreads = 2;
+
+    FragRetrofitBinding viewBinding;
 
     public RetrofitFragment() {
     }
@@ -36,60 +38,56 @@ public class RetrofitFragment extends BaseLazyQLifeFragement implements View.OnC
     }
 
     @Override
-    protected int getFragmentLayoutId() {
+    protected void needDestroyData() {
+
+    }
+
+    @Override
+    protected int needGetLayoutId() {
         return R.layout.frag_retrofit;
     }
 
     @Override
-    protected void initSetupView(View view) {
+    protected void needViewBinding() {
+        viewBinding = (FragRetrofitBinding) getViewBinding();
     }
 
 
     @Override
-    protected void initData() {
+    protected void needInitData() {
         QcLog.e("initData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
-        initViewModel();
     }
 
     @Override
-    public void initViewModel() {
-        QcLog.e("initViewModel == ");
+    public void needInitViewModel() {
+        QcLog.e("needInitViewModel == ");
         if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+            viewModel = ViewModelProviders.of(this).get(RetrofitViewModel.class);
             viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
         }
     }
 
     @Override
-    public void lazyFetchData() {
+    public void needSubscribeUiFromViewModel() {
+        QcLog.e("needSubscribeUiFromViewModel == ");
+    }
+
+    @Override
+    public void needPageVisiableToUser() {
         QcLog.e("lazyFetchData == ");
     }
 
-    @Override
-    public void subscribeUiFromViewModel() {
-        QcLog.e("subscribeUiLoans == ");
-    }
-
-    @Override
-    protected void destroyData() {
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
     @Override
     public void onClick(View v) {
-        Intent intent;
-        switch (v.getId()) {
-            case R.id.TwitterLoginBtn:
-//                intent = new Intent(this, TwitterLoginActivity.class);
-//                startActivity(intent);
-                break;
-        }
+//        Intent intent;
+//        switch (v.getId()) {
+//            case R.id.TwitterLoginBtn:
+////                intent = new Intent(this, TwitterLoginActivity.class);
+////                startActivity(intent);
+//                break;
+//        }
     }
 }

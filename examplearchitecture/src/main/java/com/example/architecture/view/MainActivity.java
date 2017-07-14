@@ -1,8 +1,6 @@
 package com.example.architecture.view;
 
 import android.arch.lifecycle.LifecycleFragment;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -13,6 +11,7 @@ import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.example.architecture.databinding.ActivityMainBinding;
 import com.ulling.lib.core.base.BaseQLifecycleActivity;
 import com.ulling.lib.core.util.QcLog;
 
@@ -24,70 +23,76 @@ public class MainActivity extends BaseQLifecycleActivity {
     private QUllingApplication qApp;
     private ArrayList<LifecycleFragment> BaseQLifecycleFragmentList = new ArrayList<>();
 
+    ActivityMainBinding viewBinding;
+
     @Override
-    protected void initViewModel() {
+    protected void needDestroyData() {
+
+    }
+    @Override
+    protected int needGetLayoutId() {
+        return R.layout.activity_main;
     }
 
     @Override
-    protected void subscribeUiFromViewModel() {
+    protected void needLayoutIdBinding() {
+        viewBinding = (ActivityMainBinding) getViewDataBinding();
     }
+//    public ViewDataBinding getViewDataBinding() {
+//        return DataBindingUtil.setContentView(this, needGetLayoutId());
+//    }
 
     @Override
-    protected void onCreateInitData() {
-    }
+    protected void needSetupView() {
+//        mViewPager = (ViewPager) findViewById(R.id.container);
+//        mViewPager.setAdapter(mSectionsPagerAdapter);
+//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+//        tabLayout.setupWithViewPager(mViewPager);
+//        tabLayout.setTabMode(TabLayout.MODE_FIXED);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
-    @Override
-    protected void animationResume() {
-    }
-
-    @Override
-    protected void animationPause() {
-    }
-
-    @Override
-    protected void destroyData() {
-    }
-
-    @Override
-    protected int getFragmentLayoutId() {
-        return 0;
-    }
-
-    @Override
-    protected void onCreateSetUpView() {
-    }
-
-    @Override
-    protected void onCreateGetArgument() {
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setFragment();
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        viewBinding.container.setAdapter(mSectionsPagerAdapter);
+        viewBinding.tabs.setupWithViewPager(viewBinding.container);
+        viewBinding.tabs.setTabMode(TabLayout.MODE_FIXED);
+        viewBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
-        qApp = QUllingApplication.getInstance();
     }
+
+    @Override
+    protected void needInitData() {
+        qApp = QUllingApplication.getInstance();
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        setFragment();
+    }
+
+    @Override
+    protected void needInitViewModel() {
+
+    }
+
+    @Override
+    protected void needSubscribeUiFromViewModel() {
+
+    }
+
 
     private void setFragment() {
         BaseQLifecycleFragmentList.add(FireLogInFragment.newInstance(0));
         BaseQLifecycleFragmentList.add(FireDatabaseFragment.newInstance(1));
         BaseQLifecycleFragmentList.add(RetrofitFragment.newInstance(2));
-        BaseQLifecycleFragmentList.add(UserProfileFragment.newInstance(3));
+        BaseQLifecycleFragmentList.add(LiveDataFragment.newInstance(3));
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

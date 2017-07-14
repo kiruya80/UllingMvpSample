@@ -1,18 +1,20 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.example.architecture.databinding.FragUserProfileBinding;
 import com.example.architecture.enty.User;
-import com.example.architecture.viewmodel.UserProfileViewModel;
+import com.example.architecture.viewmodel.LiveDataViewModel;
 import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
@@ -21,32 +23,23 @@ import com.ulling.lib.core.util.QcToast;
 import java.util.List;
 import java.util.Random;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 /**
  * Created by P100651 on 2017-07-04.
  */
-public class UserProfileFragment extends BaseLazyQLifeFragement {
+public class LiveDataFragment extends BaseLazyQLifeFragement {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
-    private UserProfileViewModel viewModel;
+    private LiveDataViewModel viewModel;
     private String userId;
-    private TextView tvUsers;
-    private Button getButton;
-    private Button addButton;
-    private Button deleteButton;
+//    private TextView tvUsers;
+//    private Button getButton;
+//    private Button addButton;
+//    private Button deleteButton;
     private int nThreads = 2;
+    FragUserProfileBinding viewBinding;
 
-    public UserProfileFragment() {
-    }
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static UserProfileFragment newInstance(int sectionNumber) {
-        UserProfileFragment fragment = new UserProfileFragment();
+    public static LiveDataFragment newInstance(int sectionNumber) {
+        LiveDataFragment fragment = new LiveDataFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -54,31 +47,37 @@ public class UserProfileFragment extends BaseLazyQLifeFragement {
     }
 
     @Override
-    protected int getFragmentLayoutId() {
+    protected void needDestroyData() {
+
+    }
+
+    @Override
+    protected int needGetLayoutId() {
         return R.layout.frag_user_profile;
     }
 
     @Override
-    protected void initSetupView(View view) {
-        tvUsers = (TextView) view.findViewById(R.id.tvUsers);
-        getButton = (Button) view.findViewById(R.id.getButton);
-        getButton.setOnClickListener(new View.OnClickListener() {
+    protected void needViewBinding() {
+        viewBinding = (FragUserProfileBinding) getViewBinding();
+//        tvUsers = (TextView) view.findViewById(R.id.tvUsers);
+//        getButton = (Button) view.findViewById(R.id.getButton);
+        viewBinding.getButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 QcLog.e("getUser == ");
                 viewModel.getAllUsers();
             }
         });
-        addButton = (Button) view.findViewById(R.id.addButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
+//        addButton = (Button) view.findViewById(R.id.addButton);
+        viewBinding.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 QcLog.e("addUser == ");
                 viewModel.addUserDao(randomUser());
             }
         });
-        deleteButton = (Button) view.findViewById(R.id.deleteButton);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
+//        deleteButton = (Button) view.findViewById(deleteButton);
+        viewBinding.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Random random = new Random();
@@ -91,59 +90,35 @@ public class UserProfileFragment extends BaseLazyQLifeFragement {
     }
 
     @Override
-    protected void initData() {
-        QcLog.e("initData == ");
+    protected void needInitData() {
+        QcLog.e("needInitData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         id_ = QcPreferences.getInstance().get("index", 1);
-        initViewModel();
-        QcToast.getInstance().show("initData !!", false);
     }
 
     @Override
-    protected void initArgument() {
-        super.initArgument();
+    protected void optGetArgument() {
+        super.optGetArgument();
         QcLog.e("initArgument == ");
         userId = getArguments().getString(UID_KEY);
     }
 
-//(BaseLazyQFragment.java:80) [onPause()]  == onPause ==
-//            07-12 17:27:33.395 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:86) [onStop()]  == onStop ==
-//            07-12 17:27:33.396 5209-5209/com.example.architecture I/APP_NAME:  (BaseLazyQFragment.java:92) [onDestroyView()]  == onDestroyView ==
-
     @Override
-    protected void animationResume() {
-    }
-
-    @Override
-    protected void animationPause() {
-    }
-
-    @Override
-    protected void destroyData() {
-    }
-
-    @Override
-    public void initViewModel() {
-        QcLog.e("initViewModel == ");
+    public void needInitViewModel() {
+        QcLog.e("needInitViewModel == ");
         // 안드로이드가 ViewModel을 생성합니다.
         // ViewModel 최고의 장점은 configurationChanges에서도 살아남는 점입니다!
         // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
         if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
             viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
         }
     }
 
     @Override
-    public void lazyFetchData() {
-        QcLog.e("lazyFetchData == ");
-        subscribeUiFromViewModel();
-    }
-
-    @Override
-    public void subscribeUiFromViewModel() {
-        QcLog.e("subscribeUiLoans == ");
+    public void needSubscribeUiFromViewModel() {
+        QcLog.e("needSubscribeUiFromViewModel == ");
 //        if (viewModel != null && viewModel.getLoansResult() != null)
 //        viewModel.getLoansResult().observe(this, new Observer<String>() {
 //            @Override
@@ -156,6 +131,11 @@ public class UserProfileFragment extends BaseLazyQLifeFragement {
         observerUserListResults(viewModel.getAllUsers());
     }
 
+    @Override
+    public void needPageVisiableToUser() {
+        QcLog.e("needPageVisiableToUser == ");
+    }
+
     private void observerUserResults(LiveData<User> userLive) {
         //observer LiveData
         userLive.observe(this, new Observer<User>() {
@@ -165,7 +145,7 @@ public class UserProfileFragment extends BaseLazyQLifeFragement {
                 if (user == null) {
                     return;
                 }
-                tvUsers.setText(user.toString());
+                viewBinding.tvUsers.setText(user.toString());
             }
         });
     }
@@ -179,7 +159,7 @@ public class UserProfileFragment extends BaseLazyQLifeFragement {
                 if (allUsers == null) {
                     return;
                 }
-                tvUsers.setText(allUsers.toString());
+                viewBinding.tvUsers.setText(allUsers.toString());
             }
         });
     }

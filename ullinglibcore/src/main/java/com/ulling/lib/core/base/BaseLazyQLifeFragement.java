@@ -1,9 +1,9 @@
 package com.ulling.lib.core.base;
 
+import static com.ulling.lib.core.util.QcLog.i;
+
 import android.os.Bundle;
 import android.view.View;
-
-import com.ulling.lib.core.util.QcLog;
 
 /**
  * 뷰페이저용 프레그먼트
@@ -15,6 +15,7 @@ public abstract class BaseLazyQLifeFragement extends BaseQLifeFragment {
     public boolean isViewPrepared;
     public boolean hasFetchData;
 
+    protected abstract void needPageVisiableToUser();
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -25,13 +26,14 @@ public abstract class BaseLazyQLifeFragement extends BaseQLifeFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        QcLog.i("setUserVisibleHint == " + section_number + " , " + isVisibleToUser);
+        i("setUserVisibleHint == " + section_number + " , " + isVisibleToUser);
+        isResumeAnimation = false;
         if (isVisibleToUser) {
             // 현재 페이지
             lazyFetchDataIfPrepared();
         } else {
             // 감춰진다
-            animationPause();
+            optAnimationPause();
         }
     }
 
@@ -42,18 +44,19 @@ public abstract class BaseLazyQLifeFragement extends BaseQLifeFragment {
         lazyFetchDataIfPrepared();
     }
 
+
     @Override
-    protected void initArgument() {
+    protected void optGetArgument() {
+        super.optGetArgument();
         section_number = getArguments().getInt(ARG_SECTION_NUMBER);
     }
 
     private void lazyFetchDataIfPrepared() {
         if (getUserVisibleHint() && !hasFetchData && isViewPrepared) {
             hasFetchData = true;
-            lazyFetchData();
-            animationResume();
+            needPageVisiableToUser();
+            optAnimationResume();
         }
     }
 
-    protected abstract void lazyFetchData();
 }

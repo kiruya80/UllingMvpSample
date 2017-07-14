@@ -2,7 +2,10 @@ package com.ulling.lib.core.base;
 
 import android.arch.lifecycle.LifecycleFragment;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,55 +15,83 @@ import com.ulling.lib.core.util.QcLog;
 public abstract class BaseQLifeFragment extends LifecycleFragment {
     public Context qCon;
     public String APP_NAME;
-//    public String TAG = getClass().getSimpleName();
+    //    public String TAG = getClass().getSimpleName();
+    public boolean isResumeAnimation = true;
 
     /**
      * 필수
+     * need~ 시작
+     */
+    /**
+     * 정리할 데이터
+     */
+    protected abstract void needDestroyData();
+
+    /**
      *
      * @return
      */
-    protected abstract int getFragmentLayoutId();
-    protected abstract void initSetupView(View view);
+    protected abstract int needGetLayoutId();
+
+    public ViewDataBinding rootViewBinding;
+
+    public ViewDataBinding getViewBinding() {
+        return rootViewBinding;
+    }
+
+//    protected abstract void needLayoutDataBinding();
+
+    /**
+     *
+     * @param view
+     */
+//    protected abstract void needInitSetupView(View view);
+    protected abstract void needViewBinding();
 
     /**
      * 데이터 초기화
      */
-    protected abstract void initData();
+    protected abstract void needInitData();
 
     /**
      * 뷰모델 초기화
      */
-    protected abstract void initViewModel();
+    protected abstract void needInitViewModel();
 
     /**
      * 데이터 subscribe
      */
-    protected abstract void subscribeUiFromViewModel();
+    protected abstract void needSubscribeUiFromViewModel();
 
 
-    /**
-     * 정리할 데이터
-     */
-    protected abstract void destroyData();
     /**
      * 옵션
+     * opt
+     *
      * animationResume
      * animationPause
      */
-
-    protected void initArgument() {
+    /**
+     *
+     */
+    protected void optGetArgument() {
     }
+
     /**
      * 애니메이션 시작
      */
-    protected void animationResume() {
-    };
+    protected void optAnimationResume() {
+    }
+
+    ;
 
     /**
      * 애니메이션 정지
      */
-    protected void animationPause() {
-    };
+    protected void optAnimationPause() {
+    }
+
+    ;
 
     /**
      * Lifecycle
@@ -82,48 +113,49 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
      * 사용자 UI를 처음 그리는 시점에서 호출
      * View 를 반환
      * 프래그먼트가 UI를 제공하지 않는 경우 null을 반환
-     *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
      */
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        QcLog.i("onCreateView == ");
+//        View view = inflater.inflate(needGetLayoutId(), container, false);
+//        needInitSetupView(view);
+//        return view;
+//    }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        QcLog.i("onCreateView == ");
-        View view = inflater.inflate(getFragmentLayoutId(), container, false);
-        initSetupView(view);
-        return view;
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        rootViewBinding = DataBindingUtil.inflate(
+                inflater, needGetLayoutId(), container, false);
+//        View view = viewBinding.getRoot();
+        needViewBinding();
+        return rootViewBinding.getRoot();
     }
 
     /**
      * 다시 돌아올때
      * onDestroyView에서
-     *
-     * @param view
-     * @param savedInstanceState
      */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         QcLog.i("onViewCreated == ");
         qCon = getActivity().getApplicationContext();
-        initData();
-        initViewModel();
+        needInitData();
+        needInitViewModel();
+        needSubscribeUiFromViewModel();
     }
 
     /**
      * Activity에서 Fragment를 모두 생성하고 난다음 호출 된다.
      * Activity의 onCreate()에서 setContentView()한 다음이라고 생각 하면 쉽게 이해 될것 같다.
      * 여기서 부터는 ui변경작업이 가능하다.
-     *
-     * @param savedInstanceState
      */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         QcLog.i("onActivityCreated == ");
-        initArgument();
+        optGetArgument();
     }
 
     /**
@@ -144,6 +176,8 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
     public void onResume() {
         super.onResume();
         QcLog.i("onResume == ");
+        if (isResumeAnimation)
+            optAnimationResume();
     }
 
     /**
@@ -154,7 +188,7 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
     public void onPause() {
         super.onPause();
         QcLog.i("onPause == ");
-        animationPause();
+        optAnimationPause();
     }
 
     /**
@@ -184,7 +218,7 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
     public void onDestroy() {
         super.onDestroy();
         QcLog.i("onDestroy == ");
-        destroyData();
+        needDestroyData();
     }
 
     /**

@@ -22,14 +22,14 @@ import java.util.concurrent.Executors;
  * UI의 데이터를 준비하는 클래스
  * livedata 1,2,3,....
  */
-public class UserProfileViewModel extends AndroidViewModel {
+public class FireDatabaseViewModel extends AndroidViewModel {
     private DatabaseModel mDatabaseModel;
 //    private Application application;
     private Context qCon;
     private int nThreads = 2;
     private Executor executor = Executors.newFixedThreadPool(nThreads);
 
-    public UserProfileViewModel(@NonNull Application application) {
+    public FireDatabaseViewModel(@NonNull Application application) {
         super(application);
 //        this.application = application;
     }

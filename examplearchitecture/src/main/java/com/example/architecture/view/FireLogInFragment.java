@@ -1,21 +1,21 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
+import com.google.firebase.database.FirebaseDatabase;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.Button;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
-import com.example.architecture.viewmodel.UserProfileViewModel;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.architecture.databinding.FragFireLoginBinding;
+import com.example.architecture.viewmodel.FireLogInViewModel;
 import com.ulling.lib.core.base.BaseLazyQLifeFragement;
 import com.ulling.lib.core.util.QcLog;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -34,16 +34,18 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 public class FireLogInFragment extends BaseLazyQLifeFragement implements View.OnClickListener {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
-    private UserProfileViewModel viewModel;
+    private FireLogInViewModel viewModel;
     private int nThreads = 2;
     private FirebaseDatabase firebaseDatabase;
 
-    private Button AnonymousAuthBtn;
-    private Button CustomAuthBtn;
-    private Button EmailPasswordBtn;
-    private Button googleLogInBtn;
-    private Button facebookLogInBtn;
-    private Button TwitterLoginBtn;
+//    private Button AnonymousAuthBtn;
+//    private Button CustomAuthBtn;
+//    private Button EmailPasswordBtn;
+//    private Button googleLogInBtn;
+//    private Button facebookLogInBtn;
+//    private Button TwitterLoginBtn;
+    private FragFireLoginBinding viewBinding;
+
     public FireLogInFragment() {
     }
 
@@ -60,64 +62,60 @@ public class FireLogInFragment extends BaseLazyQLifeFragement implements View.On
     }
 
     @Override
-    protected int getFragmentLayoutId() {
+    public void needDestroyData() {
+    }
+
+    @Override
+    protected int needGetLayoutId() {
         return R.layout.frag_fire_login;
     }
 
     @Override
-    protected void initSetupView(View view) {
-        AnonymousAuthBtn = (Button) view.findViewById(R.id.AnonymousAuthBtn);
-        CustomAuthBtn = (Button) view.findViewById(R.id.CustomAuthBtn);
-        EmailPasswordBtn = (Button) view.findViewById(R.id.EmailPasswordBtn);
-        // Assign fields
-        googleLogInBtn = (Button) view.findViewById(R.id.googleLogInBtn);
-        facebookLogInBtn = (Button) view.findViewById(R.id.facebookLogInBtn);
-        TwitterLoginBtn = (Button) view.findViewById(R.id.TwitterLoginBtn);
+    protected void needViewBinding() {
+        viewBinding = (FragFireLoginBinding) getViewBinding();
+//        AnonymousAuthBtn = (Button) view.findViewById(R.id.AnonymousAuthBtn);
+//        CustomAuthBtn = (Button) view.findViewById(R.id.CustomAuthBtn);
+//        EmailPasswordBtn = (Button) view.findViewById(R.id.EmailPasswordBtn);
+//        // Assign fields
+//        googleLogInBtn = (Button) view.findViewById(R.id.googleLogInBtn);
+//        facebookLogInBtn = (Button) view.findViewById(R.id.facebookLogInBtn);
+//        TwitterLoginBtn = (Button) view.findViewById(R.id.TwitterLoginBtn);
 
         // Set click listeners
-        AnonymousAuthBtn.setOnClickListener(this);
-        CustomAuthBtn.setOnClickListener(this);
-        EmailPasswordBtn.setOnClickListener(this);
-        googleLogInBtn.setOnClickListener(this);
-        facebookLogInBtn.setOnClickListener(this);
-        TwitterLoginBtn.setOnClickListener(this);
+        viewBinding.AnonymousAuthBtn.setOnClickListener(this);
+//        viewBinding.CustomAuthBtn.setOnClickListener(this);
+//        viewBinding.EmailPasswordBtn.setOnClickListener(this);
+//        viewBinding.googleLogInBtn.setOnClickListener(this);
+//        viewBinding.facebookLogInBtn.setOnClickListener(this);
+//        viewBinding.TwitterLoginBtn.setOnClickListener(this);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-//        userId = getArguments().getString(UID_KEY);
-    }
-
-    @Override
-    protected void initData() {
-        QcLog.e("initData == ");
+    protected void needInitData() {
+        QcLog.e("needInitData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
-        initViewModel();
     }
 
     @Override
-    public void initViewModel() {
-        QcLog.e("initViewModel == ");
+    public void needInitViewModel() {
+        QcLog.e("needInitViewModel == ");
         if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+            viewModel = ViewModelProviders.of(this).get(FireLogInViewModel.class);
             viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
         }
     }
 
-    @Override
-    public void lazyFetchData() {
-        QcLog.e("lazyFetchData == ");
-    }
 
     @Override
-    public void subscribeUiFromViewModel() {
+    public void needSubscribeUiFromViewModel() {
         QcLog.e("subscribeUiLoans == ");
     }
 
+
     @Override
-    protected void destroyData() {
+    public void needPageVisiableToUser() {
+        QcLog.e("needPageVisiableToUser == ");
     }
 
     @Override
