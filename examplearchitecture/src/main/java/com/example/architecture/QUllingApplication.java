@@ -2,14 +2,14 @@ package com.example.architecture;
 
 import android.content.Context;
 
-import com.ulling.lib.core.base.QbaseApplication;
+import com.ulling.lib.core.base.QcBaseApplication;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
 
 /**
  * Created by KILHO on 2016. 7. 4..
  */
-public class QUllingApplication extends QbaseApplication {
+public class QUllingApplication extends QcBaseApplication {
     private static QUllingApplication SINGLE_U;
     public static Context qCon;
 //    public static QcPreferences appQcPreferences;

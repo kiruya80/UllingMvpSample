@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import com.google.gson.reflect.TypeToken;
-import com.ulling.lib.core.base.QbaseApplication;
+import com.ulling.lib.core.base.QcBaseApplication;
 import com.ulling.lib.core.common.QcDefine;
 
 import java.lang.reflect.Type;
@@ -77,7 +77,7 @@ public class QcPreferences {
 //    }
 
     public static synchronized QcPreferences getInstance() {
-        if (QbaseApplication.getInstance() == null) {
+        if (QcBaseApplication.getInstance() == null) {
             QcLog.i("QcPreferences init failed !");
             return null;
         }
@@ -88,8 +88,8 @@ public class QcPreferences {
     }
 
     private QcPreferences() {
-        APP_NAME = QbaseApplication.getInstance().getPackageName();
-        prefs = QbaseApplication.getInstance().getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
+        APP_NAME = QcBaseApplication.getInstance().getPackageName();
+        prefs = QcBaseApplication.getInstance().getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
         editor = prefs.edit();
         GsonBuilder gsonGsonBuilder = new GsonBuilder();
         gsonGsonBuilder.setDateFormat(QcDefine.UTC_DATE_FORMAT);

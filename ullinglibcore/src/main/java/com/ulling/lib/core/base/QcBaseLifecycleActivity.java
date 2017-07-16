@@ -12,7 +12,7 @@ import com.ulling.lib.core.util.QcLog;
 /**
  * Created by P100651 on 2017-07-04.
  */
-public abstract class BaseQLifecycleActivity extends LifecycleActivity {
+public abstract class QcBaseLifecycleActivity extends LifecycleActivity {
     public Context qCon;
     public String APP_NAME;
 

@@ -12,57 +12,89 @@ import android.view.ViewGroup;
 
 import com.ulling.lib.core.util.QcLog;
 
-public abstract class BaseQLifeFragment extends LifecycleFragment {
+/**
+ * 기본 프레그먼트
+ * 필수적인 요소들만 개발자가
+ * 오버라이드하여 사용할수 있게 만든 베이스 프레그먼트
+ */
+public abstract class QcBaseLifeFragment extends LifecycleFragment {
     public Context qCon;
     public String APP_NAME;
     //    public String TAG = getClass().getSimpleName();
+
+    /**
+     * 리줌에서 애니메이션을 시작할지 결정하는 플래그
+     * pageview에서는 false 설정해야함
+     */
     public boolean isResumeAnimation = true;
+    /**
+     * 레이아웃 내 설정한 아이디들을 바인딩하는 클래스
+     *
+     * 프레그먼트와 맞는 뷰데이터바인딩 클래스로 형변환 해야함
+     */
+    private ViewDataBinding rootViewBinding;
+
+    /**
+     * 바인딩된 뷰데이터바인딩 가져오기
+     */
+    public ViewDataBinding getViewBinding() {
+        return rootViewBinding;
+    }
 
     /**
      * 필수
      * need~ 시작
      */
-    /**
-     * 정리할 데이터
-     */
-    protected abstract void needDestroyData();
 
     /**
+     * 1.
      *
-     * @return
+     * 설정한 레이아웃 아이디를 가지고
+     * onCreateView 에서 자동으로 바인딩된다
+     * rootViewBinding = DataBindingUtil.inflate(inflater, needGetLayoutId(), container, false);
+     *
+     * @return 레이아웃 아이디 클래스이름을 기준으로 생성
+     *
+     * ex) LiveDataFragment -> R.layout.frag_user_profile;
      */
     protected abstract int needGetLayoutId();
 
-    public ViewDataBinding rootViewBinding;
-
-    public ViewDataBinding getViewBinding() {
-        return rootViewBinding;
-    }
-
-//    protected abstract void needLayoutDataBinding();
-
     /**
+     * 2.
      *
-     * @param view
+     * 프레그먼트 UI 데이터 초기화
      */
-//    protected abstract void needInitSetupView(View view);
-    protected abstract void needViewBinding();
+    protected abstract void needResetData();
 
     /**
-     * 데이터 초기화
+     * 3.
+     *
+     * UI에서 필요한 데이터 바인딩
+     * 옵져버 달기?
      */
-    protected abstract void needInitData();
+    protected abstract void needUIInflate();
 
     /**
+     * 4.
+     *
+     * 버튼 및 기타 UI이벤트 설정
+     */
+    protected abstract void needUIEventListener();
+
+    /**
+     * 5.
+     *
      * 뷰모델 초기화
      */
     protected abstract void needInitViewModel();
 
     /**
-     * 데이터 subscribe
+     * 6.
+     *
+     * 데이터모델로부터 변화되는 데이터를 구독하고
+     * 데이터를 UI에 연결한다
      */
     protected abstract void needSubscribeUiFromViewModel();
-
 
     /**
      * 옵션
@@ -72,7 +104,16 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
      * animationPause
      */
     /**
-     *
+     * 옵션
+     * 프레그먼트 Destroy되는 경우 데이터 리셋
+     */
+    protected void needDestroyData() {
+    }
+
+    /**
+     * 데이터 전달시 가져오기
+     * LiveData로 활용하능한지는 체크해봐야함 !!
+     * 또한 데이터가 필요한지도 확인 필요
      */
     protected void optGetArgument() {
     }
@@ -83,7 +124,6 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
     protected void optAnimationResume() {
     }
 
-    ;
 
     /**
      * 애니메이션 정지
@@ -91,7 +131,6 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
     protected void optAnimationPause() {
     }
 
-    ;
 
     /**
      * Lifecycle
@@ -100,20 +139,38 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
      */
     /**
      * Activity에서의 onCreate()와 비슷하나, ui관련 작업은 할 수 없다.
-     * @param savedInstanceState
      */
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        QcLog.i("onCreate");
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        QcLog.i("onCreate");
+        if (getArguments() != null) {
+            optGetArgument();
+        }
+    }
+
 
     /**
      * Layout을 inflater을하여 View작업을 하는곳이다.
      * 사용자 UI를 처음 그리는 시점에서 호출
      * View 를 반환
      * 프래그먼트가 UI를 제공하지 않는 경우 null을 반환
+     *
+     * onStop / onDestroyView 에서 돌아오는 경우 호출됨
      */
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        QcLog.i("onCreateView == ");
+        if (rootViewBinding == null)
+        rootViewBinding = DataBindingUtil.inflate(
+                inflater, needGetLayoutId(), container, false);
+//        View view = viewBinding.getRoot();
+//        needUIDataBinding();
+        needUIInflate();
+        return rootViewBinding.getRoot();
+    }
 //    @Override
 //    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 //        QcLog.i("onCreateView == ");
@@ -121,28 +178,17 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
 //        needInitSetupView(view);
 //        return view;
 //    }
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        rootViewBinding = DataBindingUtil.inflate(
-                inflater, needGetLayoutId(), container, false);
-//        View view = viewBinding.getRoot();
-        needViewBinding();
-        return rootViewBinding.getRoot();
-    }
 
     /**
-     * 다시 돌아올때
-     * onDestroyView에서
      */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         QcLog.i("onViewCreated == ");
         qCon = getActivity().getApplicationContext();
-        needInitData();
+        needResetData();
         needInitViewModel();
+        needUIEventListener();
         needSubscribeUiFromViewModel();
     }
 
@@ -155,7 +201,7 @@ public abstract class BaseQLifeFragment extends LifecycleFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         QcLog.i("onActivityCreated == ");
-        optGetArgument();
+//        optGetArgument();
     }
 
     /**

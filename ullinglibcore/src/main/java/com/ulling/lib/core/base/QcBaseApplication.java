@@ -8,9 +8,9 @@ import com.ulling.lib.core.util.QcLog;
 /**
  * Created by P100651 on 2017-07-10.
  */
-public class QbaseApplication extends Application {
+public class QcBaseApplication extends Application {
     //    public String TAG = getClass().getSimpleName();
-    private static QbaseApplication SINGLE_U;
+    private static QcBaseApplication SINGLE_U;
     public static String APP_NAME = "";
 
     /**
@@ -40,7 +40,7 @@ public class QbaseApplication extends Application {
 //        QcToast.init(this);
     }
 
-    public static synchronized QbaseApplication getInstance() {
+    public static synchronized QcBaseApplication getInstance() {
         return SINGLE_U;
     }
 

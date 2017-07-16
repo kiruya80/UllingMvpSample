@@ -7,7 +7,7 @@ package com.ulling.lib.core.util;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.ulling.lib.core.base.QbaseApplication;
+import com.ulling.lib.core.base.QcBaseApplication;
 
 public class QcToast {
     private static QcToast SINGLE_U;
@@ -15,7 +15,7 @@ public class QcToast {
     private Context qCon;
 
     public static synchronized QcToast getInstance() {
-        if (QbaseApplication.getInstance() == null) {
+        if (QcBaseApplication.getInstance() == null) {
             QcLog.i("QcToast init failed !");
             return null;
         }
@@ -27,7 +27,7 @@ public class QcToast {
 
     private QcToast() {
         if (qCon == null)
-            qCon = QbaseApplication.getInstance().getApplicationContext();
+            qCon = QcBaseApplication.getInstance().getApplicationContext();
         if (qCon != null)
             toast = new Toast(qCon);
         QcLog.i("QcToast init Success !!");

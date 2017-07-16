@@ -5,25 +5,20 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.databinding.FragRetrofitBinding;
 import com.example.architecture.viewmodel.RetrofitViewModel;
-import com.ulling.lib.core.base.BaseLazyQLifeFragement;
+import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.util.QcLog;
 
-public class RetrofitFragment extends BaseLazyQLifeFragement implements View.OnClickListener {
+public class RetrofitFragment extends QcBaseShowLifeFragement {
     private QUllingApplication qApp;
+    private FragRetrofitBinding viewBinding;
     private static final String UID_KEY = "uid";
     private RetrofitViewModel viewModel;
     private int nThreads = 2;
-
-    FragRetrofitBinding viewBinding;
-
-    public RetrofitFragment() {
-    }
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -38,26 +33,32 @@ public class RetrofitFragment extends BaseLazyQLifeFragement implements View.OnC
     }
 
     @Override
-    protected void needDestroyData() {
-
-    }
-
-    @Override
     protected int needGetLayoutId() {
         return R.layout.frag_retrofit;
     }
 
     @Override
-    protected void needViewBinding() {
+    protected void optGetArgument() {
+        super.optGetArgument();
+        QcLog.e("optGetArgument == ");
+    }
+
+    @Override
+    protected void needResetData() {
+        QcLog.e("needResetData == ");
+        qApp = QUllingApplication.getInstance();
+        APP_NAME = QUllingApplication.getAppName();
+    }
+
+    @Override
+    protected void needUIInflate() {
+        QcLog.e("needUIInflate == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
     }
 
-
     @Override
-    protected void needInitData() {
-        QcLog.e("initData == ");
-        qApp = QUllingApplication.getInstance();
-        APP_NAME = QUllingApplication.getAppName();
+    protected void needUIEventListener() {
+        QcLog.e("needUIEventListener == ");
     }
 
     @Override
@@ -75,19 +76,8 @@ public class RetrofitFragment extends BaseLazyQLifeFragement implements View.OnC
     }
 
     @Override
-    public void needPageVisiableToUser() {
-        QcLog.e("lazyFetchData == ");
+    public void needShowToUser() {
+        QcLog.e("needShowToUser == ");
     }
 
-
-    @Override
-    public void onClick(View v) {
-//        Intent intent;
-//        switch (v.getId()) {
-//            case R.id.TwitterLoginBtn:
-////                intent = new Intent(this, TwitterLoginActivity.class);
-////                startActivity(intent);
-//                break;
-//        }
-    }
 }

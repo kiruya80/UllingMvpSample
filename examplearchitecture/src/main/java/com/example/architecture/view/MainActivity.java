@@ -12,12 +12,12 @@ import android.view.View;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.databinding.ActivityMainBinding;
-import com.ulling.lib.core.base.BaseQLifecycleActivity;
+import com.ulling.lib.core.base.QcBaseLifecycleActivity;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.ArrayList;
 
-public class MainActivity extends BaseQLifecycleActivity {
+public class MainActivity extends QcBaseLifecycleActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private QUllingApplication qApp;

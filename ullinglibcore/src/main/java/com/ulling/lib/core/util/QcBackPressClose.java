@@ -6,7 +6,7 @@ package com.ulling.lib.core.util;
 
 import android.content.Context;
 
-import com.ulling.lib.core.base.QbaseApplication;
+import com.ulling.lib.core.base.QcBaseApplication;
 
 /**
  *
@@ -18,7 +18,7 @@ public class QcBackPressClose {
     private static final int BACK_KEY_TIMEOUT = 2000;
 
     public static synchronized QcBackPressClose getInstance() {
-        if (QbaseApplication.getInstance() == null) {
+        if (QcBaseApplication.getInstance() == null) {
             QcLog.i("QcBackPressClose init failed !");
             return null;
         }
@@ -29,7 +29,7 @@ public class QcBackPressClose {
     }
     private QcBackPressClose() {
         if (qCon == null)
-            qCon = QbaseApplication.getInstance().getApplicationContext();
+            qCon = QcBaseApplication.getInstance().getApplicationContext();
     }
 
     public boolean isBackPress(String backKeyMsg) {
@@ -52,7 +52,7 @@ public class QcBackPressClose {
             backKeyPressedTime = System.currentTimeMillis();
             if (qCon != null) {
 //                    QcToast.with(qCtx, qCtx.getResources().getString(backKeyMsgId), false);
-                QcToast.getInstance().show(QbaseApplication.getInstance().getResources().getString(backKeyMsgId), false);
+                QcToast.getInstance().show(QcBaseApplication.getInstance().getResources().getString(backKeyMsgId), false);
             }
             return false;
         }

@@ -15,7 +15,8 @@ import com.example.architecture.R;
 import com.example.architecture.databinding.FragUserProfileBinding;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.LiveDataViewModel;
-import com.ulling.lib.core.base.BaseLazyQLifeFragement;
+import com.ulling.lib.core.base.QcBaseShowLifeFragement;
+import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
@@ -26,17 +27,13 @@ import java.util.Random;
 /**
  * Created by P100651 on 2017-07-04.
  */
-public class LiveDataFragment extends BaseLazyQLifeFragement {
+public class LiveDataFragment extends QcBaseShowLifeFragement {
     private QUllingApplication qApp;
+    private FragUserProfileBinding viewBinding;
     private static final String UID_KEY = "uid";
     private LiveDataViewModel viewModel;
     private String userId;
-//    private TextView tvUsers;
-//    private Button getButton;
-//    private Button addButton;
-//    private Button deleteButton;
     private int nThreads = 2;
-    FragUserProfileBinding viewBinding;
 
     public static LiveDataFragment newInstance(int sectionNumber) {
         LiveDataFragment fragment = new LiveDataFragment();
@@ -46,40 +43,73 @@ public class LiveDataFragment extends BaseLazyQLifeFragement {
         return fragment;
     }
 
-    @Override
-    protected void needDestroyData() {
 
-    }
+//    public static BaseQLifeFragment newInstance(LiveData<User> data) {
+//        LiveDataFragment fragment = new LiveDataFragment();
+//        Bundle args = new Bundle();
+//        args.putSerializable(ARG_SECTION_NUMBER, (Serializable) data);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
+//    public static BaseQLifeFragment newInstance(Bundle args) {
+//        LiveDataFragment fragment = new LiveDataFragment();
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_user_profile;
     }
 
+
     @Override
-    protected void needViewBinding() {
+    protected void optGetArgument() {
+        super.optGetArgument();
+        QcLog.e("optGetArgument == ");
+        userId = getArguments().getString(UID_KEY);
+    }
+
+    @Override
+    protected void needResetData() {
+        QcLog.e("needResetData == ");
+        qApp = QUllingApplication.getInstance();
+        APP_NAME = QUllingApplication.getAppName();
+        id_ = QcPreferences.getInstance().get("index", 1);
+    }
+
+    @Override
+    protected void needUIInflate() {
+        QcLog.e("needUIInflate == ");
         viewBinding = (FragUserProfileBinding) getViewBinding();
 //        tvUsers = (TextView) view.findViewById(R.id.tvUsers);
 //        getButton = (Button) view.findViewById(R.id.getButton);
-        viewBinding.getButton.setOnClickListener(new View.OnClickListener() {
+    }
+
+    @Override
+    protected void needUIEventListener() {
+        QcLog.e("needUIEventListener == ");
+        viewBinding.getButton.setOnClickListener(new OnSingleClickListener() {
+
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View v) {
                 QcLog.e("getUser == ");
                 viewModel.getAllUsers();
+
             }
         });
 //        addButton = (Button) view.findViewById(R.id.addButton);
-        viewBinding.addButton.setOnClickListener(new View.OnClickListener() {
+        viewBinding.addButton.setOnClickListener(new OnSingleClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
                 QcLog.e("addUser == ");
                 viewModel.addUserDao(randomUser());
             }
         });
 //        deleteButton = (Button) view.findViewById(deleteButton);
-        viewBinding.deleteButton.setOnClickListener(new View.OnClickListener() {
+        viewBinding.deleteButton.setOnClickListener(new OnSingleClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
                 Random random = new Random();
                 int ranIndex = random.nextInt(100);
                 QcLog.e("deleteUser == " + ranIndex);
@@ -87,21 +117,7 @@ public class LiveDataFragment extends BaseLazyQLifeFragement {
                 viewModel.deleteUserDaoAsyncTask(Integer.toString(ranIndex));
             }
         });
-    }
 
-    @Override
-    protected void needInitData() {
-        QcLog.e("needInitData == ");
-        qApp = QUllingApplication.getInstance();
-        APP_NAME = QUllingApplication.getAppName();
-        id_ = QcPreferences.getInstance().get("index", 1);
-    }
-
-    @Override
-    protected void optGetArgument() {
-        super.optGetArgument();
-        QcLog.e("initArgument == ");
-        userId = getArguments().getString(UID_KEY);
     }
 
     @Override
@@ -132,8 +148,8 @@ public class LiveDataFragment extends BaseLazyQLifeFragement {
     }
 
     @Override
-    public void needPageVisiableToUser() {
-        QcLog.e("needPageVisiableToUser == ");
+    public void needShowToUser() {
+        QcLog.e("needShowToUser == ");
     }
 
     private void observerUserResults(LiveData<User> userLive) {

@@ -19,7 +19,8 @@ import com.example.architecture.R;
 import com.example.architecture.databinding.FragFireDatabaseBinding;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.FireDatabaseViewModel;
-import com.ulling.lib.core.base.BaseLazyQLifeFragement;
+import com.ulling.lib.core.base.QcBaseShowLifeFragement;
+import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.Random;
@@ -38,12 +39,13 @@ import java.util.Random;
  * <p>
  * http://yookn.tistory.com/244
  */
-public class FireDatabaseFragment extends BaseLazyQLifeFragement {
+public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
+    private FragFireDatabaseBinding viewBinding;
     private FireDatabaseViewModel viewModel;
     private String userId;
-//    private TextView tvUsers;
+    //    private TextView tvUsers;
 //    private Button getButton;
 //    private Button addButton;
 //    private Button deleteButton;
@@ -52,7 +54,6 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
     private DatabaseReference databaseReference;
     private ChildEventListener childEventListener;
     private ValueEventListener valueEventListener;
-    FragFireDatabaseBinding viewBinding;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -75,19 +76,40 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
     }
 
     @Override
+    protected void optGetArgument() {
+        QcLog.e("optGetArgument == ");
+        userId = getArguments().getString(UID_KEY);
+    }
+
+    @Override
     protected int needGetLayoutId() {
         return R.layout.frag_fire_database;
     }
 
     @Override
-    protected void needViewBinding() {
+    protected void needResetData() {
+        QcLog.e("needResetData == ");
+        qApp = QUllingApplication.getInstance();
+        APP_NAME = QUllingApplication.getAppName();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+//        databaseReference = firebaseDatabase.getReference("usersData");
+//        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("usersData");
+    }
+
+    @Override
+    protected void needUIInflate() {
+        QcLog.e("needUIInflate == ");
         viewBinding = (FragFireDatabaseBinding) getViewBinding();
-//        tvUsers = (TextView) view.findViewById(R.id.tvUsers);
-//        addButton = (Button) view.findViewById(R.id.addButton);
-        viewBinding.addButton.setOnClickListener(new View.OnClickListener() {
+    }
+
+    @Override
+    protected void needUIEventListener() {
+        QcLog.e("needUIEventListener == ");
+        viewBinding.addButton.setOnClickListener(new OnSingleClickListener() {
             @Override
-            public void onClick(View view) {
-                QcLog.e("addUser == ");
+            public void onSingleClick(View view) {
+                QcLog.e("addButton == ");
                 User user = new User();
                 user.setId(new Random().nextInt(100) + "_id");
                 user.setName(new Random().nextInt(100) + "_name");
@@ -100,17 +122,6 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
         });
     }
 
-    @Override
-    protected void needInitData() {
-        QcLog.e("initData == ");
-        qApp = QUllingApplication.getInstance();
-        APP_NAME = QUllingApplication.getAppName();
-        firebaseDatabase = FirebaseDatabase.getInstance();
-//        databaseReference = firebaseDatabase.getReference("usersData");
-//        databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("usersData");
-        initFirebaseDatabase();
-    }
 
     @Override
     public void needInitViewModel() {
@@ -124,18 +135,12 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
+        subscribeFirebaseDatabase();
     }
 
     @Override
-    protected void optGetArgument() {
-        QcLog.e("optGetArgument == ");
-        userId = getArguments().getString(UID_KEY);
-    }
-
-    @Override
-    public void needPageVisiableToUser() {
-        QcLog.e("needPageVisiableToUser == ");
-        QcLog.e("databaseReference.toString() == " + databaseReference.toString());
+    public void needShowToUser() {
+        QcLog.e("needShowToUser == ");
 //        for (DataSnapshot messageData : dataSnapshot.getChildren()) {
 //            String msg = messageData.getValue().toString();
 //            dataAdapter.add(msg);
@@ -144,12 +149,12 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
     }
 
 
-    private void initFirebaseDatabase() {
+    private void subscribeFirebaseDatabase() {
 //        databaseReference.addValueEventListener(new ValueEventListener() {
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                QcLog.e("ValueEventListener onDataChange == ");
+                QcLog.e("ValueEventListener 11 onDataChange == ");
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 viewBinding.tvUsers.setText("");
@@ -177,32 +182,6 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
         databaseReference.addValueEventListener(valueEventListener);
     }
 
-    private void getSingleAllData() {
-        DatabaseReference keyRef = FirebaseDatabase.getInstance().getReference().child("usersData");
-        ValueEventListener valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                QcLog.e("addListenerForSingleValueEvent ValueEventListener onDataChange == ");
-                viewBinding.tvUsers.setText("");
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    User user = ds.getValue(User.class);
-                    if (user != null) {
-                        QcLog.e("onDataChange == " + user.toString());
-                        viewBinding.tvUsers.setText(viewBinding.tvUsers.getText() + "\n" + user.toString());
-                    }
-//                            String name = ds.child("name").getValue(String.class);
-//                            String lastName = ds.child("lastName").getValue(String.class);
-//                            //and so on
-//                            QcLog.e("name == " + name + " , lastName = " + lastName);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        keyRef.addListenerForSingleValueEvent(valueEventListener);
-    }
 
     private void initFirebaseDatabase2() {
         childEventListener = new ChildEventListener() {
@@ -266,4 +245,31 @@ public class FireDatabaseFragment extends BaseLazyQLifeFragement {
         databaseReference.addChildEventListener(childEventListener);
     }
 
+
+    private void getSingleAllData() {
+//        DatabaseReference keyRef = FirebaseDatabase.getInstance().getReference().child("usersData");
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                QcLog.e("ValueEventListener 22 onDataChange == ");
+                viewBinding.tvUsers.setText("");
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    User user = ds.getValue(User.class);
+                    if (user != null) {
+                        QcLog.e("onDataChange == " + user.toString());
+                        viewBinding.tvUsers.setText(viewBinding.tvUsers.getText() + "\n" + user.toString());
+                    }
+//                            String name = ds.child("name").getValue(String.class);
+//                            String lastName = ds.child("lastName").getValue(String.class);
+//                            //and so on
+//                            QcLog.e("name == " + name + " , lastName = " + lastName);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        databaseReference.addListenerForSingleValueEvent(valueEventListener);
+    }
 }
