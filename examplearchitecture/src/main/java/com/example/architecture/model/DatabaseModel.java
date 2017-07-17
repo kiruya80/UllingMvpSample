@@ -3,10 +3,13 @@ package com.example.architecture.model;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
+import com.example.architecture.common.ApiUrl;
 import com.example.architecture.enty.User;
 import com.example.architecture.enty.UserDao;
+import com.example.architecture.enty.retrofit.SOAnswersResponse;
 import com.example.architecture.localdb.DatabaseCreator;
 import com.example.architecture.localdb.RoomLocalData;
+import com.example.architecture.remotedb.GetAnswersApi;
 import com.example.architecture.remotedb.RetrofitRemoteData;
 import com.ulling.lib.core.util.QcLog;
 
@@ -37,14 +40,16 @@ public class DatabaseModel {
 
     //    private final PersonDAO personDAO;
     private UserDao userDao = null;
+    private GetAnswersApi getAnswersApi;
+    private LiveData<SOAnswersResponse> answers = new SOAnswersResponse();
 
-
-    public DatabaseModel(Context context, int localDbType, int remoteType) {
+    public DatabaseModel(Context context, int localDbType, int remoteType, String baseUrl) {
         this.qCtx = context;
         this.localDbType = localDbType;
         this.remoteType = remoteType;
         initLocalDb();
-        initRemoteDb();
+        if (baseUrl != null && !"".equals(baseUrl))
+            initRemoteDb(baseUrl);
         if (localData != null)
             userDao = localData.userDatabase();
     }
@@ -55,9 +60,14 @@ public class DatabaseModel {
         }
     }
 
-    private void initRemoteDb() {
+    private void initRemoteDb(String baseUrl) {
         if (remoteType == REMOTE_TYPE_RETROFIT) {
-            RetrofitRemoteData.getRetrofitClient();
+            RetrofitRemoteData.getRetrofitClient(baseUrl);
+
+
+            getAnswersApi = RetrofitRemoteData
+                    .getRetrofitClient(ApiUrl.BASE_URL)
+                    .create(GetAnswersApi.class);
         }
     }
 
@@ -102,6 +112,44 @@ public class DatabaseModel {
             return null;
         }
     }
+
+    public void getAnswers() {
+        RetrofitRemoteData.getSOAnswersResponse();
+
+//        if (getAnswersApi != null)
+//            getAnswersApi.getAnswers().enqueue(new Callback<SOAnswersResponse>() {
+//                @Override
+//                public void onResponse(Call<SOAnswersResponse> call, Response<SOAnswersResponse> response) {
+//
+//                    if (response.isSuccessful()) {
+////                    mAdapter.updateAnswers(response.body().getItems());
+//                        QcLog.e("onResponse isSuccessful == ");
+//                        QcLog.e("getItems().size = " + response.body().getItems().size());
+//                        for (Item item : response.body().getItems()) {
+//                            QcLog.e("item == " + item.toString());
+//                        }
+//                        if (response.body() != null)
+//                        answers = response.body();
+//                    } else {
+//                        int statusCode = response.code();
+//                        QcLog.e("onResponse == " + statusCode);
+//                        // handle request errors depending on status code
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<SOAnswersResponse> call, Throwable t) {
+////                showErrorMessage();
+//                    QcLog.e("onFailure error loading from API");
+//
+//                }
+//            });
+    }
+
+    public LiveData<SOAnswersResponse> answers() {
+        return RetrofitRemoteData.getIntData();
+    }
+
 
 //    public void addPerson(Person p) {
 //        long rec =  personDAO.insertPerson(p);

@@ -16,6 +16,7 @@ import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragFireDatabaseBinding;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.FireDatabaseViewModel;
@@ -38,6 +39,9 @@ import java.util.Random;
  * https://github.com/firebase/quickstart-android/tree/master/database
  * <p>
  * http://yookn.tistory.com/244
+ *
+ *
+ * http://www.zoftino.com/android-livedata-examples
  */
 public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     private QUllingApplication qApp;
@@ -129,7 +133,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
         QcLog.e("needInitViewModel == ");
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(FireDatabaseViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
     }
 

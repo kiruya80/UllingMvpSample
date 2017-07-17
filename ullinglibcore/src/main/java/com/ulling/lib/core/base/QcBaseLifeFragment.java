@@ -36,6 +36,9 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 
     /**
      * 바인딩된 뷰데이터바인딩 가져오기
+     *
+     * Binding클래스 이름의 생성은 파스칼표기법 기준으로 변경됩니다.
+     * 예를들어 ted_park_activity.xml 파일은 TedParkActivityBinding 클래스를 생성시킵니다.
      */
     public ViewDataBinding getViewBinding() {
         return rootViewBinding;

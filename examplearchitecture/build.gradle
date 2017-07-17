@@ -75,6 +75,7 @@ dependencies {
   annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
   //  compile 'com.android.support.constraint:constraint-layout:1.0.2'
   compile 'com.squareup.retrofit2:retrofit:2.3.0'
+  compile 'com.squareup.retrofit2:converter-gson:2.3.0'
   /**
    * Firebase database
    */

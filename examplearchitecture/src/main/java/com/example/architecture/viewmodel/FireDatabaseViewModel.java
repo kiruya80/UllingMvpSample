@@ -34,13 +34,13 @@ public class FireDatabaseViewModel extends AndroidViewModel {
 //        this.application = application;
     }
 
-    public void initViewModel(Context qCon, int nThreads, int dbTypeLocal, int remoteType) {
+    public void initViewModel(Context qCon, int nThreads, int dbTypeLocal, int remoteType, String baseUrl) {
         QcLog.e("initViewModel == ");
         this.qCon = qCon;
         this.nThreads = nThreads;
         this.executor = Executors.newFixedThreadPool(nThreads);
         // db model 초기화
-        mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType);
+        mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType, baseUrl);
 //        mDatabaseModel = new DatabaseModel(getApplication());
 //        mDatabaseModel.initLocalDb(DB_TYPE_LOCAL_ROOM);
 //        mDatabaseModel.initRemoteDb(DB_TYPE_REMOTE_RETROFIT);

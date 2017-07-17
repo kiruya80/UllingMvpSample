@@ -3,16 +3,45 @@ package com.example.architecture.view;
 import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
 import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
+import com.example.architecture.enty.retrofit.Item;
+import com.example.architecture.enty.retrofit.SOAnswersResponse;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
+import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 
+/**
+ * https://news.realm.io/kr/news/retrofit2-for-http-requests/
+ *
+ * http://devuryu.tistory.com/44
+ *
+ * https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
+ *
+ * http://kang6264.tistory.com/m/entry/Retrofit-기본-기능에-대해서-알아보자날씨를-조회하는-RestAPI
+ *
+ *
+ *
+ *https://github.com/square/retrofit
+ *
+ * https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample/app/src/main/java/com/android/example/github
+ *
+ *
+ * http://www.zoftino.com/android-livedata-examples
+ *
+ * http://www.zoftino.com/android-persistence-library-room
+ *
+ */
 public class RetrofitFragment extends QcBaseShowLifeFragement {
     private QUllingApplication qApp;
     private FragRetrofitBinding viewBinding;
@@ -59,6 +88,13 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     @Override
     protected void needUIEventListener() {
         QcLog.e("needUIEventListener == ");
+        viewBinding.getButton.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                if (viewModel != null)
+                    viewModel.getAnswers();
+            }
+        });
     }
 
     @Override
@@ -66,18 +102,40 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         QcLog.e("needInitViewModel == ");
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(RetrofitViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
     }
 
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
+        observerUserListResults(viewModel.getAnswersLiveData());
     }
 
     @Override
     public void needShowToUser() {
         QcLog.e("needShowToUser == ");
+    }
+
+    private void observerUserListResults(LiveData<SOAnswersResponse> answersLive) {
+        //observer LiveData
+        answersLive.observe(this, new Observer<SOAnswersResponse>() {
+            @Override
+            public void onChanged(@Nullable SOAnswersResponse answers) {
+                if (answers == null) {
+                    QcLog.e("allUsers observe answers == null ");
+                    return;
+                }
+                QcLog.e("allUsers observe == ");
+                String result = "";
+                for (Item item : answers.getItems()) {
+                    QcLog.e("item == " + item.toString());
+                    result = result + item.toString() + "\n\n";
+                }
+                QcLog.e("result == " + result);
+                viewBinding.tvAnswers.setText(result);
+            }
+        });
     }
 
 }

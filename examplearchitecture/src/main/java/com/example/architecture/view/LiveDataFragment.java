@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragUserProfileBinding;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.LiveDataViewModel;
@@ -128,7 +129,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
     }
 

@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
+import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragFireLoginBinding;
 import com.example.architecture.viewmodel.FireLogInViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
@@ -113,7 +114,7 @@ public class FireLogInFragment extends QcBaseShowLifeFragement {
         QcLog.e("needInitViewModel == ");
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(FireLogInViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
     }
 
