@@ -76,7 +76,8 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void optGetArgument() {
+    protected void optGetArgument(Bundle savedInstanceState) {
+        super.optGetArgument(savedInstanceState);
         QcLog.e("optGetArgument == ");
         userId = getArguments().getString(UID_KEY);
     }
@@ -98,8 +99,8 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needUIInflate() {
-        QcLog.e("needUIInflate == ");
+    protected void needUIBinding() {
+        QcLog.e("needUIBinding == ");
         viewBinding = (FragFireDatabaseBinding) getViewBinding();
     }
 

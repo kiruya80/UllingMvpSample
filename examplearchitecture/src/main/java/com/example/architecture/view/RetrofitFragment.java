@@ -38,8 +38,8 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void optGetArgument() {
-        super.optGetArgument();
+    protected void optGetArgument(Bundle savedInstanceState) {
+        super.optGetArgument(savedInstanceState);
         QcLog.e("optGetArgument == ");
     }
 
@@ -51,8 +51,8 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needUIInflate() {
-        QcLog.e("needUIInflate == ");
+    protected void needUIBinding() {
+        QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
     }
 

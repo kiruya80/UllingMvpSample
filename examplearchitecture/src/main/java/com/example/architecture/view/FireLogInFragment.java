@@ -64,8 +64,8 @@ public class FireLogInFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void optGetArgument() {
-        super.optGetArgument();
+    protected void optGetArgument(Bundle savedInstanceState) {
+        super.optGetArgument(savedInstanceState);
         QcLog.e("optGetArgument == ");
     }
 
@@ -77,8 +77,8 @@ public class FireLogInFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needUIInflate() {
-        QcLog.e("needUIInflate == ");
+    protected void needUIBinding() {
+        QcLog.e("needUIBinding == ");
         viewBinding = (FragFireLoginBinding) getViewBinding();
 //        AnonymousAuthBtn = (Button) view.findViewById(R.id.AnonymousAuthBtn);
 //        CustomAuthBtn = (Button) view.findViewById(R.id.CustomAuthBtn);

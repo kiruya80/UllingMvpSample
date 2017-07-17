@@ -49,6 +49,13 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
     /**
      * 1.
      *
+     * 프레그먼트 UI 데이터 초기화
+     */
+    protected abstract void needResetData();
+
+    /**
+     * 2.
+     *
      * 설정한 레이아웃 아이디를 가지고
      * onCreateView 에서 자동으로 바인딩된다
      * rootViewBinding = DataBindingUtil.inflate(inflater, needGetLayoutId(), container, false);
@@ -59,24 +66,19 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      */
     protected abstract int needGetLayoutId();
 
-    /**
-     * 2.
-     *
-     * 프레그먼트 UI 데이터 초기화
-     */
-    protected abstract void needResetData();
 
     /**
      * 3.
      *
      * UI에서 필요한 데이터 바인딩
-     * 옵져버 달기?
+     * View객체에 접근하여 데이터 연결한다.
      */
-    protected abstract void needUIInflate();
+//    protected abstract void needUIInflate();
+    protected abstract void needUIBinding();
 
     /**
      * 4.
-     *
+     * 접근한 View에 이벤트에 따른 동작 설정
      * 버튼 및 기타 UI이벤트 설정
      */
     protected abstract void needUIEventListener();
@@ -115,7 +117,7 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      * LiveData로 활용하능한지는 체크해봐야함 !!
      * 또한 데이터가 필요한지도 확인 필요
      */
-    protected void optGetArgument() {
+    protected void optGetArgument(Bundle savedInstanceState) {
     }
 
     /**
@@ -138,25 +140,38 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      * onAttach() > onCreateView() > onStart() > onStop() > onResume() > onPause() > onDestroyView() > onDetach()
      */
     /**
-     * Activity에서의 onCreate()와 비슷하나, ui관련 작업은 할 수 없다.
+     * Fragment가 생성된 시점에 호출됩니다.
+     * Activity의 onCreate메소드가 아직 완료된 시점이 아니라서 유저 인터페이스와 관련있는 것을 제외한 Fragment에서 사용되는 리소스들이 초기화됩니다.
+     * ui관련 작업은 할 수 없다.
+     * 유저 인터페이스와 관련된 처리는 onActivityCreated 메소드에서 해주어야 합니다.!!
+     *
+     *
+     * Fragment가 paused 또는 stop되었다가
+     * 다시 resume되었을 때 유지하고 싶은 Fragment의 컴포넌트들를 여기서 초기화 해주어야 합니다.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         QcLog.i("onCreate");
         if (getArguments() != null) {
-            optGetArgument();
+            optGetArgument(savedInstanceState);
         }
+        qCon = getActivity().getApplicationContext();
+
+        needResetData();
     }
 
 
     /**
      * Layout을 inflater을하여 View작업을 하는곳이다.
-     * 사용자 UI를 처음 그리는 시점에서 호출
-     * View 를 반환
-     * 프래그먼트가 UI를 제공하지 않는 경우 null을 반환
      *
      * onStop / onDestroyView 에서 돌아오는 경우 호출됨
+     *
+     * Fragment의 유저 인터페이스가 화면에 그려지는 시점에 호출됩니다. (사용자 UI를 처음 그리는 시점에서 호출)
+     * XML 레이아웃을 inflate하여 Fragment를 위한 View를 생성하고 Fragment 레이아웃의 root에 해당되는 View를 Activity에게 리턴해야 합니다.
+     * inflate란 XML 레이아웃에 정의된 뷰나 레이아웃을 읽어서 메모리상의 view 객체를 생성해주는 겁니다.
+     * 여기서 view를 리턴했다면, view가 release될때 onDestroyView()가 호출됩니다.
+     * 유저 인터페이스 없는 Fragment의 경우에는 null을 리턴하면 됩니다.
      */
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -164,11 +179,9 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
                              @Nullable Bundle savedInstanceState) {
         QcLog.i("onCreateView == ");
         if (rootViewBinding == null)
-        rootViewBinding = DataBindingUtil.inflate(
-                inflater, needGetLayoutId(), container, false);
+            rootViewBinding = DataBindingUtil.inflate(inflater, needGetLayoutId(), container, false);
 //        View view = viewBinding.getRoot();
 //        needUIDataBinding();
-        needUIInflate();
         return rootViewBinding.getRoot();
     }
 //    @Override
@@ -180,34 +193,55 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 //    }
 
     /**
-     */
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        QcLog.i("onViewCreated == ");
-        qCon = getActivity().getApplicationContext();
-        needResetData();
-        needInitViewModel();
-        needUIEventListener();
-        needSubscribeUiFromViewModel();
-    }
+     * */
+//    @Override
+//    public void onViewCreated(View view, Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        QcLog.i("onViewCreated == ");
+////        qCon = getActivity().getApplicationContext();
+////        needResetData();
+////        needInitViewModel();
+////        needUIEventListener();
+////        needSubscribeUiFromViewModel();
+//    }
 
     /**
      * Activity에서 Fragment를 모두 생성하고 난다음 호출 된다.
      * Activity의 onCreate()에서 setContentView()한 다음이라고 생각 하면 쉽게 이해 될것 같다.
      * 여기서 부터는 ui변경작업이 가능하다.
+     *
+     *
+     *
+     * Activity의 onCreate()를 완료되고 fragment의 View 생성이 완료했을때 호출됩니다.
+     * Activity와 Fragment의 View가 모두 생성된 시점이라 findViewById()를 사용하여
+     * !! View 객체에 접근하는게 가능합니다.
+     * inflate된 레이아웃 내에서 R.java에 할당되어있는 주어진 ID를 가지고 view를 찾습니다.
+     * !! 또한 Context객체를 요구하는 객체를 초기화 할 수 있습니다.
+     *
+     * 유저 인터페이스와 관련된 처리는 onActivityCreated 메소드에서 해주어야 합니다.
      */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         QcLog.i("onActivityCreated == ");
 //        optGetArgument();
+
+        if (rootViewBinding != null) {
+            needUIBinding();
+            needInitViewModel();
+            needUIEventListener();
+            needSubscribeUiFromViewModel();
+        }
+
     }
 
     /**
      * 액티비티가 사용자에게 표시되기 직전에 호출
      * 액티비티가 전경으로 나오면 onResume()
      * 액티비티가 숨겨지면 onStop()
+     *
+     * Fragment가 사용자에게 보여질때 호출되며 아직 사용자와 상호작용은 불가능한 상태입니다.
+     * (fragment가 속한 activity가 start된거랑 관련있습니다.)
      */
     @Override
     public void onStart() {
@@ -217,6 +251,10 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 
     /**
      * 액티비티가 시작되고 사용자와 상호 작용하기 직전에 호출
+     *
+     * fragment가 사용자에게 보여지고 실행 중일때 호출되며 사용자와 상호작용할 수 있는 상태입니다. (fragment가 속한 activity가 resume된거랑 관련있습니다.)
+     *
+     * 보통 onResume에서 자원을 할당하고 onPause에서 자원을 해제해줍니다.
      */
     @Override
     public void onResume() {
@@ -229,6 +267,8 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
     /**
      * Fragment를 종료한다는 첫 번째 신호
      * 저장되어야 할 것들을 저장 시켜야함
+     *
+     * Activity가 pause되어 fragment가 더이상 사용자와 상호작용하지 않을 때이다.
      */
     @Override
     public void onPause() {
@@ -240,6 +280,8 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
     /**
      * 액티비티가 더 이상 사용자에게 표시되지 않게 되면 호출
      * 액티비티가 다시 사용자와 상호 작용하면 onRestart()
+     *
+     * Activity가 stop되었거나 fragment의 operation이 activity에 의해 수정되었을 경우로 fragment가 더이상 사용자에게 보여지지 않을 때입니다.
      */
     @Override
     public void onStop() {
@@ -259,6 +301,9 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 
     /**
      * 액티비티가 사라지면 onDestroy()
+     *
+     * fragment를 더 이상 사용하지 않을때 호출되며 activity와 연결이 끊어진 상태는 아니지만 fragment는 동작을 하지 않는 상태입니다.
+     * 시스템에서 onDestroy가 항상 호출되는 것을 보장해주지 않습니다.
      */
     @Override
     public void onDestroy() {
@@ -269,6 +314,9 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 
     /**
      * Fragment가 Activity에 제거 될 때 호출
+     *
+     * fragment가 activity와의 연결이 끊어지기 전에 호출되며 fragment의 view hierarchy가 더 이상 존재하지 않게 됩니다.
+     * 부모 activity가 full 라이프사이클을 완료하지 않고 종료되었다면 onDetach()는 호출되지 않습니다.
      */
     @Override
     public void onDetach() {

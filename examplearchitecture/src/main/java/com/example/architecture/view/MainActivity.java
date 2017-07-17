@@ -12,12 +12,12 @@ import android.view.View;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.databinding.ActivityMainBinding;
-import com.ulling.lib.core.base.QcBaseLifecycleActivity;
+import com.ulling.lib.core.base.QcBaseLifeActivity;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.ArrayList;
 
-public class MainActivity extends QcBaseLifecycleActivity {
+public class MainActivity extends QcBaseLifeActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private QUllingApplication qApp;
@@ -29,34 +29,23 @@ public class MainActivity extends QcBaseLifecycleActivity {
     protected void needDestroyData() {
 
     }
+
+    @Override
+    protected void needResetData() {
+        qApp = QUllingApplication.getInstance();
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        setFragment();
+    }
+
+
     @Override
     protected int needGetLayoutId() {
         return R.layout.activity_main;
     }
 
     @Override
-    protected void needLayoutIdBinding() {
+    protected void needUIBinding() {
         viewBinding = (ActivityMainBinding) getViewDataBinding();
-    }
-//    public ViewDataBinding getViewDataBinding() {
-//        return DataBindingUtil.setContentView(this, needGetLayoutId());
-//    }
-
-    @Override
-    protected void needSetupView() {
-//        mViewPager = (ViewPager) findViewById(R.id.container);
-//        mViewPager.setAdapter(mSectionsPagerAdapter);
-//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-//        tabLayout.setupWithViewPager(mViewPager);
-//        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         viewBinding.container.setAdapter(mSectionsPagerAdapter);
         viewBinding.tabs.setupWithViewPager(viewBinding.container);
@@ -71,10 +60,8 @@ public class MainActivity extends QcBaseLifecycleActivity {
     }
 
     @Override
-    protected void needInitData() {
-        qApp = QUllingApplication.getInstance();
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        setFragment();
+    protected void needUIEventListener() {
+
     }
 
     @Override

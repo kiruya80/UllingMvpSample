@@ -58,8 +58,8 @@ public abstract class QcBaseShowLifeFragement extends QcBaseLifeFragment {
 
 
     @Override
-    protected void optGetArgument() {
-        super.optGetArgument();
+    protected void optGetArgument(Bundle savedInstanceState) {
+        super.optGetArgument(savedInstanceState);
         if (getArguments() != null) {
             section_number = getArguments().getInt(ARG_SECTION_NUMBER);
         } else {

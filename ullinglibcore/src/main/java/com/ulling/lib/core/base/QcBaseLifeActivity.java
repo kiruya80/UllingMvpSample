@@ -12,7 +12,7 @@ import com.ulling.lib.core.util.QcLog;
 /**
  * Created by P100651 on 2017-07-04.
  */
-public abstract class QcBaseLifecycleActivity extends LifecycleActivity {
+public abstract class QcBaseLifeActivity extends LifecycleActivity {
     public Context qCon;
     public String APP_NAME;
 
@@ -20,39 +20,58 @@ public abstract class QcBaseLifecycleActivity extends LifecycleActivity {
      * 필수
      * need~ 시작
      */
-    /**
-     * 정리할 데이터
-     */
-    protected abstract void needDestroyData();
 
     /**
+     * 1.
      *
-     * @return
+     * 프레그먼트 UI 데이터 초기화
+     */
+    protected abstract void needResetData();
+
+    /**
+     * 2.
+     *
+     * 설정한 레이아웃 아이디를 가지고
+     * onCreateView 에서 자동으로 바인딩된다
+     * rootViewBinding = DataBindingUtil.inflate(inflater, needGetLayoutId(), container, false);
+     *
+     * @return 레이아웃 아이디 클래스이름을 기준으로 생성
+     *
+     * ex) LiveDataFragment -> R.layout.frag_user_profile;
      */
     protected abstract int needGetLayoutId();
 
-    protected abstract void needLayoutIdBinding();
 
     /**
-     * 데이터 초기화
+     * 3.
+     *
+     * UI에서 필요한 데이터 바인딩
+     * View객체에 접근하여 데이터 연결한다.
      */
-    protected abstract void needInitData();
+//    protected abstract void needUIInflate();
+    protected abstract void needUIBinding();
 
     /**
-     * 뷰셋팅
+     * 4.
+     * 접근한 View에 이벤트에 따른 동작 설정
+     * 버튼 및 기타 UI이벤트 설정
      */
-    protected abstract void needSetupView();
+    protected abstract void needUIEventListener();
 
     /**
+     * 5.
+     *
      * 뷰모델 초기화
      */
     protected abstract void needInitViewModel();
 
     /**
-     * 데이터 subscribe
+     * 6.
+     *
+     * 데이터모델로부터 변화되는 데이터를 구독하고
+     * 데이터를 UI에 연결한다
      */
     protected abstract void needSubscribeUiFromViewModel();
-
     /**
      * 옵션
      * opt
@@ -61,9 +80,18 @@ public abstract class QcBaseLifecycleActivity extends LifecycleActivity {
      * animationPause
      */
     /**
-     *
+     * 옵션
+     * 프레그먼트 Destroy되는 경우 데이터 리셋
      */
-    protected void optGetArgument() {
+    protected void needDestroyData() {
+    }
+
+    /**
+     * 데이터 전달시 가져오기
+     * LiveData로 활용하능한지는 체크해봐야함 !!
+     * 또한 데이터가 필요한지도 확인 필요
+     */
+    protected void optGetArgument(Bundle savedInstanceState) {
     }
 
     /**
@@ -72,12 +100,12 @@ public abstract class QcBaseLifecycleActivity extends LifecycleActivity {
     protected void optAnimationResume() {
     }
 
+
     /**
      * 애니메이션 정지
      */
     protected void optAnimationPause() {
     }
-
 
     protected void onActivityResultOk(int requestCode, Intent data) {
         QcLog.i("RESULT_OK requestCode == " + requestCode);
@@ -104,15 +132,13 @@ public abstract class QcBaseLifecycleActivity extends LifecycleActivity {
         QcLog.i("onCreate");
         qCon = getApplication().getApplicationContext();
 //        setContentView(needGetLayoutId());
-        needLayoutIdBinding();
-        optGetArgument();
-        needInitData();
-        needSetupView();
+        needResetData();
+        needUIBinding();
+        optGetArgument(savedInstanceState);
     }
 
     /**
      * layout id binding
-     * @return
      */
     public ViewDataBinding getViewDataBinding() {
         return DataBindingUtil.setContentView(this, needGetLayoutId());
