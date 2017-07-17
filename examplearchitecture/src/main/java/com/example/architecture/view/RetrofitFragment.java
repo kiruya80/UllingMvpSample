@@ -8,6 +8,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
@@ -16,10 +19,14 @@ import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
 import com.example.architecture.enty.retrofit.Item;
 import com.example.architecture.enty.retrofit.SOAnswersResponse;
+import com.example.architecture.view.adapter.AnswersAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcToast;
+
+import java.util.ArrayList;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -49,6 +56,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     private RetrofitViewModel viewModel;
     private int nThreads = 2;
 
+    private AnswersAdapter mAdapter;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -83,6 +91,22 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
+
+         mAdapter = new AnswersAdapter(qCon, new ArrayList<Item>(0), new AnswersAdapter.PostItemListener() {
+
+            @Override
+            public void onPostClick(long id) {
+                QcLog.e("Post id is" + id);
+            }
+        });
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(qCon);
+        viewBinding.recyclerView.setLayoutManager(layoutManager);
+        viewBinding.recyclerView.setAdapter(mAdapter);
+        viewBinding.recyclerView.setHasFixedSize(true);
+        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
+        viewBinding.recyclerView.addItemDecoration(itemDecoration);
+
     }
 
     @Override
@@ -117,23 +141,26 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         QcLog.e("needShowToUser == ");
     }
 
+    // https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
     private void observerUserListResults(LiveData<SOAnswersResponse> answersLive) {
         //observer LiveData
         answersLive.observe(this, new Observer<SOAnswersResponse>() {
             @Override
             public void onChanged(@Nullable SOAnswersResponse answers) {
                 if (answers == null) {
-                    QcLog.e("allUsers observe answers == null ");
+                    QcLog.e("answersLive observe answersLive == null ");
                     return;
                 }
-                QcLog.e("allUsers observe == ");
+                QcToast.getInstance().show("observe answersLive", false);
+                QcLog.e("answersLive observe == ");
                 String result = "";
                 for (Item item : answers.getItems()) {
-                    QcLog.e("item == " + item.toString());
+//                    QcLog.e("item == " + item.toString());
                     result = result + item.toString() + "\n\n";
                 }
                 QcLog.e("result == " + result);
-                viewBinding.tvAnswers.setText(result);
+//                viewBinding.tvAnswers.setText(result);
+                mAdapter.updateAnswers(answers.getItems());
             }
         });
     }
