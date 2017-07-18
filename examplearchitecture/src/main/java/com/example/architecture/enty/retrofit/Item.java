@@ -6,8 +6,10 @@ import com.google.gson.annotations.SerializedName;
 
 import android.arch.lifecycle.LiveData;
 
-public class Item extends LiveData{
+public class Item extends LiveData   {
+//    public class Item extends LiveData implements BaseObservable {
 
+//    @Bindable
     @SerializedName("owner")
     @Expose
     private Owner owner;
