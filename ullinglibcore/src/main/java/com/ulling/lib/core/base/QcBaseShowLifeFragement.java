@@ -1,11 +1,11 @@
 package com.ulling.lib.core.base;
 
-import static com.ulling.lib.core.util.QcLog.i;
-
 import android.os.Bundle;
 import android.view.View;
 
 import com.ulling.lib.core.util.QcLog;
+
+import static com.ulling.lib.core.util.QcLog.i;
 
 /**
  * 현재 보이는 프레그먼트
@@ -44,6 +44,7 @@ public abstract class QcBaseShowLifeFragement extends QcBaseLifeFragment {
             showToUserIfPrepared();
         } else {
             // 감춰진다
+            hasShowData = false;
             optAnimationPause();
         }
     }
