@@ -14,7 +14,7 @@ public abstract class QcBaseShowLifeFragement extends QcBaseLifeFragment {
     public static final String ARG_SECTION_NUMBER = "section_number";
     public int section_number = -1;
     private boolean isViewPrepared;
-    private boolean hasShowData;
+    private boolean isShowToUser;
 
     /**
      * 사용자에게 보여지는 경우 호출된다
@@ -24,34 +24,30 @@ public abstract class QcBaseShowLifeFragement extends QcBaseLifeFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        hasShowData = false;
+        isShowToUser = false;
         isViewPrepared = false;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        hasShowData = false;
+        isShowToUser = false;
         isViewPrepared = false;
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-//        if (getArguments() != null && section_number < 0) {
-//            section_number = getArguments().getInt(ARG_SECTION_NUMBER);
-//            QcLog.e( "setUserVisibleHint getArguments()  != null = " + section_number);
-//        }
         /**
          * QcBaseLifeFragment 의 resume에서 애니메이션 플레그 막기
          */
         isResumeAnimation = false;
         QcLog.i( "setUserVisibleHint == " + section_number + " , " + isVisibleToUser + " ," + isViewPrepared);
         if (isVisibleToUser && isViewPrepared) {
-            hasShowData = true;
+            isShowToUser = true;
             needShowToUser();
         } else {
-            hasShowData = false;
+            isShowToUser = false;
             optAnimationPause();
         }
     }
@@ -61,8 +57,8 @@ public abstract class QcBaseShowLifeFragement extends QcBaseLifeFragment {
         super.onViewCreated(view, savedInstanceState);
         QcLog.i( "onViewCreated == " + section_number + " ," + getUserVisibleHint());
         isViewPrepared = true;
-        if (!hasShowData && getUserVisibleHint()) {
-            hasShowData = true;
+        if (!isShowToUser && getUserVisibleHint()) {
+            isShowToUser = true;
             needShowToUser();
         }
     }

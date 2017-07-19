@@ -80,6 +80,20 @@ dependencies {
   compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
   compile 'com.squareup.okhttp3:okhttp:3.8.1'
   /**
+   * Image library
+   */
+  compile 'com.github.bumptech.glide:glide:3.7.0'
+  /**
+   * bitmapTransform
+   * https://github.com/wasabeef/glide-transformations
+   */
+  compile 'jp.wasabeef:glide-transformations:2.0.2'
+  // If you want to use the GPU Filters
+//  compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
+//  compile 'jp.wasabeef:glide-transformations:1.0.6'
+  //  compile 'jp.wasabeef:recyclerview-animators:1.2.2'
+  compile 'com.squareup.picasso:picasso:2.3.2'
+  /**
    * Firebase database
    */
   compile 'com.firebaseui:firebase-ui-database:1.2.0'
@@ -109,7 +123,6 @@ dependencies {
   //    compile 'com.twitter.sdk.android:twitter:1.7.0@aar'
   //    compile 'com.twitter.sdk.android:twitter:3.0.0'
   //    compile 'com.twitter.sdk.android:twitter-core:3.0.0'
-  compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
 }
 
 apply plugin: 'com.google.gms.google-services'

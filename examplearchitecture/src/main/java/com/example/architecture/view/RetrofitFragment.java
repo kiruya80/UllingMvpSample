@@ -8,6 +8,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
  * http://www.zoftino.com/android-livedata-examples
  *
  * http://www.zoftino.com/android-persistence-library-room
+ *
  *
  */
 public class RetrofitFragment extends QcBaseShowLifeFragement {
@@ -107,12 +109,13 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
         viewBinding.recyclerView.addItemDecoration(itemDecoration);
 
+
     }
 
     @Override
     protected void needUIEventListener() {
         QcLog.e("needUIEventListener == ");
-        viewBinding.getButton.setOnClickListener(new OnSingleClickListener() {
+        viewBinding.btnGet.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
                 if (viewModel != null)
@@ -152,14 +155,19 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
                     return;
                 }
                 QcToast.getInstance().show("observe answersLive", false);
+                Snackbar.make(viewBinding.recyclerView, "Success get data", Snackbar.LENGTH_LONG)
+                        .setAction("Action", new OnSingleClickListener() {
+                            @Override
+                            public void onSingleClick(View v) {
+                                QcLog.e("Snackbar onSingleClick ");
+                            }
+                        }).show();
                 QcLog.e("answersLive observe == ");
-                String result = "";
-                for (Item item : answers.getItems()) {
-//                    QcLog.e("item == " + item.toString());
-                    result = result + item.toString() + "\n\n";
-                }
-                QcLog.e("result == " + result);
-//                viewBinding.tvAnswers.setText(result);
+//                String result = "";
+//                for (Item item : answers.getItems()) {
+//                    result = result + item.toString() + "\n\n";
+//                }
+//                QcLog.e("result == " + result);
                 mAdapter.updateAnswers(answers.getItems());
             }
         });

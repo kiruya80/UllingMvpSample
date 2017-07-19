@@ -22,6 +22,8 @@ import java.util.concurrent.Executors;
  *
  * UI의 데이터를 준비하는 클래스
  * livedata 1,2,3,....
+ *
+ * https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
  */
 public class RetrofitViewModel extends AndroidViewModel {
     private DatabaseModel mDatabaseModel;

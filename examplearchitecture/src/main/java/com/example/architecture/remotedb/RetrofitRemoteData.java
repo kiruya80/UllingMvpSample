@@ -146,6 +146,7 @@ public class RetrofitRemoteData {
                     QcLog.e("getItems().size = " + response.body().getItems().size());
                     SOAnswersResponse si = response.body();
                     data.postValue(si);
+//                    data.setValue(si);
 //                    for (Item item : response.body().getItems()) {
 //                        QcLog.e("item == " + item.toString());
 //                    }

@@ -1,26 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-  <data>
-    <variable name="item" type="com.example.architecture.enty.retrofit.Item"/>
-  </data>
+>
 
 
   <LinearLayout
       android:orientation="horizontal"
       android:layout_width="match_parent"
-      android:layout_height="@dimen/p200">
-
-    <ImageView
-        android:id="@+id/ivProfile"
-        android:layout_width="@dimen/p100"
-        android:layout_height="@dimen/p100"/>
+      android:gravity="center"
+      android:layout_height="@dimen/p300">
 
     <TextView
-        android:id="@+id/tvUserName"
+        android:id="@+id/tvPosition"
+        android:layout_width="@dimen/p300"
+        android:textColor="@color/color_black"
+        android:textSize="@dimen/p40"
+        android:gravity="center"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="@dimen/p300"
+        android:layout_marginLeft="@dimen/p20"
+        android:transitionName="userProfileImg"
+        android:layout_height="@dimen/p300"/>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:text="@{item.owner.displayName}"
-        android:layout_height="wrap_content"/>
+        android:gravity="center"
+        android:layout_marginLeft="@dimen/p20"
+        android:layout_marginRight="@dimen/p20"
+        android:layout_height="@dimen/p300">
+
+      <TextView
+          android:id="@+id/tvUserId"
+          android:layout_width="match_parent"
+          android:textColor="@color/color_black"
+          android:textSize="@dimen/p40"
+          android:layout_height="wrap_content"/>
+
+
+      <TextView
+          android:id="@+id/tvUserName"
+          android:layout_width="match_parent"
+          android:textColor="@color/color_black"
+          android:layout_marginTop="@dimen/p10"
+          android:textSize="@dimen/p60"
+          android:layout_height="wrap_content"/>
+
+    </LinearLayout>
   </LinearLayout>
 </layout>
