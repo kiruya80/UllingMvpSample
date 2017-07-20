@@ -13,8 +13,11 @@ import com.ulling.lib.core.util.QcLog;
 public abstract class QcBaseShowLifeFragement extends QcBaseLifeFragment {
     public static final String ARG_SECTION_NUMBER = "section_number";
     public int section_number = -1;
+    // 뷰가 준비되었는지 플래그 onViewCreated true
     private boolean isViewPrepared;
+    // 사용자에게 현재뷰가 봉지는 경우 플래그
     private boolean isShowToUser;
+//    private boolean hasShowData;
 
     /**
      * 사용자에게 보여지는 경우 호출된다
