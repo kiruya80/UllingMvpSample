@@ -39,4 +39,76 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
     //Start loading
     public abstract void onLoadMore(int currentPage);
+
+
+
+
+//    private LinearLayoutManager mLayoutManager;
+//    //    RecyclerView.LayoutManager mLayoutManager;
+//    private Boolean isLastItem = false;
+//    private boolean isMoreLoading = false;
+//    private boolean hasNextPage = false;
+//    private int visibleThreshold = 1;
+//    private int firstVisibleItem;
+//    private int visibleItemCount;
+//    private int totalItemCount;
+//
+//    public EndlessScrollListener(LinearLayoutManager layoutManager) {
+//        this.mLayoutManager = layoutManager;
+//    }
+//
+//    public EndlessScrollListener(GridLayoutManager layoutManager) {
+//        this.mLayoutManager = layoutManager;
+//    }
+////    public EndlessScrollListener(StaggeredGridLayoutManager layoutManager) {
+////        this.mLayoutManager = layoutManager;
+////    }
+//
+//    @Override
+//    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//        super.onScrolled(recyclerView, dx, dy);
+//        visibleItemCount = recyclerView.getChildCount();
+//        totalItemCount = mLayoutManager.getItemCount();
+//        firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+//
+//        if (!isMoreLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+//            if (hasNextPage) {
+//                onLoadMore();
+//                isMoreLoading = true;
+//            }
+//            isLastItem = true;
+//        } else {
+//            isLastItem = false;
+//        }
+//    }
+//
+//    @Override
+//    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//        super.onScrollStateChanged(recyclerView, newState);
+//        if (isLastItem && newState == RecyclerView.SCROLL_STATE_IDLE) {
+//            onLastPage();
+//        }
+//    }
+//
+//    // Call this method whenever performing new searches
+//    public void resetState() {
+//        this.isLastItem = false;
+//        this.isMoreLoading = false;
+//        this.hasNextPage = false;
+//        this.visibleThreshold = 1;
+//    }
+//
+//    public void setMoreLoading(boolean isMoreLoading) {
+//        this.isMoreLoading = isMoreLoading;
+//    }
+//
+//    public void setHasNextPage(boolean hasNextPage) {
+//        this.hasNextPage = hasNextPage;
+//    }
+//    // Defines the process for actually loading more data based on page
+////    public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
+//
+//    public abstract void onLoadMore();
+//
+//    public abstract void onLastPage();
 }

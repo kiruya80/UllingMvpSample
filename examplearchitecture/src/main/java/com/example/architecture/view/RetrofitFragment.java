@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -26,8 +23,12 @@ import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
+import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
 import java.util.ArrayList;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -102,10 +103,20 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
             }
         });
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(qCon);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(qCon);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+            }
+        };
         viewBinding.recyclerView.setLayoutManager(layoutManager);
         viewBinding.recyclerView.setAdapter(mAdapter);
-        viewBinding.recyclerView.setHasFixedSize(true);
+        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
+
+//        viewBinding.recyclerView.setHasFixedSize(true);
+        // 항목 구분선
         RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
         viewBinding.recyclerView.addItemDecoration(itemDecoration);
 

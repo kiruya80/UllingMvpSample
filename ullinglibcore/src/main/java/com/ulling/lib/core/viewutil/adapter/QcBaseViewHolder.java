@@ -1,4 +1,4 @@
-package com.ulling.lib.core.base;
+package com.ulling.lib.core.viewutil.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -24,6 +24,7 @@ public class QcBaseViewHolder extends RecyclerView.ViewHolder {
     public ViewDataBinding getBinding() {
         return binding;
     }
+
     public QcBaseViewHolder(ViewDataBinding binding) {
         super(binding.getRoot());
         this.binding = binding;

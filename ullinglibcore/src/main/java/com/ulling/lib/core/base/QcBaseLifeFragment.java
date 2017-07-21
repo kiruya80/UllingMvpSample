@@ -105,8 +105,8 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      * 옵션
      * opt
      *
-     * animationResume
-     * animationPause
+     * optAnimationResume
+     * optAnimationPause
      */
     /**
      * 옵션

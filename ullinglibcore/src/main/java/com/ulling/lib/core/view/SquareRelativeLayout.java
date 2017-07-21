@@ -1,8 +1,8 @@
 package com.ulling.lib.core.view;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
+import android.widget.RelativeLayout;
 
 /**
  * @author : KILHO
@@ -11,16 +11,16 @@ import android.util.AttributeSet;
  * @description :
  * @since :
  */
-public final class SquareImageView extends AppCompatImageView {
-    public SquareImageView(Context context) {
+public final class SquareRelativeLayout extends RelativeLayout {
+    public SquareRelativeLayout(Context context) {
         super(context);
     }
 
-    public SquareImageView(Context context, AttributeSet attrs) {
+    public SquareRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SquareImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SquareRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

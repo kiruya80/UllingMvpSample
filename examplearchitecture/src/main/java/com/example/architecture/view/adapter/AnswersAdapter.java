@@ -10,12 +10,12 @@ import com.bumptech.glide.Glide;
 import com.example.architecture.R;
 import com.example.architecture.databinding.RowRetrofitBinding;
 import com.example.architecture.enty.retrofit.Item;
-import com.ulling.lib.core.base.QcBaseViewHolder;
+import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
+
+import java.util.List;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
-import java.util.List;
 
 /**
  * @author : KILHO
@@ -23,28 +23,22 @@ import java.util.List;
  * @date : 2017. 7. 18.
  * @description :
  * @since :
- *
+ * <p>
  * https://medium.com/google-developers/android-data-binding-recyclerview-db7c40d9f0e4
+ *
+ *  http://realignist.me/code/2016/05/25/data-binding-guide.html
  */
 public class AnswersAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
-
     private List<Item> mItems;
     private Context qCon;
     private PostItemListener mItemListener;
-
-
-    // https://medium.com/google-developers/android-data-binding-recyclerview-db7c40d9f0e4
-
-    //    http://realignist.me/code/2016/05/25/data-binding-guide.html
     @Override
     public QcBaseViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 //        final View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_retrofit, viewGroup, false);
 //        return new QcBaseViewHolder(v);
-
 //        ListItemBinding binding = ListItemBinding.inflate(layoutInflater, viewGroup, false);
         //or
         RowRetrofitBinding viewBinding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.row_retrofit, viewGroup, false);
-
         return new QcBaseViewHolder(viewBinding);
 //        if (layoutInflater == null) {
 //            layoutInflater = LayoutInflater.from(viewGroup.getContext());
@@ -59,7 +53,6 @@ public class AnswersAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
         // BindingHolder#getBinding()がViewDataBindingを返すのでsetVariable()を呼んでいる
         // 専用のBinding（この場合だとListItemSampleBinding）を返すことが出来るなら普通にsetUser()でOK
 //        holder.getBinding().setVariable(BR.user, getItem(position));
-
         Item item = mItems.get(position);
         RowRetrofitBinding hoderBinding = (RowRetrofitBinding) holder.getBinding();
         hoderBinding.tvUserId.setText("" + item.getOwner().getUserId());
@@ -70,14 +63,11 @@ public class AnswersAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
                     .error(R.mipmap.ic_launcher)
                     .placeholder(R.mipmap.ic_launcher)
                     .crossFade(R.anim.fade_in, 300)
-//            .centerCrop()
                     .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
 //                    .bitmapTransform(new BlurTransformation(qCon))
                     .into(hoderBinding.ivProfile);
         hoderBinding.tvPosition.setText("" + position);
     }
-
-
 //    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 //
 //        public TextView titleTv;
@@ -105,7 +95,6 @@ public class AnswersAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
         this.mItems = posts;
         this.mItemListener = itemListener;
     }
-
 //    @Override
 //    public AnswersAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 //
