@@ -1,5 +1,7 @@
 package com.example.architecture.view.adapter;
 
+import android.content.Context;
+
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
@@ -7,13 +9,20 @@ import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
  * Created by P100651 on 2017-07-20.
  */
 public class LiveDataAdapter extends QcRecyclerBaseAdapter {
-    public LiveDataAdapter() {
-        super();
-        needInitData();
+    QcRecyclerItemListener qcRecyclerItemListener;
+
+    public LiveDataAdapter(Context qCon) {
+        super(qCon);
+//        needInitData();
     }
+    public void needSetData() {
+
+    }
+
     @Override
     protected void needInitData() {
     }
+
 
     @Override
     protected void needResetData() {
@@ -38,9 +47,14 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     protected void needUIEventListener(QcBaseViewHolder holder, int position, Object object) {
-        if (object == null) {
+        if (object == null || qcRecyclerItemListener == null) {
             return;
         }
+    }
+
+    @Override
+    protected void setEventListener(QcRecyclerItemListener qcRecyclerItemListener) {
+        this.qcRecyclerItemListener = qcRecyclerItemListener;
     }
 
     @Override

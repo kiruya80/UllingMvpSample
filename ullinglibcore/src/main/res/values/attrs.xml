@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="QcAttrsRecyclerView">
+    <attr name="layoutManager" format="enum">
+      <enum name="LinearLayoutManager" value="0"/>
+      <enum name="GridLayoutManager" value="1"/>
+      <enum name="StaggeredGridLayoutManager" value="2"/>
+    </attr>
+    <attr name="orientation" format="enum">
+      <enum name="horizontal" value="0"/>
+      <enum name="vertical" value="1"/>
+    </attr>
+    <attr name="reverseLayout" format="enum">
+      <enum name="false" value="0"/>
+      <enum name="true" value="1"/>
+    </attr>
+
+    <attr name="spanCount" format="reference|integer"/>
+  </declare-styleable>
+</resources>

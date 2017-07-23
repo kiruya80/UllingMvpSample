@@ -1,15 +1,30 @@
 package com.ulling.lib.core.viewutil.adapter;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 /**
  * Created by P100651 on 2017-07-20.
  */
 public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
+    public Context qCon;
+
+    public interface QcRecyclerItemListener {
+
+        void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
+        void onItemCheck(boolean checked, int position);
+        void onDeleteItem(int itemPosition);
+
+        void onRefresh();
+        void onLoadMore(int page, int totalItemsCount, RecyclerView view);
+    }
+
     /**
      * 필수
      * need~ 시작
@@ -25,6 +40,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 리셋할 데이터 정의
      */
     protected abstract void needResetData();
+//    protected abstract void needSetData();
 
     /**
      * 2.
@@ -60,6 +76,14 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
     protected abstract void needUIEventListener(QcBaseViewHolder holder, int position, Object object);
 
     /**
+     * 6.
+     *
+     * 리스너 달기
+     * @param qcRecyclerItemListener
+     */
+    protected abstract void setEventListener(QcRecyclerItemListener qcRecyclerItemListener);
+
+    /**
      * 옵션
      * opt
      *
@@ -82,8 +106,9 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 아답터 시작
      */
 
-    public QcRecyclerBaseAdapter() {
+    public QcRecyclerBaseAdapter(Context qCon) {
         super();
+        this.qCon = qCon;
         needInitData();
     }
     /**

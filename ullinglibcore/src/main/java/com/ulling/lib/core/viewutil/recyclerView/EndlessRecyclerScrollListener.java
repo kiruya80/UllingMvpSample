@@ -1,5 +1,8 @@
 package com.ulling.lib.core.viewutil.recyclerView;
 
+import static com.ulling.lib.core.viewutil.QcRecyclerView.Grid;
+import static com.ulling.lib.core.viewutil.QcRecyclerView.StaggeredGrid;
+
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,6 +48,21 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
     public EndlessRecyclerScrollListener(StaggeredGridLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
+    }
+
+    public EndlessRecyclerScrollListener(RecyclerView.LayoutManager layoutManager, int orientation) {
+        this.mLayoutManager = layoutManager;
+        if (Grid == orientation) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) mLayoutManager;
+            int spanCount = gridLayoutManager.getSpanCount();
+            visibleThreshold = visibleThreshold * spanCount;
+        } else if (StaggeredGrid == orientation) {
+            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) mLayoutManager;
+            int spanCount = staggeredGridLayoutManager.getSpanCount();
+            visibleThreshold = visibleThreshold * spanCount;
+
+        }
+
     }
 
     public int getLastVisibleItem(int[] lastVisibleItemPositions) {
