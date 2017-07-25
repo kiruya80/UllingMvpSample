@@ -56,14 +56,20 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      * 프레그먼트 UI 데이터 리셋
      */
     protected abstract void needResetData();
+
     /**
-     *
      * 1.
      *
      * 프레그먼트 UI 데이터 초기화
      */
     protected abstract void needOneceInitData();
 
+    /**
+     * 5.
+     *
+     * 뷰모델 초기화
+     */
+    protected abstract void needInitViewModel();
     /**
      * 2.
      *
@@ -94,12 +100,6 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      */
     protected abstract void needUIEventListener();
 
-    /**
-     * 5.
-     *
-     * 뷰모델 초기화
-     */
-    protected abstract void needInitViewModel();
 
     /**
      * 6.
@@ -171,10 +171,9 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
         if (!fragStrt) {
             fragStrt = true;
             needOneceInitData();
-            needInitViewModel();
 
         } else {
-            needResetData();
+//            needResetData();
         }
     }
 
@@ -201,26 +200,6 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 //        needUIDataBinding();
         return rootViewBinding.getRoot();
     }
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        QcLog.i("onCreateView == ");
-//        View view = inflater.inflate(needGetLayoutId(), container, false);
-//        needInitSetupView(view);
-//        return view;
-//    }
-
-    /**
-     * */
-//    @Override
-//    public void onViewCreated(View view, Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        QcLog.i("onViewCreated == ");
-////        qCon = getActivity().getApplicationContext();
-////        needResetData();
-////        needInitViewModel();
-////        needUIEventListener();
-////        needSubscribeUiFromViewModel();
-//    }
 
     /**
      * Activity에서 Fragment를 모두 생성하고 난다음 호출 된다.
@@ -245,7 +224,6 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 
         if (rootViewBinding != null) {
             needUIBinding();
-//            needInitViewModel();
             needUIEventListener();
             needSubscribeUiFromViewModel();
         }
@@ -330,7 +308,7 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
     }
 
     /**
-     * Fragment가 Activity에 제거 될 때 호출
+     * Fragment가 Activity에 제거 될 때 호출f
      *
      * fragment가 activity와의 연결이 끊어지기 전에 호출되며 fragment의 view hierarchy가 더 이상 존재하지 않게 됩니다.
      * 부모 activity가 full 라이프사이클을 완료하지 않고 종료되었다면 onDetach()는 호출되지 않습니다.

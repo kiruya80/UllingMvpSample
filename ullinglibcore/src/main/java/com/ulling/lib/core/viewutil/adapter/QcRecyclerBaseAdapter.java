@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.util.QcLog;
 
 /**
@@ -14,6 +15,7 @@ import com.ulling.lib.core.util.QcLog;
  */
 public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
     public Context qCon;
+    public QcBaseLifeFragment qFragment;
 //    public OnSingleClickListener listener;
 
 //    public interface QcRecyclerItemListener {
@@ -30,17 +32,18 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 필수
      * need~ 시작
      */
+
+    /**
+     * 0.
+     * 리셋할 데이터 정의
+     */
+    protected abstract void needResetData();
     /**
      * 1.
      * <p>
      * adapter data 초기화
      */
-    protected abstract void needInitData();
-
-    /**
-     * 리셋할 데이터 정의
-     */
-    protected abstract void needResetData();
+    protected abstract void needOneceInitData();
 
     /**
      * 2.
@@ -104,10 +107,11 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 아답터 시작
      */
 
-    public QcRecyclerBaseAdapter(Context qCon) {
+    public QcRecyclerBaseAdapter(QcBaseLifeFragment qFragment) {
         super();
-        this.qCon = qCon;
-        needInitData();
+        this.qFragment = qFragment;
+        this.qCon = qFragment.getContext();
+        needOneceInitData();
     }
 
     /**

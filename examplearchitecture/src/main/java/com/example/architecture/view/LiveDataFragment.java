@@ -64,7 +64,14 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         id_ = QcPreferences.getInstance().get("index", 1);
-        liveDataAdapter = new LiveDataAdapter(qCon);
+        liveDataAdapter = new LiveDataAdapter(this);
+
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+        }
+        if (liveDataAdapter != null && !liveDataAdapter.isViewModel())
+            liveDataAdapter.setViewModel(viewModel);
 
     }
 
@@ -79,12 +86,12 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         // 안드로이드가 ViewModel을 생성합니다.
         // ViewModel 최고의 장점은 configurationChanges에서도 살아남는 점입니다!
         // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
-        if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
-        }
-        if (liveDataAdapter != null && !liveDataAdapter.isViewModel())
-            liveDataAdapter.setViewModel(viewModel);
+//        if (viewModel == null) {
+//            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
+//            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+//        }
+//        if (liveDataAdapter != null && !liveDataAdapter.isViewModel())
+//            liveDataAdapter.setViewModel(viewModel);
     }
 
     @Override

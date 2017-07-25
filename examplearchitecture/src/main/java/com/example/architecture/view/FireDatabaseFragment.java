@@ -100,6 +100,10 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
 //        databaseReference = firebaseDatabase.getReference("usersData");
 //        databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("usersData");
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(FireDatabaseViewModel.class);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+        }
 
     }
 
@@ -138,10 +142,10 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
-        if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(FireDatabaseViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
-        }
+//        if (viewModel == null) {
+//            viewModel = ViewModelProviders.of(this).get(FireDatabaseViewModel.class);
+//            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+//        }
     }
 
     @Override

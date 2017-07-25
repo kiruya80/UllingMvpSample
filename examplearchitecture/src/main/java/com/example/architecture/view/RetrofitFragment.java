@@ -88,6 +88,10 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         QcLog.e("needOneceInitData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(RetrofitViewModel.class);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+        }
 
     }
 
@@ -145,10 +149,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
-        if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(RetrofitViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
-        }
+
     }
 
     @Override

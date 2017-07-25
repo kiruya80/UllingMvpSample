@@ -1,10 +1,8 @@
 package com.example.architecture.view.adapter;
 
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.content.Context;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -13,6 +11,7 @@ import com.example.architecture.R;
 import com.example.architecture.databinding.RowLiveDataBinding;
 import com.example.architecture.enty.User;
 import com.example.architecture.viewmodel.LiveDataViewModel;
+import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
@@ -26,12 +25,12 @@ import java.util.List;
  * Created by P100651 on 2017-07-20.
  */
 public class LiveDataAdapter extends QcRecyclerBaseAdapter {
-//    QcRecyclerItemListener qcRecyclerItemListener;
+    //    QcRecyclerItemListener qcRecyclerItemListener;
     ArrayList<User> userList = new ArrayList<>();
     private LiveDataViewModel viewModel;
 
-    public LiveDataAdapter(Context qCon) {
-        super(qCon);
+    public LiveDataAdapter(QcBaseLifeFragment qFragment) {
+        super(qFragment);
     }
 
     public void addAll(ArrayList<User> data) {
@@ -55,7 +54,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
     public boolean isViewModel() {
         if (viewModel == null) {
-         return false;
+            return false;
         } else {
             return true;
         }
@@ -63,7 +62,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
     private void observerUserListResults(LiveData<List<User>> userLive) {
         //observer LiveData
-        userLive.observe((LifecycleOwner) qCon, new Observer<List<User>>() {
+        userLive.observe(qFragment, new Observer<List<User>>() {
             @Override
             public void onChanged(@Nullable List<User> allUsers) {
                 QcLog.e("allUsers observe == ");
@@ -76,7 +75,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
     }
 
     @Override
-    public void needInitData() {
+    public void needOneceInitData() {
         userList = new ArrayList<>();
 //        this.viewModel = (LiveDataViewModel) viewModel;
     }
@@ -134,7 +133,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
         RowLiveDataBinding rowLiveDataBinding = (RowLiveDataBinding) holder.getBinding();
 
         rowLiveDataBinding.tvPosition.setTag(position);
-        rowLiveDataBinding.tvPosition.setText(""+ position + "\n" + user.getId());
+        rowLiveDataBinding.tvPosition.setText("" + position + "\n" + user.getId());
         rowLiveDataBinding.ivProfile.setTag(position);
         rowLiveDataBinding.tvUserLastName.setTag(position);
         rowLiveDataBinding.tvUserLastName.setText(user.getLastName());
