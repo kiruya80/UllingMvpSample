@@ -124,19 +124,19 @@ public class QcRecyclerView extends RecyclerView {
 
     private void setTypeArray(TypedArray typedArray) {
 
-        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_orientation)) {
-            orientation = typedArray.getInt(R.styleable.QcAttrsRecyclerView_orientation, 0);
+        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_qcOrientation)) {
+            orientation = typedArray.getInt(R.styleable.QcAttrsRecyclerView_qcOrientation, 0);
         }
 
-        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_spanCount)) {
-            reverseLayout = typedArray.getBoolean(R.styleable.QcAttrsRecyclerView_spanCount, false);
+        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_qcReverseLayout)) {
+            reverseLayout = typedArray.getBoolean(R.styleable.QcAttrsRecyclerView_qcReverseLayout, false);
         }
 
-        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_spanCount)) {
-            spanCount = typedArray.getInt(R.styleable.QcAttrsRecyclerView_spanCount, 1);
+        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_qcSpanCount)) {
+            spanCount = typedArray.getInt(R.styleable.QcAttrsRecyclerView_qcSpanCount, 1);
         }
-        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_layoutManager)) {
-            transform = typedArray.getInt(R.styleable.QcAttrsRecyclerView_layoutManager, 0);
+        if (typedArray.hasValue(R.styleable.QcAttrsRecyclerView_qcLayoutManager)) {
+            transform = typedArray.getInt(R.styleable.QcAttrsRecyclerView_qcLayoutManager, 0);
         }
 
 //        try {
@@ -175,16 +175,19 @@ public class QcRecyclerView extends RecyclerView {
         if (linear == orientation) {
             layoutManager = new LinearLayoutManager(getContext());
             layoutManager.setOrientation(orientation);
+            layoutManager.setItemPrefetchEnabled(true);
             setLayoutManager(layoutManager);
 
         } else if (Grid == orientation) {
             gridLayoutManager = new GridLayoutManager(getContext(), spanCount, orientation, reverseLayout);
+
+            gridLayoutManager.setItemPrefetchEnabled(true);
             setLayoutManager(gridLayoutManager);
 
         } else if (StaggeredGrid == orientation) {
             stgaggeredGridLayoutManager = new StaggeredGridLayoutManager(spanCount,
                     StaggeredGridLayoutManager.VERTICAL);
-
+            stgaggeredGridLayoutManager.setItemPrefetchEnabled(true);
             setLayoutManager(stgaggeredGridLayoutManager);
 
         }

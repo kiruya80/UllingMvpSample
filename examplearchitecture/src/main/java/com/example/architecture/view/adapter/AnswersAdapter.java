@@ -39,7 +39,12 @@ public class AnswersAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
 //        ListItemBinding binding = ListItemBinding.inflate(layoutInflater, viewGroup, false);
         //or
         RowRetrofitBinding viewBinding = DataBindingUtil.inflate(LayoutInflater.from(viewGroup.getContext()), R.layout.row_retrofit, viewGroup, false);
-        return new QcBaseViewHolder(viewBinding);
+        return new QcBaseViewHolder(viewBinding) {
+//            @Override
+//            protected void onItemClick(View view, int position) {
+//                QcLog.e("onItemClick === " + position);
+//            }
+        };
 //        if (layoutInflater == null) {
 //            layoutInflater = LayoutInflater.from(viewGroup.getContext());
 //        }

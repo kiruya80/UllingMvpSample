@@ -12,8 +12,8 @@ import android.view.View;
  * @description :
  * @since :
  */
-
-public class QcBaseViewHolder extends RecyclerView.ViewHolder {
+public class QcBaseViewHolder extends RecyclerView.ViewHolder  {
+//        implements OnSingleClickListener.OnSingleClick  {
     private final ViewDataBinding binding;
 
     public QcBaseViewHolder(View itemView) {
@@ -34,8 +34,21 @@ public class QcBaseViewHolder extends RecyclerView.ViewHolder {
 //        binding.setVariable(BR.obj, obj);
 //        binding.executePendingBindings();
     }
-}
 
+
+//    @Override
+//    public void onSingleClick(View view) {
+//    }
+
+//    @Override
+//    public void onClick(View view) {
+//        if (view != null) {
+//            QcLog.e("onItemClick ==== ");
+////            int position = (int) view.getTag();
+//            onItemClick(view, 0);
+//        }
+//    }
+}
 //public abstract class MyBaseAdapter
 //        extends RecyclerView.Adapter<QcBaseViewHolder> {
 //    public QcBaseViewHolder onCreateViewHolder(ViewGroup parent,
@@ -61,7 +74,6 @@ public class QcBaseViewHolder extends RecyclerView.ViewHolder {
 //
 //    protected abstract int getLayoutIdForPosition(int position);
 //}
-
 //public abstract class SingleLayoutAdapter extends MyBaseAdapter {
 //    private final int layoutId;
 //

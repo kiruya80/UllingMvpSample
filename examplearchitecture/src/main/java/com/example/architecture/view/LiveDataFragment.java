@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -15,6 +12,7 @@ import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragUserProfileBinding;
 import com.example.architecture.enty.User;
+import com.example.architecture.view.adapter.LiveDataAdapter;
 import com.example.architecture.viewmodel.LiveDataViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
@@ -22,8 +20,12 @@ import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -35,6 +37,8 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
     private LiveDataViewModel viewModel;
     private String userId;
     private int nThreads = 2;
+    private LiveDataAdapter liveDataAdapter;
+    private int id_ = 1;
 
     public static LiveDataFragment newInstance(int sectionNumber) {
         LiveDataFragment fragment = new LiveDataFragment();
@@ -44,25 +48,10 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         return fragment;
     }
 
-
-//    public static BaseQLifeFragment newInstance(LiveData<User> data) {
-//        LiveDataFragment fragment = new LiveDataFragment();
-//        Bundle args = new Bundle();
-//        args.putSerializable(ARG_SECTION_NUMBER, (Serializable) data);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-//    public static BaseQLifeFragment newInstance(Bundle args) {
-//        LiveDataFragment fragment = new LiveDataFragment();
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_user_profile;
     }
-
 
     @Override
     protected void optGetArgument(Bundle savedInstanceState) {
@@ -83,23 +72,33 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragUserProfileBinding) getViewBinding();
-//        tvUsers = (TextView) view.findViewById(R.id.tvUsers);
-//        getButton = (Button) view.findViewById(R.id.getButton);
+        liveDataAdapter = new LiveDataAdapter(qCon);
+
+//        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(viewBinding.recyclerView.getLayoutManager()) {
+//            @Override
+//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+//            }
+//        };
+//        viewBinding.recyclerView.setLayoutManager(layoutManager);
+//        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
+        viewBinding.recyclerView.setAdapter(liveDataAdapter);
+//        viewBinding.recyclerView.getLayoutManager()
+//        viewBinding.recyclerView.setHasFixedSize(true);
+        // 항목 구분선
+//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
+//        viewBinding.recyclerView.addItemDecoration(itemDecoration);
     }
 
     @Override
     protected void needUIEventListener() {
         QcLog.e("needUIEventListener == ");
         viewBinding.getButton.setOnClickListener(new OnSingleClickListener() {
-
             @Override
             public void onSingleClick(View v) {
                 QcLog.e("getUser == ");
                 viewModel.getAllUsers();
-
             }
         });
-//        addButton = (Button) view.findViewById(R.id.addButton);
         viewBinding.addButton.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View view) {
@@ -107,7 +106,6 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
                 viewModel.addUserDao(randomUser());
             }
         });
-//        deleteButton = (Button) view.findViewById(deleteButton);
         viewBinding.deleteButton.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View view) {
@@ -118,7 +116,6 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
                 viewModel.deleteUserDaoAsyncTask(Integer.toString(ranIndex));
             }
         });
-
     }
 
     @Override
@@ -153,20 +150,6 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         QcLog.e("needShowToUser == ");
     }
 
-    private void observerUserResults(LiveData<User> userLive) {
-        //observer LiveData
-        userLive.observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(@Nullable User user) {
-                QcLog.e("User observe == ");
-                if (user == null) {
-                    return;
-                }
-                viewBinding.tvUsers.setText(user.toString());
-            }
-        });
-    }
-
     private void observerUserListResults(LiveData<List<User>> userLive) {
         //observer LiveData
         userLive.observe(this, new Observer<List<User>>() {
@@ -177,11 +160,10 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
                     return;
                 }
                 viewBinding.tvUsers.setText(allUsers.toString());
+                liveDataAdapter.addAll((ArrayList<User>) allUsers);
             }
         });
     }
-
-    int id_ = 1;
 
     private User randomUser() {
         Random random = new Random();

@@ -5,25 +5,26 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
+
+import com.ulling.lib.core.util.QcLog;
 
 /**
  * Created by P100651 on 2017-07-20.
  */
-public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
+public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder>    {
     public Context qCon;
+//    public OnSingleClickListener listener;
 
-    public interface QcRecyclerItemListener {
-
-        void onItemClick(View view, int position);
-        void onItemLongClick(View view, int position);
-        void onItemCheck(boolean checked, int position);
-        void onDeleteItem(int itemPosition);
-
-        void onRefresh();
-        void onLoadMore(int page, int totalItemsCount, RecyclerView view);
-    }
+//    public interface QcRecyclerItemListener {
+//
+//        void onItemClick(View view, int position);
+//        void onItemLongClick(View view, int position);
+//        void onItemCheck(boolean checked, int position);
+//        void onDeleteItem(int itemPosition);
+//
+//        void onRefresh();
+//    }
 
     /**
      * 필수
@@ -40,7 +41,6 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 리셋할 데이터 정의
      */
     protected abstract void needResetData();
-//    protected abstract void needSetData();
 
     /**
      * 2.
@@ -58,6 +58,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * @return
      */
     protected abstract Object needItemFromPosition(int position);
+//    protected abstract void needAddData(LiveData<List<Class>> data);
 
     /**
      * 4.
@@ -73,7 +74,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 접근한 View에 이벤트에 따른 동작 설정
      * 버튼 및 기타 UI이벤트 설정
      */
-    protected abstract void needUIEventListener(QcBaseViewHolder holder, int position, Object object);
+    protected abstract void needUIEventListener(ViewDataBinding binding);
 
     /**
      * 6.
@@ -81,7 +82,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 리스너 달기
      * @param qcRecyclerItemListener
      */
-    protected abstract void setEventListener(QcRecyclerItemListener qcRecyclerItemListener);
+//    protected abstract void setEventListener(QcRecyclerItemListener qcRecyclerItemListener);
 
     /**
      * 옵션
@@ -113,13 +114,20 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
     }
     /**
      * @param viewGroup
-     * @param viewType
+     * @param viewTypeResId
      * @return
      */
     @Override
-    public QcBaseViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public QcBaseViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewTypeResId) {
+        QcLog.e("onCreateViewHolder == ");
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewType, viewGroup, false);
+        ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewTypeResId, viewGroup, false);
+
+        needUIEventListener(binding);
+
+//        QcBaseViewHolder qcBaseViewHolder = new QcBaseViewHolder(binding);
+//        qcBaseViewHolder.setOnItemClick(listener);
+//        return qcBaseViewHolder;
         return new QcBaseViewHolder(binding);
     }
 
@@ -130,10 +138,20 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      */
     @Override
     public void onBindViewHolder(QcBaseViewHolder holder, int position) {
+        QcLog.e("onBindViewHolder == ");
+        if (holder == null) {
+            return;
+        }
+        if (position < 0) {
+            return;
+        }
         Object object = needItemFromPosition(position);
 //        holder.bind(obj);
+        if (object == null) {
+            return;
+        }
+
         needUIBinding(holder, position, object);
-        needUIEventListener(holder, position, object);
     }
 
     /**
@@ -143,6 +161,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      */
     @Override
     public int getItemViewType(int position) {
+        QcLog.e("getItemViewType == ");
 //        return getLayoutIdForPosition(position);
         return needLayoutIdFromItemViewType(position);
     }
