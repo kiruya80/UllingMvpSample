@@ -1,10 +1,11 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
@@ -20,12 +21,8 @@ import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -60,19 +57,41 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         userId = getArguments().getString(UID_KEY);
     }
 
+
     @Override
-    protected void needResetData() {
-        QcLog.e("needResetData == ");
+    protected void needOneceInitData() {
+        QcLog.e("needOneceInitData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         id_ = QcPreferences.getInstance().get("index", 1);
+        liveDataAdapter = new LiveDataAdapter(qCon);
+
+    }
+
+    @Override
+    protected void needResetData() {
+        QcLog.e("needResetData == ");
+    }
+
+    @Override
+    public void needInitViewModel() {
+        QcLog.e("needInitViewModel == ");
+        // 안드로이드가 ViewModel을 생성합니다.
+        // ViewModel 최고의 장점은 configurationChanges에서도 살아남는 점입니다!
+        // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
+        if (viewModel == null) {
+            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
+            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+        }
+        if (liveDataAdapter != null && !liveDataAdapter.isViewModel())
+            liveDataAdapter.setViewModel(viewModel);
     }
 
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragUserProfileBinding) getViewBinding();
-        liveDataAdapter = new LiveDataAdapter(qCon);
+//        liveDataAdapter = new LiveDataAdapter(qCon);
 
 //        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(viewBinding.recyclerView.getLayoutManager()) {
 //            @Override
@@ -88,6 +107,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
 //        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
 //        viewBinding.recyclerView.addItemDecoration(itemDecoration);
     }
+
 
     @Override
     protected void needUIEventListener() {
@@ -118,17 +138,6 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         });
     }
 
-    @Override
-    public void needInitViewModel() {
-        QcLog.e("needInitViewModel == ");
-        // 안드로이드가 ViewModel을 생성합니다.
-        // ViewModel 최고의 장점은 configurationChanges에서도 살아남는 점입니다!
-        // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
-        if (viewModel == null) {
-            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
-        }
-    }
 
     @Override
     public void needSubscribeUiFromViewModel() {
@@ -152,17 +161,16 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
 
     private void observerUserListResults(LiveData<List<User>> userLive) {
         //observer LiveData
-        userLive.observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(@Nullable List<User> allUsers) {
-                QcLog.e("allUsers observe == ");
-                if (allUsers == null) {
-                    return;
-                }
-                viewBinding.tvUsers.setText(allUsers.toString());
-                liveDataAdapter.addAll((ArrayList<User>) allUsers);
-            }
-        });
+//        userLive.observe(this, new Observer<List<User>>() {
+//            @Override
+//            public void onChanged(@Nullable List<User> allUsers) {
+//                QcLog.e("allUsers observe == ");
+//                if (allUsers == null) {
+//                    return;
+//                }
+//                liveDataAdapter.addAll((ArrayList<User>) allUsers);
+//            }
+//        });
     }
 
     private User randomUser() {

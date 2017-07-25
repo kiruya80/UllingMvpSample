@@ -13,13 +13,14 @@
         android:id="@+id/tvPosition"
         android:layout_width="@dimen/p300"
         android:textColor="@color/color_black"
-        android:textSize="@dimen/p40"
+        android:textSize="@dimen/p60"
         android:gravity="center"
         android:layout_height="match_parent"/>
     <ImageView
         android:id="@+id/ivProfile"
         android:layout_width="@dimen/p300"
         android:layout_marginLeft="@dimen/p20"
+        android:background="@color/color_black_trance_20"
         android:transitionName="userProfileImg"
         android:layout_height="@dimen/p300"/>
 
@@ -32,11 +33,12 @@
         android:layout_height="@dimen/p300">
 
       <TextView
-          android:id="@+id/tvUserId"
+          android:id="@+id/tvUserLastName"
           android:layout_width="match_parent"
           android:textColor="@color/color_black"
-          android:textSize="@dimen/p40"
-          android:layout_height="wrap_content"/>
+          android:textSize="@dimen/p60"
+          android:layout_weight="1"
+          android:layout_height="0px"/>
 
       <TextView
           android:id="@+id/tvUserName"
@@ -44,7 +46,8 @@
           android:textColor="@color/color_black"
           android:layout_marginTop="@dimen/p10"
           android:textSize="@dimen/p60"
-          android:layout_height="wrap_content"/>
+          android:layout_weight="1"
+          android:layout_height="0px"/>
     </LinearLayout>
   </LinearLayout>
 </layout>

@@ -20,6 +20,7 @@ import com.ulling.lib.core.util.QcLog;
 public abstract class QcBaseLifeFragment extends LifecycleFragment {
     public Context qCon;
     public String APP_NAME;
+    public boolean fragStrt = false;
     //    public String TAG = getClass().getSimpleName();
 
     /**
@@ -50,11 +51,18 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      */
 
     /**
+     * 0.
+     *
+     * 프레그먼트 UI 데이터 리셋
+     */
+    protected abstract void needResetData();
+    /**
+     *
      * 1.
      *
      * 프레그먼트 UI 데이터 초기화
      */
-    protected abstract void needResetData();
+    protected abstract void needOneceInitData();
 
     /**
      * 2.
@@ -160,8 +168,14 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
             optGetArgument(savedInstanceState);
         }
         qCon = getActivity().getApplicationContext();
+        if (!fragStrt) {
+            fragStrt = true;
+            needOneceInitData();
+            needInitViewModel();
 
-        needResetData();
+        } else {
+            needResetData();
+        }
     }
 
 
@@ -231,7 +245,7 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
 
         if (rootViewBinding != null) {
             needUIBinding();
-            needInitViewModel();
+//            needInitViewModel();
             needUIEventListener();
             needSubscribeUiFromViewModel();
         }

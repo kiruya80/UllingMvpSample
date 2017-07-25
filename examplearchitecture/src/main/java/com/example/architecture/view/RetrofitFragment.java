@@ -84,10 +84,16 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needResetData() {
-        QcLog.e("needResetData == ");
+    protected void needOneceInitData() {
+        QcLog.e("needOneceInitData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
+
+    }
+
+    @Override
+    protected void needResetData() {
+        QcLog.e("needResetData == ");
     }
 
     @Override

@@ -12,7 +12,7 @@ import com.ulling.lib.core.util.QcLog;
 /**
  * Created by P100651 on 2017-07-20.
  */
-public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder>    {
+public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
     public Context qCon;
 //    public OnSingleClickListener listener;
 
@@ -53,9 +53,6 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 3.
      * <p>
      * 포기션에 맞는 아이템 가져오기
-     *
-     * @param position
-     * @return
      */
     protected abstract Object needItemFromPosition(int position);
 //    protected abstract void needAddData(LiveData<List<Class>> data);
@@ -112,6 +109,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
         this.qCon = qCon;
         needInitData();
     }
+
     /**
      * @param viewGroup
      * @param viewTypeResId
@@ -124,10 +122,6 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
         ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewTypeResId, viewGroup, false);
 
         needUIEventListener(binding);
-
-//        QcBaseViewHolder qcBaseViewHolder = new QcBaseViewHolder(binding);
-//        qcBaseViewHolder.setOnItemClick(listener);
-//        return qcBaseViewHolder;
         return new QcBaseViewHolder(binding);
     }
 
@@ -146,7 +140,6 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
             return;
         }
         Object object = needItemFromPosition(position);
-//        holder.bind(obj);
         if (object == null) {
             return;
         }

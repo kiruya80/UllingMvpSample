@@ -54,7 +54,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
 //    private Button addButton;
 //    private Button deleteButton;
     private int nThreads = 2;
-    private FirebaseDatabase firebaseDatabase;
+//    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private ChildEventListener childEventListener;
     private ValueEventListener valueEventListener;
@@ -92,14 +92,20 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needResetData() {
-        QcLog.e("needResetData == ");
+    protected void needOneceInitData() {
+        QcLog.e("needOneceInitData == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
-        firebaseDatabase = FirebaseDatabase.getInstance();
+//        firebaseDatabase = FirebaseDatabase.getInstance();
 //        databaseReference = firebaseDatabase.getReference("usersData");
 //        databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("usersData");
+
+    }
+
+    @Override
+    protected void needResetData() {
+        QcLog.e("needResetData == ");
     }
 
     @Override
@@ -122,6 +128,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
                 user.setAge(new Random().nextInt(100));
 //                databaseReference.child("usersData").push().setValue(user);
 //                databaseReference.child("usersData").child(user.id).setValue(user);
+                if (databaseReference != null)
                 databaseReference.child(user.id).setValue(user);
             }
         });
@@ -184,6 +191,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
                 QcLog.e("onCancelled user == " + error.toException());
             }
         };
+        if (databaseReference != null)
         databaseReference.addValueEventListener(valueEventListener);
     }
 
@@ -247,6 +255,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
                 QcLog.e("onCancelled == ");
             }
         };
+        if (databaseReference != null)
         databaseReference.addChildEventListener(childEventListener);
     }
 
@@ -275,6 +284,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
+        if (databaseReference != null)
         databaseReference.addListenerForSingleValueEvent(valueEventListener);
     }
 }
