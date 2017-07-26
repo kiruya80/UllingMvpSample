@@ -16,15 +16,12 @@ import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
 import com.example.architecture.enty.retrofit.AnswersResponse;
-import com.example.architecture.enty.retrofit.ItemResponse;
 import com.example.architecture.view.adapter.RetrofitAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
-
-import java.util.ArrayList;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -55,7 +52,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     private RetrofitViewModel viewModel;
     private int nThreads = 2;
 
-    private RetrofitAdapter mAdapter;
+    private RetrofitAdapter adapter;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -101,13 +98,8 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
 
-         mAdapter = new RetrofitAdapter(qCon, new ArrayList<ItemResponse>(0), new RetrofitAdapter.PostItemListener() {
+        adapter = new RetrofitAdapter(this);
 
-            @Override
-            public void onPostClick(long id) {
-                QcLog.e("Post id is" + id);
-            }
-        });
 
 //        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(layoutManager) {
 //            @Override
@@ -117,7 +109,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
 //        viewBinding.recyclerView.setLayoutManager(layoutManager);
 //        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
 
-        viewBinding.recyclerView.setAdapter(mAdapter);
+        viewBinding.recyclerView.setAdapter(adapter);
 //        viewBinding.recyclerView.getLayoutManager()
 //        viewBinding.recyclerView.setHasFixedSize(true);
         // 항목 구분선
@@ -180,7 +172,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
 //                    result = result + item.toString() + "\n\n";
 //                }
 //                QcLog.e("result == " + result);
-                mAdapter.updateAnswers(answers.getItemResponses());
+                adapter.addAll(answers.getItemResponses());
             }
         });
     }

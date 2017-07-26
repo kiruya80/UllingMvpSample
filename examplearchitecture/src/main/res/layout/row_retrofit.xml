@@ -22,6 +22,7 @@
         android:layout_width="@dimen/p300"
         android:layout_height="@dimen/p300"
         android:layout_marginLeft="@dimen/p20"
+        android:background="@color/color_black_trance_20"
         android:gravity="center"
         android:transitionName="userProfileImg">
 

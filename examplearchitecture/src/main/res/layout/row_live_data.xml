@@ -16,14 +16,23 @@
         android:textSize="@dimen/p60"
         android:gravity="center"
         android:layout_height="match_parent"/>
-    <ImageView
-        android:id="@+id/ivProfile"
-        android:layout_width="@dimen/p300"
-        android:layout_marginLeft="@dimen/p20"
-        android:background="@color/color_black_trance_20"
-        android:transitionName="userProfileImg"
-        android:layout_height="@dimen/p300"/>
 
+    <RelativeLayout
+        android:id="@+id/rlProfile"
+        android:layout_width="@dimen/p300"
+        android:layout_height="@dimen/p300"
+        android:background="@color/color_black_trance_20"
+        android:layout_marginLeft="@dimen/p20"
+        android:gravity="center"
+        android:transitionName="userProfileImg">
+
+      <ImageView
+          android:id="@+id/ivProfile"
+          android:layout_width="@dimen/p300"
+          android:layout_height="@dimen/p300"
+          android:layout_marginLeft="@dimen/p20"/>
+
+    </RelativeLayout>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

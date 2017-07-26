@@ -151,7 +151,8 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
     @Override
     protected void needUIEventListener(ViewDataBinding binding) {
         RowLiveDataBinding hoderBinding = (RowLiveDataBinding) binding;
-        hoderBinding.ivProfile.setOnClickListener(mOnSingleClickListener);
+        hoderBinding.rlProfile.setOnClickListener(mOnSingleClickListener);
+        hoderBinding.rlProfile.setOnLongClickListener(mOnLongClickListener);
         hoderBinding.tvUserLastName.setOnClickListener(mOnSingleClickListener);
         hoderBinding.tvUserName.setOnClickListener(mOnSingleClickListener);
         hoderBinding.tvUserName.setOnLongClickListener(mOnLongClickListener);
@@ -164,7 +165,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
         RowLiveDataBinding hoderBinding = (RowLiveDataBinding) holder.getBinding();
         hoderBinding.tvPosition.setTag(position);
         hoderBinding.tvPosition.setText("" + position + "\n" + user.getId());
-        hoderBinding.ivProfile.setTag(position);
+        hoderBinding.rlProfile.setTag(position);
         hoderBinding.tvUserLastName.setTag(position);
         hoderBinding.tvUserLastName.setText(user.getLastName());
         hoderBinding.tvUserName.setTag(position);
@@ -177,9 +178,9 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
             int position = (int) v.getTag();
             QcLog.e("onItemClick ==== " + position);
             switch (v.getId()) {
-                case R.id.ivProfile:
-                    QcLog.e("ivProfile ==== " + position);
-                    QcToast.getInstance().show("ivProfile = ", false);
+                case R.id.rlProfile:
+                    QcLog.e("rlProfile ==== " + position);
+                    QcToast.getInstance().show("rlProfile = ", false);
                     break;
                 case R.id.tvUserLastName:
                     QcLog.e("tvUserLastName ==== " + position);
@@ -203,8 +204,8 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
         public boolean onLongClick(View v) {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
-            if (v.getId() == R.id.ivProfile) {
-                QcToast.getInstance().show("onLongClick ivProfile = " +  userList.get(position).getLastName(), false);
+            if (v.getId() == R.id.rlProfile) {
+                QcToast.getInstance().show("onLongClick rlProfile = " +  userList.get(position).getLastName(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserLastName) {
                 QcToast.getInstance().show("onLongClick tvUserLastName = " + userList.get(position).getLastName(), false);
