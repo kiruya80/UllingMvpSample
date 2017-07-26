@@ -1,5 +1,5 @@
 
-package com.example.architecture.enty.retrofit;
+package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

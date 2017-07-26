@@ -1,8 +1,13 @@
 
-package com.example.architecture.enty.room;
+package com.example.architecture.entities.room;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.graphics.Bitmap;
 
 /**
  * PrimaryKey: marks a field as primary key field.
@@ -28,6 +33,20 @@ import android.arch.persistence.room.PrimaryKey;
  * 관련 엔터티를 가져 오는 데 유용한 관계를 지정합니다.
  *
  *
+ *
+ * Embedded 참고
+ * https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
+ *
+ * https://commonsware.com/AndroidArch/previews/room-and-custom-types
+ *
+ *
+ *
+ * 이 구성 요소는 데이터베이스 행을 보유하는 클래스를 나타냅니다.
+ * 각 엔티티를 들어, 데이터베이스 테이블 항목을 저장하기 위해 만든됩니다.
+ * 당신은을 통해 엔티티 클래스를 참조해야합니다 entities 의 배열 Database 클래스입니다.
+ * 엔티티의 각 필드는 당신이 그것을 주석을하지 않는 데이터베이스에 유지됩니다 @Ignore.
+ *
+ *
  * private String name;
  *
  * @PrimaryKey private String mobile; private String email;
@@ -35,25 +54,37 @@ import android.arch.persistence.room.PrimaryKey;
  * @Ignore private String middleName;
  */
 @Entity
+//        (tableName = "users")
+//        (primaryKeys = {"firstName", "lastName"})
+
+        (indices = {@Index("id")})
+//        (indices = {@Index("name"),
+//                @Index(value = {"last_name", "address"})})
+
+//        (indices = {@Index(value = {"first_name", "last_name"},
+//                unique = true)})
 public class User {
+//    @PrimaryKey(autoGenerate = true)
+//    private int slNo;
+
     @PrimaryKey
     public String id;
     public String name;
+    @ColumnInfo(name = "last_name") // DB저장되는 필드명
     public String lastName;
     public int age;
 
+    @Ignore
+    Bitmap picture;
+
+    @Embedded
+//    @Embedded(prefix = "clg") // prefix + Address ex) clgstreet
+    public Address address;
 //    @Ignore
     public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-//    @Ignore
-//    public User(String id, String name, String lastName, int age) {
-//        this.id = id;
-//        this.name = name;
-//        this.lastName = lastName;
-//        this.age = age;
-//    }
+
 
     public String getId() {
         return id;
@@ -87,13 +118,19 @@ public class User {
         this.age = age;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                '}' + "\n\n";
+    public Bitmap getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Bitmap picture) {
+        this.picture = picture;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

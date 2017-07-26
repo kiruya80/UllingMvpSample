@@ -7,7 +7,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.example.architecture.enty.room.User;
+import com.example.architecture.entities.room.User;
 import com.example.architecture.model.DatabaseModel;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
@@ -96,9 +96,9 @@ public class FireLogInViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<User> getUserInfo(int userId) {
-        return mDatabaseModel.getUserInfo(userId);
-    }
+//    public LiveData<User> getUserInfo(int userId) {
+//        return mDatabaseModel.getUserInfo(userId);
+//    }
 
     public LiveData<List<User>> getAllUsers() {
         return mDatabaseModel.getAllUsers();

@@ -1,6 +1,6 @@
 package com.example.architecture.remotedb;
 
-import com.example.architecture.enty.retrofit.AnswersResponse;
+import com.example.architecture.entities.retrofit.AnswersResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

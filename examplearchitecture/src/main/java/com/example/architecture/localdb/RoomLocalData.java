@@ -4,12 +4,12 @@ package com.example.architecture.localdb;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
-import com.example.architecture.enty.room.Book;
-import com.example.architecture.enty.room.BookDao;
-import com.example.architecture.enty.room.Loan;
-import com.example.architecture.enty.room.LoanDao;
-import com.example.architecture.enty.room.User;
-import com.example.architecture.enty.room.UserDao;
+import com.example.architecture.entities.room.Book;
+import com.example.architecture.entities.room.BookDao;
+import com.example.architecture.entities.room.Loan;
+import com.example.architecture.entities.room.LoanDao;
+import com.example.architecture.entities.room.User;
+import com.example.architecture.entities.room.UserDao;
 
 /**
  *
@@ -22,8 +22,18 @@ import com.example.architecture.enty.room.UserDao;
  *
  *  메인 쓰레드에서 룸을 실행해야한다면 적어도 테스트 목적을 위해
  *  RoomDatabase.Builder에서 allowMainThreadQueries () 메소드를 호출하면된다.
+ *
+ *
+ *
+ * 참고
+ * https://developer.android.com/topic/libraries/architecture/room.html
+ *
+ *  당신은 데이터베이스 홀더를 만들려면이 구성 요소를 사용할 수 있습니다. 주석은 개체의 목록을 정의하고,
+ *  클래스의 내용은 데이터베이스의 데이터 액세스 개체 (DAO를)의 목록을 정의합니다. 또한 기본 연결을위한 주요 액세스 포인트입니다.
+ *  주석이 달린 클래스를 확장하는 추상 클래스이어야한다
+ *  RoomDatabase. 런타임시, 당신은 호출하여 인스턴스를 획득 할 수있다 Room.databaseBuilder()나 Room.inMemoryDatabaseBuilder().
  */
-@Database(entities = {User.class, Book.class, Loan.class}, version = 1)
+@Database(entities = {User.class, Book.class, Loan.class }, version = 1)
 public abstract class RoomLocalData extends RoomDatabase {
 
     public abstract UserDao userDatabase();

@@ -4,9 +4,9 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import com.example.architecture.common.ApiUrl;
-import com.example.architecture.enty.room.User;
-import com.example.architecture.enty.room.UserDao;
-import com.example.architecture.enty.retrofit.AnswersResponse;
+import com.example.architecture.entities.room.User;
+import com.example.architecture.entities.room.UserDao;
+import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.localdb.DatabaseCreator;
 import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.remotedb.GetAnswersApi;
@@ -97,13 +97,13 @@ public class DatabaseModel {
         }
     }
 
-    public LiveData<User> getUserInfo(int userId) {
-        if (userDao != null) {
-            return userDao.loadUserById(userId);
-        } else {
-            return null;
-        }
-    }
+//    public LiveData<User> getUserInfo(int userId) {
+//        if (userDao != null) {
+//            return userDao.loadUserById(userId);
+//        } else {
+//            return null;
+//        }
+//    }
 
     public LiveData<List<User>> getAllUsers() {
         if (userDao != null) {

@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.example.architecture.R;
 import com.example.architecture.databinding.RowLiveDataBinding;
-import com.example.architecture.enty.room.User;
+import com.example.architecture.entities.room.User;
 import com.example.architecture.viewmodel.LiveDataViewModel;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;

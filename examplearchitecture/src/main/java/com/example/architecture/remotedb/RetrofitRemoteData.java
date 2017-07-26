@@ -4,8 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 import com.example.architecture.common.ApiUrl;
-import com.example.architecture.enty.retrofit.ItemResponse;
-import com.example.architecture.enty.retrofit.AnswersResponse;
+import com.example.architecture.entities.retrofit.ItemResponse;
+import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.concurrent.Executors;

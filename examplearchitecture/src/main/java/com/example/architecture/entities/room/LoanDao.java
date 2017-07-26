@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.architecture.enty.room;
+package com.example.architecture.entities.room;
 
 import static android.arch.persistence.room.OnConflictStrategy.ABORT;
 
@@ -26,7 +26,6 @@ import android.arch.persistence.room.TypeConverters;
 
 import com.example.architecture.localdb.DateConverter;
 
-import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -36,19 +35,19 @@ public interface LoanDao {
     @Query("SELECT * From Loan")
     LiveData<List<Loan>> findAll();
 
-    @Query("SELECT Loan.id, Book.title, User.name, Loan.startTime, Loan.endTime From Loan " +
-        "INNER JOIN Book ON Loan.book_id = Book.id " +
-        "INNER JOIN User ON Loan.user_id = User.id ")
-    LiveData<List<LoanWithUserAndBook>> findAllWithUserAndBook();
-
-    @Query("SELECT Loan.id, Book.title as title, User.name as name, Loan.startTime, Loan.endTime " +
-            "FROM Book " +
-            "INNER JOIN Loan ON Loan.book_id = Book.id " +
-            "INNER JOIN User on User.id = Loan.user_id " +
-            "WHERE User.name LIKE :userName " +
-            "AND Loan.endTime > :after "
-    )
-    public LiveData<List<LoanWithUserAndBook>> findLoansByNameAfter(String userName, Date after);
+//    @Query("SELECT Loan.id, Book.title, User.name, Loan.startTime, Loan.endTime From Loan " +
+//        "INNER JOIN Book ON Loan.book_id = Book.id " +
+//        "INNER JOIN User ON Loan.user_id = User.id ")
+//    LiveData<List<LoanWithUserAndBook>> findAllWithUserAndBook();
+//
+//    @Query("SELECT Loan.id, Book.title as title, User.name as name, Loan.startTime, Loan.endTime " +
+//            "FROM Book " +
+//            "INNER JOIN Loan ON Loan.book_id = Book.id " +
+//            "INNER JOIN User on User.id = Loan.user_id " +
+//            "WHERE User.name LIKE :userName " +
+//            "AND Loan.endTime > :after "
+//    )
+//    public LiveData<List<LoanWithUserAndBook>> findLoansByNameAfter(String userName, Date after);
 
     @Insert(onConflict = ABORT)
     void insertLoan(Loan loan);

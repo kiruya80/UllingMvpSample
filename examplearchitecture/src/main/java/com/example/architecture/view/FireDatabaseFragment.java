@@ -18,7 +18,7 @@ import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragFireDatabaseBinding;
-import com.example.architecture.enty.room.User;
+import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.FireDatabaseAdapter;
 import com.example.architecture.viewmodel.FireDatabaseViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;

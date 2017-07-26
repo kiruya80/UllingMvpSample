@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.architecture.enty.room;
+package com.example.architecture.entities.room;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.TypeConverters;

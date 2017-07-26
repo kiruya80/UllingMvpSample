@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.example.architecture.enty.room;
+package com.example.architecture.entities.room;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
@@ -33,18 +34,20 @@ import java.util.Date;
 
         @ForeignKey(entity = User.class,
                 parentColumns = "id",
-                childColumns = "user_id")})
+                childColumns = "user_id")},
+        indices = {@Index("book_id"), @Index("user_id")} )
 @TypeConverters(DateConverter.class)
 public class Loan {
     // Fields can be public or private with getters and setters.
-    public @PrimaryKey
-    String id;
+
+    @PrimaryKey
+    public String id;
     public Date startTime;
     public Date endTime;
 
-    @ColumnInfo(name="book_id")
+    @ColumnInfo(name = "book_id")
     public String bookId;
-    @ColumnInfo(name="user_id")
+    @ColumnInfo(name = "user_id")
     public String userId;
 
     public Loan() {

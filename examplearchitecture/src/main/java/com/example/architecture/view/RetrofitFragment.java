@@ -15,7 +15,7 @@ import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
-import com.example.architecture.enty.retrofit.AnswersResponse;
+import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.view.adapter.RetrofitAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;

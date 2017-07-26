@@ -14,7 +14,7 @@ import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragUserProfileBinding;
-import com.example.architecture.enty.room.User;
+import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.LiveDataAdapter;
 import com.example.architecture.viewmodel.LiveDataViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;

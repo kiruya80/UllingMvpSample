@@ -7,7 +7,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.example.architecture.R;
 import com.example.architecture.databinding.RowRetrofitBinding;
-import com.example.architecture.enty.retrofit.ItemResponse;
+import com.example.architecture.entities.retrofit.ItemResponse;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
