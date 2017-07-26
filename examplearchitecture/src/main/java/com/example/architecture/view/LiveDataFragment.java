@@ -4,15 +4,17 @@ import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
 import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragUserProfileBinding;
-import com.example.architecture.enty.User;
+import com.example.architecture.enty.room.User;
 import com.example.architecture.view.adapter.LiveDataAdapter;
 import com.example.architecture.viewmodel.LiveDataViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
@@ -21,6 +23,7 @@ import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -34,7 +37,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
     private LiveDataViewModel viewModel;
     private String userId;
     private int nThreads = 2;
-    private LiveDataAdapter liveDataAdapter;
+    private LiveDataAdapter adapter;
     private int id_ = 1;
 
     public static LiveDataFragment newInstance(int sectionNumber) {
@@ -59,19 +62,19 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
 
 
     @Override
-    protected void needOneceInitData() {
-        QcLog.e("needOneceInitData == ");
+    protected void needInitToOnCreate() {
+        QcLog.e("needInitToOnCreate == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         id_ = QcPreferences.getInstance().get("index", 1);
-        liveDataAdapter = new LiveDataAdapter(this);
+        adapter = new LiveDataAdapter(this);
 
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
             viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
-        if (liveDataAdapter != null && !liveDataAdapter.isViewModel())
-            liveDataAdapter.setViewModel(viewModel);
+        if (adapter != null && !adapter.isViewModel())
+            adapter.setViewModel(viewModel);
 
     }
 
@@ -107,7 +110,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
 //        };
 //        viewBinding.recyclerView.setLayoutManager(layoutManager);
 //        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
-        viewBinding.recyclerView.setAdapter(liveDataAdapter);
+        viewBinding.recyclerView.setAdapter(adapter);
 //        viewBinding.recyclerView.getLayoutManager()
 //        viewBinding.recyclerView.setHasFixedSize(true);
         // 항목 구분선
@@ -168,16 +171,16 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
 
     private void observerUserListResults(LiveData<List<User>> userLive) {
         //observer LiveData
-//        userLive.observe(this, new Observer<List<User>>() {
-//            @Override
-//            public void onChanged(@Nullable List<User> allUsers) {
-//                QcLog.e("allUsers observe == ");
-//                if (allUsers == null) {
-//                    return;
-//                }
-//                liveDataAdapter.addAll((ArrayList<User>) allUsers);
-//            }
-//        });
+        userLive.observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable List<User> allUsers) {
+                QcLog.e("allUsers observe == ");
+                if (allUsers == null) {
+                    return;
+                }
+               adapter.addAll((ArrayList<User>) allUsers);
+            }
+        });
     }
 
     private User randomUser() {

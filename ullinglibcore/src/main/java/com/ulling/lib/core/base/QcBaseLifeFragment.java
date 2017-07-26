@@ -50,20 +50,20 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
      * need~ 시작
      */
 
+
     /**
-     * 0.
+     * 1-1.
+     *
+     * 프레그먼트 UI 데이터 초기화
+     */
+    protected abstract void needInitToOnCreate();
+
+    /**
+     * 1-2.
      *
      * 프레그먼트 UI 데이터 리셋
      */
     protected abstract void needResetData();
-
-    /**
-     * 1.
-     *
-     * 프레그먼트 UI 데이터 초기화
-     */
-    protected abstract void needOneceInitData();
-
     /**
      * 5.
      *
@@ -168,13 +168,15 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
             optGetArgument(savedInstanceState);
         }
         qCon = getActivity().getApplicationContext();
-        if (!fragStrt) {
-            fragStrt = true;
-            needOneceInitData();
-
-        } else {
-//            needResetData();
-        }
+//        if (!fragStrt) {
+//            fragStrt = true;
+//            needInitToOnCreate();
+//
+//        } else {
+////            needResetData();
+//        }
+        needInitToOnCreate();
+        needResetData();
     }
 
 

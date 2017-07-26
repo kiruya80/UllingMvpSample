@@ -7,7 +7,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.example.architecture.enty.User;
+import com.example.architecture.enty.room.User;
 import com.example.architecture.model.DatabaseModel;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;

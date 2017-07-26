@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package com.example.architecture.enty;
+package com.example.architecture.enty.room;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.TypeConverters;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
-import com.example.architecture.localdb.DateConverter;
-
-import java.util.Date;
-
-public class LoanWithUserAndBook {
-    public String id;
-    @ColumnInfo(name="title")
-    public String bookTitle;
-    @ColumnInfo(name="name")
-    public String userName;
-    @TypeConverters(DateConverter.class)
-    public Date startTime;
-    @TypeConverters(DateConverter.class)
-    public Date endTime;
-    public LoanWithUserAndBook() {
+@Entity
+public class Book {
+    public @PrimaryKey
+    String id;
+    public String title;
+    public Book() {
 
     }
 }

@@ -71,8 +71,8 @@ public class FireLogInFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needOneceInitData() {
-        QcLog.e("needOneceInitData == ");
+    protected void needInitToOnCreate() {
+        QcLog.e("needInitToOnCreate == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         if (viewModel == null) {

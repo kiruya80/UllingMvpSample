@@ -8,11 +8,11 @@ import android.arch.lifecycle.LiveData;
 
 import java.util.List;
 
-public class SOAnswersResponse extends LiveData {
+public class AnswersResponse extends LiveData {
 
     @SerializedName("items")
     @Expose
-    private List<Item> items = null;
+    private List<ItemResponse> itemResponses = null;
     @SerializedName("has_more")
     @Expose
     private Boolean hasMore;
@@ -23,12 +23,12 @@ public class SOAnswersResponse extends LiveData {
     @Expose
     private Integer quotaRemaining;
 
-    public List<Item> getItems() {
-        return items;
+    public List<ItemResponse> getItemResponses() {
+        return itemResponses;
     }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
+    public void setItemResponses(List<ItemResponse> itemResponses) {
+        this.itemResponses = itemResponses;
     }
 
     public Boolean getHasMore() {
@@ -58,7 +58,7 @@ public class SOAnswersResponse extends LiveData {
     @Override
     public String toString() {
         return "SOAnswersResponse{" +
-                "items=" + items +
+                "items=" + itemResponses +
                 ", hasMore=" + hasMore +
                 ", quotaMax=" + quotaMax +
                 ", quotaRemaining=" + quotaRemaining +

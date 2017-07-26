@@ -1,6 +1,6 @@
 package com.example.architecture.remotedb;
 
-import com.example.architecture.enty.retrofit.SOAnswersResponse;
+import com.example.architecture.enty.retrofit.AnswersResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,8 +12,8 @@ import retrofit2.http.Query;
 public interface GetAnswersApi {
 
     @GET("/answers?order=desc&sort=activity&site=stackoverflow")
-    Call<SOAnswersResponse> getAnswers();
+    Call<AnswersResponse> getAnswers();
 
     @GET("/answers?order=desc&sort=activity&site=stackoverflow")
-    Call<SOAnswersResponse> getAnswers(@Query("tagged") String tags);
+    Call<AnswersResponse> getAnswers(@Query("tagged") String tags);
 }

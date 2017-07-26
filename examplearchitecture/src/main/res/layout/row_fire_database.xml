@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+>
+
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:gravity="center"
+      android:layout_height="@dimen/p300">
+
+
+    <TextView
+        android:id="@+id/tvPosition"
+        android:layout_width="@dimen/p300"
+        android:textColor="@color/color_black"
+        android:textSize="@dimen/p60"
+        android:gravity="center"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="@dimen/p300"
+        android:layout_marginLeft="@dimen/p20"
+        android:background="@color/color_black_trance_20"
+        android:transitionName="userProfileImg"
+        android:layout_height="@dimen/p300"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_marginLeft="@dimen/p20"
+        android:layout_marginRight="@dimen/p20"
+        android:layout_height="@dimen/p300">
+
+      <TextView
+          android:id="@+id/tvUserLastName"
+          android:layout_width="match_parent"
+          android:textColor="@color/color_black"
+          android:textSize="@dimen/p60"
+          android:layout_weight="1"
+          android:layout_height="0px"/>
+
+      <TextView
+          android:id="@+id/tvUserName"
+          android:layout_width="match_parent"
+          android:textColor="@color/color_black"
+          android:layout_marginTop="@dimen/p10"
+          android:textSize="@dimen/p60"
+          android:layout_weight="1"
+          android:layout_height="0px"/>
+    </LinearLayout>
+  </LinearLayout>
+</layout>

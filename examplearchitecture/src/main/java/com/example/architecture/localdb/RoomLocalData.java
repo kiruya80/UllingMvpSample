@@ -4,12 +4,12 @@ package com.example.architecture.localdb;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
-import com.example.architecture.enty.Book;
-import com.example.architecture.enty.BookDao;
-import com.example.architecture.enty.Loan;
-import com.example.architecture.enty.LoanDao;
-import com.example.architecture.enty.User;
-import com.example.architecture.enty.UserDao;
+import com.example.architecture.enty.room.Book;
+import com.example.architecture.enty.room.BookDao;
+import com.example.architecture.enty.room.Loan;
+import com.example.architecture.enty.room.LoanDao;
+import com.example.architecture.enty.room.User;
+import com.example.architecture.enty.room.UserDao;
 
 /**
  *
@@ -25,6 +25,7 @@ import com.example.architecture.enty.UserDao;
  */
 @Database(entities = {User.class, Book.class, Loan.class}, version = 1)
 public abstract class RoomLocalData extends RoomDatabase {
+
     public abstract UserDao userDatabase();
     public abstract BookDao bookDatabase();
     public abstract LoanDao loanDatabase();

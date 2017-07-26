@@ -1,4 +1,4 @@
-package com.example.architecture.enty;
+package com.example.architecture.enty.room;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;

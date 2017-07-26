@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.example.architecture.enty;
+package com.example.architecture.enty.room;
+
+import static android.arch.persistence.room.OnConflictStrategy.ABORT;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -26,8 +28,6 @@ import com.example.architecture.localdb.DateConverter;
 
 import java.util.Date;
 import java.util.List;
-
-import static android.arch.persistence.room.OnConflictStrategy.ABORT;
 
 @Dao
 @TypeConverters(DateConverter.class)

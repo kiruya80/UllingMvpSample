@@ -3,7 +3,7 @@ package com.example.architecture.remotedb;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
-import com.example.architecture.enty.User;
+import com.example.architecture.enty.room.User;
 
 import retrofit2.Call;
 import retrofit2.Callback;

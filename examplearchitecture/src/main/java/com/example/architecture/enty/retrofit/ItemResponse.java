@@ -6,13 +6,13 @@ import com.google.gson.annotations.SerializedName;
 
 import android.arch.lifecycle.LiveData;
 
-public class Item extends LiveData   {
+public class ItemResponse extends LiveData   {
 //    public class Item extends LiveData implements BaseObservable {
 
 //    @Bindable
     @SerializedName("owner")
     @Expose
-    private Owner owner;
+    private OwnerResponse ownerResponse;
     @SerializedName("is_accepted")
     @Expose
     private Boolean isAccepted;
@@ -35,12 +35,12 @@ public class Item extends LiveData   {
     @Expose
     private Integer questionId;
 
-    public Owner getOwner() {
-        return owner;
+    public OwnerResponse getOwnerResponse() {
+        return ownerResponse;
     }
 
-    public void setOwner(Owner owner) {
-        this.owner = owner;
+    public void setOwnerResponse(OwnerResponse ownerResponse) {
+        this.ownerResponse = ownerResponse;
     }
 
     public Boolean getIsAccepted() {
@@ -103,7 +103,7 @@ public class Item extends LiveData   {
     @Override
     public String toString() {
         return "Item{" +
-                "owner=" + owner +
+                "owner=" + ownerResponse +
                 ", isAccepted=" + isAccepted +
                 ", score=" + score +
                 ", lastActivityDate=" + lastActivityDate +

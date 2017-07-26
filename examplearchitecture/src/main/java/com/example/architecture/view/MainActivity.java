@@ -31,6 +31,11 @@ public class MainActivity extends QcBaseLifeActivity {
     }
 
     @Override
+    protected void needInitToOnCreate() {
+
+    }
+
+    @Override
     protected void needResetData() {
         qApp = QUllingApplication.getInstance();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

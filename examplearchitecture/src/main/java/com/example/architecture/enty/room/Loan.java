@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.architecture.enty;
+package com.example.architecture.enty.room;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -41,10 +41,12 @@ public class Loan {
     String id;
     public Date startTime;
     public Date endTime;
+
     @ColumnInfo(name="book_id")
     public String bookId;
     @ColumnInfo(name="user_id")
     public String userId;
+
     public Loan() {
 
     }

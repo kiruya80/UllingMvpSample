@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 import android.arch.lifecycle.LiveData;
 
-public class Owner extends LiveData {
+public class OwnerResponse extends LiveData {
 
     @SerializedName("reputation")
     @Expose

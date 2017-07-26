@@ -1,6 +1,6 @@
 package com.example.architecture.remotedb;
 
-import com.example.architecture.enty.User;
+import com.example.architecture.enty.room.User;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

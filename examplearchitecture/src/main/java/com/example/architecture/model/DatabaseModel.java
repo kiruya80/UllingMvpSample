@@ -4,9 +4,9 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import com.example.architecture.common.ApiUrl;
-import com.example.architecture.enty.User;
-import com.example.architecture.enty.UserDao;
-import com.example.architecture.enty.retrofit.SOAnswersResponse;
+import com.example.architecture.enty.room.User;
+import com.example.architecture.enty.room.UserDao;
+import com.example.architecture.enty.retrofit.AnswersResponse;
 import com.example.architecture.localdb.DatabaseCreator;
 import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.remotedb.GetAnswersApi;
@@ -41,7 +41,7 @@ public class DatabaseModel {
     //    private final PersonDAO personDAO;
     private UserDao userDao = null;
     private GetAnswersApi getAnswersApi;
-    private LiveData<SOAnswersResponse> answers = new SOAnswersResponse();
+    private LiveData<AnswersResponse> answers = new AnswersResponse();
 
     public DatabaseModel(Context context, int localDbType, int remoteType, String baseUrl) {
         this.qCtx = context;
@@ -146,7 +146,7 @@ public class DatabaseModel {
 //            });
     }
 
-    public LiveData<SOAnswersResponse> answers() {
+    public LiveData<AnswersResponse> answers() {
         return RetrofitRemoteData.getIntData();
     }
 

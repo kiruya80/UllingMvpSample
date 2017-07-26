@@ -8,9 +8,9 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.example.architecture.R;
-import com.example.architecture.databinding.RowLiveDataBinding;
+import com.example.architecture.databinding.RowFireDatabaseBinding;
 import com.example.architecture.enty.room.User;
-import com.example.architecture.viewmodel.LiveDataViewModel;
+import com.example.architecture.viewmodel.FireDatabaseViewModel;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
@@ -24,11 +24,11 @@ import java.util.List;
 /**
  * Created by P100651 on 2017-07-20.
  */
-public class LiveDataAdapter extends QcRecyclerBaseAdapter {
+public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
     //    QcRecyclerItemListener qcRecyclerItemListener;
 //    ArrayList<User> userList = new ArrayList<>();
     private List<? extends User> userList;
-    private LiveDataViewModel viewModel;
+    private FireDatabaseViewModel viewModel;
 
 
     public void addAll(List<User> data) {
@@ -107,7 +107,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
 
 
-    public LiveDataAdapter(QcBaseLifeFragment qFragment) {
+    public FireDatabaseAdapter(QcBaseLifeFragment qFragment) {
         super(qFragment);
     }
 
@@ -115,6 +115,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
     @Override
     public void needInitToOnCreate() {
         userList = new ArrayList<>();
+//        this.viewModel = (LiveDataViewModel) viewModel;
     }
 
     @Override
@@ -124,13 +125,13 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     public void setViewModel(AndroidViewModel viewModel) {
-        this.viewModel = (LiveDataViewModel) viewModel;
+        this.viewModel =  (FireDatabaseViewModel) viewModel;
 //        observerUserListResults(this.viewModel.getAllUsers());
     }
 
     @Override
     protected int needLayoutIdFromItemViewType(int position) {
-        return R.layout.row_live_data;
+        return R.layout.row_fire_database;
     }
 
     @Override
@@ -150,7 +151,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     protected void needUIEventListener(ViewDataBinding binding) {
-        RowLiveDataBinding hoderBinding = (RowLiveDataBinding) binding;
+        RowFireDatabaseBinding hoderBinding = (RowFireDatabaseBinding) binding;
         hoderBinding.ivProfile.setOnClickListener(mOnSingleClickListener);
         hoderBinding.tvUserLastName.setOnClickListener(mOnSingleClickListener);
         hoderBinding.tvUserName.setOnClickListener(mOnSingleClickListener);
@@ -161,7 +162,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
     protected void needUIBinding(QcBaseViewHolder holder, int position, Object object) {
         User user = (User) object;
         QcLog.e("user == " + position + " " + user.toString());
-        RowLiveDataBinding hoderBinding = (RowLiveDataBinding) holder.getBinding();
+        RowFireDatabaseBinding hoderBinding = (RowFireDatabaseBinding) holder.getBinding();
         hoderBinding.tvPosition.setTag(position);
         hoderBinding.tvPosition.setText("" + position + "\n" + user.getId());
         hoderBinding.ivProfile.setTag(position);

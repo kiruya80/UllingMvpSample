@@ -9,24 +9,20 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
-import com.example.architecture.enty.retrofit.Item;
-import com.example.architecture.enty.retrofit.SOAnswersResponse;
-import com.example.architecture.view.adapter.AnswersAdapter;
+import com.example.architecture.enty.retrofit.AnswersResponse;
+import com.example.architecture.enty.retrofit.ItemResponse;
+import com.example.architecture.view.adapter.RetrofitAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
-import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
 import java.util.ArrayList;
 
@@ -59,7 +55,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     private RetrofitViewModel viewModel;
     private int nThreads = 2;
 
-    private AnswersAdapter mAdapter;
+    private RetrofitAdapter mAdapter;
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -84,8 +80,8 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     }
 
     @Override
-    protected void needOneceInitData() {
-        QcLog.e("needOneceInitData == ");
+    protected void needInitToOnCreate() {
+        QcLog.e("needInitToOnCreate == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         if (viewModel == null) {
@@ -105,7 +101,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
 
-         mAdapter = new AnswersAdapter(qCon, new ArrayList<Item>(0), new AnswersAdapter.PostItemListener() {
+         mAdapter = new RetrofitAdapter(qCon, new ArrayList<ItemResponse>(0), new RetrofitAdapter.PostItemListener() {
 
             @Override
             public void onPostClick(long id) {
@@ -113,23 +109,20 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
             }
         });
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(qCon);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(layoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-            }
-        };
-        viewBinding.recyclerView.setLayoutManager(layoutManager);
-        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
+//        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(layoutManager) {
+//            @Override
+//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+//            }
+//        };
+//        viewBinding.recyclerView.setLayoutManager(layoutManager);
+//        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
 
         viewBinding.recyclerView.setAdapter(mAdapter);
 //        viewBinding.recyclerView.getLayoutManager()
 //        viewBinding.recyclerView.setHasFixedSize(true);
         // 항목 구분선
-        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
-        viewBinding.recyclerView.addItemDecoration(itemDecoration);
+//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
+//        viewBinding.recyclerView.addItemDecoration(itemDecoration);
 
 
     }
@@ -164,11 +157,11 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     }
 
     // https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
-    private void observerUserListResults(LiveData<SOAnswersResponse> answersLive) {
+    private void observerUserListResults(LiveData<AnswersResponse> answersLive) {
         //observer LiveData
-        answersLive.observe(this, new Observer<SOAnswersResponse>() {
+        answersLive.observe(this, new Observer<AnswersResponse>() {
             @Override
-            public void onChanged(@Nullable SOAnswersResponse answers) {
+            public void onChanged(@Nullable AnswersResponse answers) {
                 if (answers == null) {
                     QcLog.e("answersLive observe answersLive == null ");
                     return;
@@ -187,7 +180,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
 //                    result = result + item.toString() + "\n\n";
 //                }
 //                QcLog.e("result == " + result);
-                mAdapter.updateAnswers(answers.getItems());
+                mAdapter.updateAnswers(answers.getItemResponses());
             }
         });
     }

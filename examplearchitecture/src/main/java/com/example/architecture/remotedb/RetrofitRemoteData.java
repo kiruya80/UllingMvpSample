@@ -4,8 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
 import com.example.architecture.common.ApiUrl;
-import com.example.architecture.enty.retrofit.Item;
-import com.example.architecture.enty.retrofit.SOAnswersResponse;
+import com.example.architecture.enty.retrofit.ItemResponse;
+import com.example.architecture.enty.retrofit.AnswersResponse;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.concurrent.Executors;
@@ -28,7 +28,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 public class RetrofitRemoteData {
 
 //    public static final String BASE_URL = "http://www.zoftino.com/api/";
-    private static MutableLiveData<SOAnswersResponse> data = new MutableLiveData<SOAnswersResponse>();
+    private static MutableLiveData<AnswersResponse> data = new MutableLiveData<AnswersResponse>();
 
     private static Retrofit retrofit = null;
 
@@ -122,7 +122,7 @@ public class RetrofitRemoteData {
     }
 
 
-    public static LiveData<SOAnswersResponse> getIntData() {
+    public static LiveData<AnswersResponse> getIntData() {
         QcLog.e("getIntData == ");
         return data;
     }
@@ -132,19 +132,19 @@ public class RetrofitRemoteData {
         QcLog.e("PROCESSING IN THREAD BEFORE RETROFIT CALL " + Thread.currentThread().getName());
 //        Call<StoreInfo> call = getRetrofitClient().create(StoreApi.class).getStoreInfo();
 
-        Call<SOAnswersResponse> call = RetrofitRemoteData
+        Call<AnswersResponse> call = RetrofitRemoteData
                 .getRetrofitClient(ApiUrl.BASE_URL)
                 .create(GetAnswersApi.class).getAnswers();
 
         //rest service call runs on background thread and Callback also runs on background thread
-        call.enqueue(new Callback<SOAnswersResponse>() {
+        call.enqueue(new Callback<AnswersResponse>() {
             @Override
-            public void onResponse(Call<SOAnswersResponse> call, Response<SOAnswersResponse> response) {
+            public void onResponse(Call<AnswersResponse> call, Response<AnswersResponse> response) {
                 //use postValue since it is running on background thread.
                 if (response.isSuccessful()) {
                     QcLog.e("onResponse isSuccessful == ");
-                    QcLog.e("getItems().size = " + response.body().getItems().size());
-                    SOAnswersResponse si = response.body();
+                    QcLog.e("getItems().size = " + response.body().getItemResponses().size());
+                    AnswersResponse si = response.body();
                     data.postValue(si);
 //                    data.setValue(si);
 //                    for (Item item : response.body().getItems()) {
@@ -159,7 +159,7 @@ public class RetrofitRemoteData {
             }
 
             @Override
-            public void onFailure(Call<SOAnswersResponse> call, Throwable t) {
+            public void onFailure(Call<AnswersResponse> call, Throwable t) {
                 QcLog.e("onFailure error loading from API");
             }
         });
@@ -193,23 +193,23 @@ public class RetrofitRemoteData {
      */
     public void getAnswers() {
 
-        Call<SOAnswersResponse> call = RetrofitRemoteData
+        Call<AnswersResponse> call = RetrofitRemoteData
                 .getRetrofitClient(ApiUrl.BASE_URL)
                 .create(GetAnswersApi.class).getAnswers();
 
         //rest service call runs on background thread and Callback also runs on background thread
-        call.enqueue(new Callback<SOAnswersResponse>() {
+        call.enqueue(new Callback<AnswersResponse>() {
             @Override
-            public void onResponse(Call<SOAnswersResponse> call, Response<SOAnswersResponse> response) {
+            public void onResponse(Call<AnswersResponse> call, Response<AnswersResponse> response) {
 //                User si = response.body();
                 //use postValue since it is running on background thread.
 
                 if (response.isSuccessful()) {
 //                    mAdapter.updateAnswers(response.body().getItems());
                     QcLog.e("onResponse isSuccessful == ");
-                    QcLog.e("getItems().size = " + response.body().getItems().size());
-                    for (Item item : response.body().getItems()) {
-                        QcLog.e("item == " + item.toString());
+                    QcLog.e("getItems().size = " + response.body().getItemResponses().size());
+                    for (ItemResponse itemResponse : response.body().getItemResponses()) {
+                        QcLog.e("item == " + itemResponse.toString());
 
                     }
                 } else {
@@ -220,7 +220,7 @@ public class RetrofitRemoteData {
             }
 
             @Override
-            public void onFailure(Call<SOAnswersResponse> call, Throwable t) {
+            public void onFailure(Call<AnswersResponse> call, Throwable t) {
                 QcLog.e("onFailure error loading from API");
             }
         });

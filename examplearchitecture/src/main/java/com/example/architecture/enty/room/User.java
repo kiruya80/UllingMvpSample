@@ -1,5 +1,5 @@
 
-package com.example.architecture.enty;
+package com.example.architecture.enty.room;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;

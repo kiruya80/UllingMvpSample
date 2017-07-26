@@ -21,15 +21,28 @@ public abstract class QcBaseLifeActivity extends LifecycleActivity {
      * need~ 시작
      */
 
+
     /**
-     * 1.
+     * 1-1.
      *
      * 프레그먼트 UI 데이터 초기화
+     */
+    protected abstract void needInitToOnCreate();
+    /**
+     * 1-2.
+     *
+     * 프레그먼트 UI 데이터 리셋
      */
     protected abstract void needResetData();
 
     /**
      * 2.
+     *
+     * 뷰모델 초기화
+     */
+    protected abstract void needInitViewModel();
+    /**
+     * 3.
      *
      * 설정한 레이아웃 아이디를 가지고
      * onCreateView 에서 자동으로 바인딩된다
@@ -48,7 +61,6 @@ public abstract class QcBaseLifeActivity extends LifecycleActivity {
      * UI에서 필요한 데이터 바인딩
      * View객체에 접근하여 데이터 연결한다.
      */
-//    protected abstract void needUIInflate();
     protected abstract void needUIBinding();
 
     /**
@@ -58,12 +70,6 @@ public abstract class QcBaseLifeActivity extends LifecycleActivity {
      */
     protected abstract void needUIEventListener();
 
-    /**
-     * 5.
-     *
-     * 뷰모델 초기화
-     */
-    protected abstract void needInitViewModel();
 
     /**
      * 6.
@@ -132,6 +138,8 @@ public abstract class QcBaseLifeActivity extends LifecycleActivity {
         QcLog.i("onCreate");
         qCon = getApplication().getApplicationContext();
 //        setContentView(needGetLayoutId());
+
+        needInitToOnCreate();
         needResetData();
         needUIBinding();
         optGetArgument(savedInstanceState);
