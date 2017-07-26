@@ -128,7 +128,7 @@ public class RetrofitRemoteData {
     }
 
 
-    public static void getSOAnswersResponse() {
+    public static void getAnswersResponse() {
         QcLog.e("PROCESSING IN THREAD BEFORE RETROFIT CALL " + Thread.currentThread().getName());
 //        Call<StoreInfo> call = getRetrofitClient().create(StoreApi.class).getStoreInfo();
 
@@ -164,6 +164,8 @@ public class RetrofitRemoteData {
             }
         });
     }
+
+
 //
 //    public static void getUserInfo(String userId) {
 //        QcLog.e("PROCESSING IN THREAD BEFORE RETROFIT CALL " + Thread.currentThread().getName());

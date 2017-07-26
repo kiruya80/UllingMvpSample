@@ -87,8 +87,6 @@ public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
 //            result.dispatchUpdatesTo(this);
 //        }
 //    }
-
-
     private void observerUserListResults(LiveData<List<User>> userLive) {
         userLive.observe(qFragment, new Observer<List<User>>() {
             @Override
@@ -104,7 +102,6 @@ public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
             }
         });
     }
-
 
 
     public FireDatabaseAdapter(QcBaseLifeFragment qFragment) {
@@ -125,7 +122,7 @@ public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     public void setViewModel(AndroidViewModel viewModel) {
-        this.viewModel =  (FireDatabaseViewModel) viewModel;
+        this.viewModel = (FireDatabaseViewModel) viewModel;
 //        observerUserListResults(this.viewModel.getAllUsers());
     }
 
@@ -205,7 +202,7 @@ public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
             if (v.getId() == R.id.ivProfile) {
-                QcToast.getInstance().show("onLongClick ivProfile = " +  userList.get(position).getLastName(), false);
+                QcToast.getInstance().show("onLongClick ivProfile = " + userList.get(position).getLastName(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserLastName) {
                 QcToast.getInstance().show("onLongClick tvUserLastName = " + userList.get(position).getLastName(), false);

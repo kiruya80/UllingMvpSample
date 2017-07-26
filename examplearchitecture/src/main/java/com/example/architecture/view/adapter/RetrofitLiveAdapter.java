@@ -7,7 +7,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.example.architecture.R;
 import com.example.architecture.databinding.RowRetrofitLiveBinding;
-import com.example.architecture.entities.retrofit.ItemResponse;
+import com.example.architecture.entities.room.Answer;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
@@ -31,18 +31,18 @@ import java.util.List;
  *
  * http://realignist.me/code/2016/05/25/data-binding-guide.html
  */
-public class RetrofitAdapter extends QcRecyclerBaseAdapter {
-    private List<ItemResponse> itemList;
+public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
+    private List<Answer> itemList;
 
     private RetrofitViewModel viewModel;
 
-    public void addAll(List<ItemResponse> data) {
+    public void addAll(List<Answer> data) {
         QcLog.e("addAll == ");
         this.itemList = data;
         notifyDataSetChanged();
     }
 
-    public RetrofitAdapter(QcBaseLifeFragment qFragment) {
+    public RetrofitLiveAdapter(QcBaseLifeFragment qFragment) {
         super(qFragment);
     }
 
@@ -99,7 +99,7 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     protected void needUIBinding(QcBaseViewHolder holder, int position, Object object) {
-        ItemResponse item = (ItemResponse) object;
+        Answer item = (Answer) object;
         // BindingHolder#getBinding()がViewDataBindingを返すのでsetVariable()を呼んでいる
         // 専用のBinding（この場合だとListItemSampleBinding）を返すことが出来るなら普通にsetUser()でOK
 //        holder.getBinding().setVariable(BR.user, getItem(position));
@@ -109,15 +109,15 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
         hoderBinding.tvPosition.setText("" + position);
 
         hoderBinding.tvUserId.setTag(position);
-        hoderBinding.tvUserId.setText("" + item.getOwnerResponse().getUserId());
+        hoderBinding.tvUserId.setText("" + item.getOwner().getUserId());
         hoderBinding.tvUserName.setTag(position);
-        hoderBinding.tvUserName.setText(item.getOwnerResponse().getDisplayName());
+        hoderBinding.tvUserName.setText(item.getOwner().getDisplayName());
 
 
         hoderBinding.rlProfile.setTag(position);
-        if (item.getOwnerResponse().getProfileImage() != null)
+        if (item.getOwner().getProfileImage() != null)
             Glide.with(qCon)
-                    .load(item.getOwnerResponse().getProfileImage())
+                    .load(item.getOwner().getProfileImage())
                     .error(R.mipmap.ic_launcher)
                     .placeholder(R.mipmap.ic_launcher)
                     .crossFade(R.anim.fade_in, 300)
@@ -139,11 +139,11 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
                     break;
                 case R.id.tvUserId:
                     QcLog.e("tvUserId ==== " + position);
-                    QcToast.getInstance().show("tvUserId = " + itemList.get(position).getOwnerResponse().getUserId(), false);
+                    QcToast.getInstance().show("tvUserId = " + itemList.get(position).getOwner().getUserId(), false);
                     break;
                 case R.id.tvUserName:
                     QcLog.e("tvUserName ==== " + position);
-                    QcToast.getInstance().show("tvUserName = " + itemList.get(position).getOwnerResponse().getDisplayName(), false);
+                    QcToast.getInstance().show("tvUserName = " + itemList.get(position).getOwner().getDisplayName(), false);
                     break;
                 default:
                     QcLog.e("default ==== " + position);
@@ -160,13 +160,13 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
             if (v.getId() == R.id.rlProfile) {
-                QcToast.getInstance().show("onLongClick rlProfile = " + itemList.get(position).getOwnerResponse().getProfileImage(), false);
+                QcToast.getInstance().show("onLongClick rlProfile = " + itemList.get(position).getOwner().getProfileImage(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserId) {
-                QcToast.getInstance().show("onLongClick tvUserId = " + itemList.get(position).getOwnerResponse().getUserId(), false);
+                QcToast.getInstance().show("onLongClick tvUserId = " + itemList.get(position).getOwner().getUserId(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserName) {
-                QcToast.getInstance().show("onLongClick tvUserName = " + itemList.get(position).getOwnerResponse().getDisplayName(), false);
+                QcToast.getInstance().show("onLongClick tvUserName = " + itemList.get(position).getOwner().getDisplayName(), false);
 
                 return false;
 

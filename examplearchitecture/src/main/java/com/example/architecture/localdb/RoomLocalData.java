@@ -4,6 +4,8 @@ package com.example.architecture.localdb;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
+import com.example.architecture.entities.room.Answer;
+import com.example.architecture.entities.room.AnswerDao;
 import com.example.architecture.entities.room.Book;
 import com.example.architecture.entities.room.BookDao;
 import com.example.architecture.entities.room.Loan;
@@ -33,9 +35,10 @@ import com.example.architecture.entities.room.UserDao;
  *  주석이 달린 클래스를 확장하는 추상 클래스이어야한다
  *  RoomDatabase. 런타임시, 당신은 호출하여 인스턴스를 획득 할 수있다 Room.databaseBuilder()나 Room.inMemoryDatabaseBuilder().
  */
-@Database(entities = {User.class, Book.class, Loan.class }, version = 1)
+@Database(entities = {User.class, Book.class, Loan.class, Answer.class }, version = 1)
 public abstract class RoomLocalData extends RoomDatabase {
 
+    public abstract AnswerDao answerDatabase();
     public abstract UserDao userDatabase();
     public abstract BookDao bookDatabase();
     public abstract LoanDao loanDatabase();

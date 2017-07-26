@@ -87,8 +87,6 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 //            result.dispatchUpdatesTo(this);
 //        }
 //    }
-
-
     private void observerUserListResults(LiveData<List<User>> userLive) {
         userLive.observe(qFragment, new Observer<List<User>>() {
             @Override
@@ -104,7 +102,6 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
             }
         });
     }
-
 
 
     public LiveDataAdapter(QcBaseLifeFragment qFragment) {
@@ -205,7 +202,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
             if (v.getId() == R.id.rlProfile) {
-                QcToast.getInstance().show("onLongClick rlProfile = " +  userList.get(position).getLastName(), false);
+                QcToast.getInstance().show("onLongClick rlProfile = " + userList.get(position).getLastName(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserLastName) {
                 QcToast.getInstance().show("onLongClick tvUserLastName = " + userList.get(position).getLastName(), false);

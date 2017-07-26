@@ -85,10 +85,11 @@ public class MainActivity extends QcBaseLifeActivity {
         BaseQLifecycleFragmentList.add(FireDatabaseFragment.newInstance(1));
         BaseQLifecycleFragmentList.add(RetrofitFragment.newInstance(2));
         BaseQLifecycleFragmentList.add(LiveDataFragment.newInstance(3));
+        BaseQLifecycleFragmentList.add(RetrofitLiveFragment.newInstance(4));
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private String tabTitles[] = new String[]{"LogIn", "Firebase", "Retrofit", "LiveData"};
+        private String tabTitles[] = new String[]{"LogIn", "Firebase", "Retrofit", "LiveData", "RetrofitLive"};
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);

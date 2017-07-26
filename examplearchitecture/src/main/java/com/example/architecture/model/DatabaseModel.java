@@ -4,16 +4,29 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import com.example.architecture.common.ApiUrl;
+import com.example.architecture.entities.retrofit.AnswersResponse;
+import com.example.architecture.entities.retrofit.ItemResponse;
+import com.example.architecture.entities.retrofit.OwnerResponse;
+import com.example.architecture.entities.room.Answer;
+import com.example.architecture.entities.room.AnswerDao;
+import com.example.architecture.entities.room.Owner;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.entities.room.UserDao;
-import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.localdb.DatabaseCreator;
 import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.remotedb.GetAnswersApi;
 import com.example.architecture.remotedb.RetrofitRemoteData;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcToast;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * 뷰모델에서 데이터 요청시
@@ -23,6 +36,8 @@ import java.util.List;
  * Created by P100651 on 2017-07-05.
  */
 public class DatabaseModel {
+    private int nThreads = 2;
+    private Executor executor = Executors.newFixedThreadPool(nThreads);
     /**
      * local db type
      */
@@ -40,6 +55,7 @@ public class DatabaseModel {
 
     //    private final PersonDAO personDAO;
     private UserDao userDao = null;
+    private AnswerDao answerDao = null;
     private GetAnswersApi getAnswersApi;
     private LiveData<AnswersResponse> answers = new AnswersResponse();
 
@@ -52,6 +68,24 @@ public class DatabaseModel {
             initRemoteDb(baseUrl);
         if (localData != null)
             userDao = localData.userDatabase();
+        if (localData != null)
+            answerDao = localData.answerDatabase();
+    }
+
+
+    public DatabaseModel(Context context, int nThreads,  int localDbType, int remoteType, String baseUrl) {
+        this.qCtx = context;
+        this.nThreads = nThreads;
+        this.executor = Executors.newFixedThreadPool(nThreads);
+        this.localDbType = localDbType;
+        this.remoteType = remoteType;
+        initLocalDb();
+        if (baseUrl != null && !"".equals(baseUrl))
+            initRemoteDb(baseUrl);
+        if (localData != null)
+            userDao = localData.userDatabase();
+        if (localData != null)
+            answerDao = localData.answerDatabase();
     }
 
     private void initLocalDb() {
@@ -77,6 +111,9 @@ public class DatabaseModel {
             localData.close();
     }
 
+    /**
+     * userDao
+     */
     public long insertUser(User u) {
         if (userDao != null) {
             long resultIndex = userDao.insertUser(u);
@@ -113,8 +150,143 @@ public class DatabaseModel {
         }
     }
 
+    /**
+     * answerDao
+     */
+
+    /**
+     *
+     * @param answer
+     * @return
+     */
+    public long insertAnswer(Answer answer) {
+        if (answerDao != null) {
+            long resultIndex = answerDao.insertAnswer(answer);
+            QcLog.e("insertUser " + resultIndex);
+            return resultIndex;
+        } else {
+            return -1;
+        }
+    }
+    public long[] insertMultipleAnswer(Answer... answers) {
+        if (answerDao != null) {
+            long[] resultIndex = answerDao.insertMultipleAnswer(answers);
+            QcLog.e("insertUser " + resultIndex);
+            return resultIndex;
+        } else {
+            return null;
+        }
+    }
+    public long[] insertMultipleListAnswer(List<Answer> answers) {
+        if (answerDao != null) {
+            long[] resultIndex = answerDao.insertMultipleListAnswer(answers);
+            QcLog.e("insertUser " + resultIndex);
+            return resultIndex;
+        } else {
+            return null;
+        }
+    }
+
+    public LiveData<List<Answer>> getAllAnswer() {
+        if (answerDao != null) {
+            return answerDao.getAllAnswer();
+        } else {
+            return null;
+        }
+    }
+
+
+    public void getAnswers(boolean isRemote) {
+        if (isRemote) {
+            Call<AnswersResponse> call = RetrofitRemoteData
+                    .getRetrofitClient(ApiUrl.BASE_URL)
+                    .create(GetAnswersApi.class).getAnswers();
+
+            //rest service call runs on background thread and Callback also runs on background thread
+            call.enqueue(new Callback<AnswersResponse>() {
+                @Override
+                public void onResponse(Call<AnswersResponse> call, Response<AnswersResponse> response) {
+                    //use postValue since it is running on background thread.
+                    if (response.isSuccessful()) {
+                        QcLog.e("onResponse isSuccessful == ");
+                        QcLog.e("getItems().size = " + response.body().getItemResponses().size());
+                        AnswersResponse answersResponse = response.body();
+//                        data.postValue(si);
+                        /**
+                         * get data -> insert
+                         */
+
+                        List<ItemResponse> itemResponses = answersResponse.getItemResponses();
+                        List<Answer> answers = new ArrayList<Answer>();
+                        for (ItemResponse item  : itemResponses) {
+                            Answer answer = new Answer();
+                            answer.setAnswerId(item.getAnswerId());
+                            answer.setQuestionId(item.getQuestionId());
+
+                            OwnerResponse ownerResponse =  item.getOwnerResponse();
+                            Owner owner = new Owner();
+                            owner.setReputation(ownerResponse.getReputation());
+                            owner.setUserId(ownerResponse.getUserId());
+                            owner.setUserType(ownerResponse.getUserType());
+                            if (ownerResponse.getAcceptRate() != null)
+                            owner.setAcceptRate(ownerResponse.getAcceptRate());
+                            owner.setProfileImage(ownerResponse.getProfileImage());
+                            owner.setDisplayName(ownerResponse.getDisplayName());
+                            owner.setLink(ownerResponse.getLink());
+
+                            answer.setOwner(owner);
+                            answer.setAccepted(item.getIsAccepted());
+                            answer.setScore(item.getScore());
+                            answer.setLastActivityDate(item.getLastActivityDate());
+                            if (item.getLastEditDate() != null)
+                            answer.setLastEditDate(item.getLastEditDate());
+                            answer.setCreationDate(item.getCreationDate());
+
+                            answers.add(answer);
+                        }
+
+                        if (answers != null && answers.size() > 0)
+                        addAnswer(answers);
+
+
+                    } else {
+                        int statusCode = response.code();
+                        QcLog.e("onResponse == " + statusCode);
+                        // handle request errors depending on status code
+                    }
+                    QcLog.e("PROCESSING IN THREAD IN RETROFIT RESPONSE HANDLER " + Thread.currentThread().getName());
+                }
+
+                @Override
+                public void onFailure(Call<AnswersResponse> call, Throwable t) {
+                    QcLog.e("onFailure error loading from API");
+                }
+            });
+        } else {
+
+        }
+    }
+
+    public void addAnswer(final List<Answer> answers) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                long[] resultIndex = insertMultipleListAnswer(answers);
+                QcLog.e("addAnswer resultIndex == " + resultIndex);
+                QcToast.getInstance().show("addAnswer seccess !! index = " + resultIndex, false);
+            }
+        });
+    }
+
+
+
+
+
+
+
+
     public void getAnswers() {
-        RetrofitRemoteData.getSOAnswersResponse();
+        RetrofitRemoteData.getAnswersResponse();
 
 //        if (getAnswersApi != null)
 //            getAnswersApi.getAnswers().enqueue(new Callback<SOAnswersResponse>() {
