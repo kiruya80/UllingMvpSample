@@ -14,7 +14,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
     // before loading more.
     private int visibleThreshold = 5;
     // The current offset index of data you have loaded
-    private int currentPage = 0;
+    private int currentPage = 1;
     // The total number of items in the dataset after the last load
     private int previousTotalItemCount = 0;
     // True if we are still waiting for the last set of data to load.
@@ -101,8 +101,6 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             return;
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
-//        if (totalItemCount == 0)
-//            return;
         if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
             // get maximum element within the list
@@ -119,9 +117,9 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         if (totalItemCount < previousTotalItemCount) {
             this.currentPage = this.startingPageIndex;
             this.previousTotalItemCount = totalItemCount;
-            if (totalItemCount == 0) {
-                this.loading = true;
-            }
+//            if (totalItemCount == 0) {
+//                this.loading = true;
+//            }
         }
         // If it’s still loading, we check to see if the dataset count has
         // changed, if so we conclude it has finished loading and update the current page
@@ -130,6 +128,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             loading = false;
             previousTotalItemCount = totalItemCount;
         }
+
         isLastItem = false;
         // If it isn’t currently loading, we check to see if we have breached
         // the visibleThreshold and need to reload more data.

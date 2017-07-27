@@ -228,7 +228,7 @@ public class DatabaseModel {
         retrofitRemoteData.getAnswersResponse(page);
     }
 
-    public void getAnswersFromRemote(int page) {
+    public void getAnswersFromRemote(final int page) {
         retrofitRemoteData.getAnswers(page, new RemoteDataListener() {
             @Override
             public void onSuccess(int statusCode, QcCommonResponse answers) {
@@ -236,7 +236,7 @@ public class DatabaseModel {
                 if (answers != null) {
                     AnswersResponse answersResponse = (AnswersResponse) answers;
                     if (answersResponse != null)
-                    getAnswersResponse(answersResponse);
+                    getAnswersResponse(page, answersResponse);
                 }
             }
 
@@ -252,7 +252,7 @@ public class DatabaseModel {
         });
     }
 
-    private void getAnswersResponse(AnswersResponse answersResponse) {
+    private void getAnswersResponse(final int page, AnswersResponse answersResponse) {
         /**
          * get data -> insert
          */
@@ -261,6 +261,7 @@ public class DatabaseModel {
         for (ItemResponse item : itemResponses) {
             Answer answer = new Answer();
             answer.setAnswerId(item.getAnswerId());
+            answer.setLastPage(page);
             answer.setQuestionId(item.getQuestionId());
             OwnerResponse ownerResponse = item.getOwnerResponse();
             Owner owner = new Owner();

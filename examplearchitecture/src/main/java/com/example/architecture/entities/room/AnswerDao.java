@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Dao
 public interface AnswerDao {
-    @Query("SELECT * FROM Answer")
+    @Query("SELECT * FROM Answer ORDER BY answerId ASC ")
     public LiveData<List<Answer>> getAllAnswer();
 
 //    @Query("select * from user")

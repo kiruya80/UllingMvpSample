@@ -175,7 +175,7 @@ public class RetrofitRemoteData {
                 //use postValue since it is running on background thread.
                 QcLog.e("message == " + response.message().toString());
                 int statusCode = response.code();
-                QcLog.e("onResponse Error !!! " + statusCode);
+                QcLog.e("onResponse statusCode !!! " + statusCode);
                 if (response.isSuccessful()) {
                     QcLog.e("onResponse isSuccessful == ");
                     QcLog.e("getItems().size = " + response.body().getItemResponses().size());

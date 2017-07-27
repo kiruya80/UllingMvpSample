@@ -157,21 +157,12 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
-//        if (viewModel != null && viewModel.getLoansResult() != null)
-//        viewModel.getLoansResult().observe(this, new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable final String result) {
-//                QcLog.e("getLoansResult observe == ");
-//                books_tv.setText(result);
-//            }
-//        });
-//        observerUserResults(viewModel.getUserInfo("1"));
-        observerUserListResults(viewModel.getAllUsers());
     }
 
     @Override
     public void needShowToUser() {
         QcLog.e("needShowToUser == ");
+        observerUserListResults(viewModel.getAllUsers());
     }
 
     private void observerUserListResults(LiveData<List<User>> userLive) {

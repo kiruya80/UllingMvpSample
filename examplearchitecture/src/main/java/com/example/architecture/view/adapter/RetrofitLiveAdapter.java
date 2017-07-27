@@ -43,11 +43,12 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
 
     public void addAll(List<Answer> data) {
         this.itemList = data;
+//        this.itemList.addAll(data);
         QcLog.e("addAll == " + itemList.size());
         notifyDataSetChanged();
     }
 
-        public void addAnswer(final List<Answer> itemList_) {
+    public void addAnswer(final List<Answer> itemList_) {
         if (itemList == null) {
             this.itemList = itemList_;
             notifyItemRangeInserted(0, itemList.size());

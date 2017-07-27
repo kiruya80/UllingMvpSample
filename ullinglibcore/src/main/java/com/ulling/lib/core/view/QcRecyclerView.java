@@ -129,6 +129,15 @@ public class QcRecyclerView extends RecyclerView {
         this.emptyView = emptyView;
     }
 
+
+
+    public void setStartingPageIndex(int startingPageIndex) {
+        if (getEndlessRecyclerScrollListener() != null)
+            getEndlessRecyclerScrollListener().setStartingPageIndex(startingPageIndex);
+    }
+
+
+
     public interface QcRecyclerListener {
         void onLoadMore(int page, int totalItemsCount, RecyclerView view);
 

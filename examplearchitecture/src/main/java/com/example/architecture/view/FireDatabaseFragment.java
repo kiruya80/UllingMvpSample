@@ -184,7 +184,6 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
-        subscribeFirebaseDatabase();
     }
 
     @Override
@@ -195,6 +194,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
 //            dataAdapter.add(msg);
 //        }
 //        getSingleAllData();
+        subscribeFirebaseDatabase();
     }
 
     private void subscribeFirebaseDatabase() {
@@ -266,47 +266,6 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     }
 
 
-    /**
-     * 중복 방지
-     * <p>
-     * 깜빡이는 현상이 생김
-     */
-//    public void addUser(final List<? extends User> userList_) {
-//        if (userList == null) {
-//            userList = userList_;
-//            notifyItemRangeInserted(0, userList_.size());
-//        } else {
-//            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-//                @Override
-//                public int getOldListSize() {
-//                    return userList.size();
-//                }
-//
-//                @Override
-//                public int getNewListSize() {
-//                    return userList_.size();
-//                }
-//
-//                @Override
-//                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-//                    return userList.get(oldItemPosition).getId() ==
-//                            userList_.get(newItemPosition).getId();
-//                }
-//
-//                @Override
-//                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-//                    User newUser = userList.get(newItemPosition);
-//                    User old = userList.get(oldItemPosition);
-//                    return newUser.getId() == old.getId()
-//                            && Objects.equals(newUser.getLastName(), old.getLastName())
-//                            && Objects.equals(newUser.getName(), old.getName())
-//                            && newUser.getAge() == old.getAge();
-//                }
-//            });
-//            userList = userList_;
-//            result.dispatchUpdatesTo(this);
-//        }
-//    }
     private void initFirebaseDatabase2() {
         childEventListener = new ChildEventListener() {
             /**

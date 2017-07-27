@@ -154,12 +154,12 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
-        observerAnswersLiveData(viewModel.getAnswersFromRemoteResponse());
     }
 
     @Override
     public void needShowToUser() {
         QcLog.e("needShowToUser == ");
+        observerAnswersLiveData(viewModel.getAnswersFromRemoteResponse());
     }
 
     // https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792

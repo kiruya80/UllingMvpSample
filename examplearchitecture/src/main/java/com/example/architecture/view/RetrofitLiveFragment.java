@@ -98,10 +98,15 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         QcLog.e("needResetData == ");
         isLoading = false;
         page = 1;
-        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
-            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        setPage();
         if (adapter != null)
         adapter.needResetData();
+    }
+
+    private void setPage() {
+        if (viewBinding != null && viewBinding.qcRecyclerView != null)
+            viewBinding.qcRecyclerView.setStartingPageIndex(page);
+
     }
 
     @Override
@@ -111,13 +116,26 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
         viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        /**
+         * 라이브데이터 사용시 문제점
+         * 1. 페이지 로딩 실패시 재로딩문제
+         * 2. 로컬에 저장된 데이터를 가져오고 이후 다음페이지 로딩 문제
+         * ->로컬 데이터에 마지막 페이지값을 같이 저장한다
+         *
+         */
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
                 QcLog.e("onLoadMore =====");
                 page = page_;
-                if (viewModel != null)
-                    viewModel.getAnswersFromRemote(page);
+                QcToast.getInstance().show("onLoadMore !! " + page, false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (viewModel != null)
+                            viewModel.getAnswersFromRemote(page);
+                    }
+                }, 1000);
             }
 
             @Override
@@ -140,15 +158,19 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         viewBinding.btnGet.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                if (viewModel != null)
+                if (viewModel != null) {
                     viewModel.getAnswersFromRemote(page);
+                    QcToast.getInstance().show("onLoadMore !! " + page, false);
+                }
             }
         });
         viewBinding.btnDeleteRoom.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
-                if (viewModel != null)
+                if (viewModel != null) {
                     viewModel.deleteAnswerFromRoom();
+                    needResetData();
+                }
             }
         });
     }
@@ -161,12 +183,12 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
-        observerAllAnswer(viewModel.getAllAnswersFromRoom());
     }
 
     @Override
     public void needShowToUser() {
         QcLog.e("needShowToUser == ");
+        observerAllAnswer(viewModel.getAllAnswersFromRoom());
     }
 
     private void observerAllAnswer(LiveData<List<Answer>> answers) {
@@ -176,11 +198,12 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             @Override
             public void onChanged(@Nullable List<Answer> allanswers) {
                 QcLog.e("allanswers observe == ");
-                if (allanswers == null) {
-                    return;
+                if (allanswers != null && allanswers.size() > 0) {
+                    page = allanswers.get(allanswers.size()-1).getLastPage();
+                    setPage();
+                adapter.addAll(allanswers);
+//                    adapter.addAnswer(allanswers);
                 }
-//                adapter.addAll(allanswers);
-                adapter.addAnswer(allanswers);
 
             }
         });
@@ -196,7 +219,6 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         isLoading = true;
         viewBinding.swipeRefreshLayout.setRefreshing(true);
         viewModel.getAllAnswersFromRoom().removeObservers(this);
-//        adapter.needResetData();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

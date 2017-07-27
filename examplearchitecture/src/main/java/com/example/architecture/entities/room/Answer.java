@@ -20,6 +20,8 @@ public class Answer {
 //    private int id;
     @PrimaryKey
     private int answerId;
+
+    private int lastPage;
     private int questionId;
     @Embedded
     private Owner owner;
@@ -67,7 +69,15 @@ public class Answer {
 
     }
 
-//    @Override
+    public int getLastPage() {
+        return lastPage;
+    }
+
+    public void setLastPage(int lastPage) {
+        this.lastPage = lastPage;
+    }
+
+    //    @Override
 //    public int hashCode() {
 //        int result = answerId;
 //        result = result + (name != null ? name.hashCode() : 0);
