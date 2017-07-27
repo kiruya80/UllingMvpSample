@@ -3,12 +3,11 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import android.arch.lifecycle.LiveData;
+import com.ulling.lib.core.entities.QcCommonResponse;
 
 import java.util.List;
 
-public class AnswersResponse extends LiveData {
+public class AnswersResponse extends QcCommonResponse {
 
     @SerializedName("items")
     @Expose

@@ -3,10 +3,9 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.ulling.lib.core.entities.QcCommonResponse;
 
-import android.arch.lifecycle.LiveData;
-
-public class OwnerResponse extends LiveData {
+public class OwnerResponse extends QcCommonResponse {
 
     @SerializedName("reputation")
     @Expose

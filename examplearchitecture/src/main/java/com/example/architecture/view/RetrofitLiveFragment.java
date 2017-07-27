@@ -13,7 +13,6 @@ import android.view.View;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
-import com.example.architecture.common.QcDefine;
 import com.example.architecture.databinding.FragRetrofitLiveBinding;
 import com.example.architecture.entities.room.Answer;
 import com.example.architecture.view.adapter.RetrofitLiveAdapter;
@@ -56,6 +55,8 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     private RetrofitLiveAdapter adapter;
     public boolean isLoading = false;
 
+    private int page = 0;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -86,7 +87,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         APP_NAME = QUllingApplication.getAppName();
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(RetrofitLiveViewModel.class);
-            viewModel.initViewModel(qCon, QcDefine.THREAD_POOL_NUM, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+            viewModel.initViewModel(qCon, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
         adapter = new RetrofitLiveAdapter(this);
         if (adapter != null && !adapter.isViewModel())
@@ -106,9 +107,11 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
+
             @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+            public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
                 QcLog.e("onLoadMore =====");
+                page = page_;
             }
 
             @Override
@@ -117,7 +120,6 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
                 QcToast.getInstance().show("onLoadEnd !! ", false);
             }
         });
-
         viewBinding.progressBar.setVisibility(View.GONE);
         viewBinding.swipeRefreshLayout.setOnRefreshListener(this);
         viewBinding.swipeRefreshLayout.setColorSchemeResources(
@@ -133,14 +135,14 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             @Override
             public void onSingleClick(View v) {
                 if (viewModel != null)
-                    viewModel.getAnswers(true);
+                    viewModel.getAnswersFromRemote(page);
             }
         });
         viewBinding.btnDeleteRoom.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View v) {
                 if (viewModel != null)
-                    viewModel.deleteAnswer();
+                    viewModel.deleteAnswerFromRoom();
             }
         });
     }
@@ -153,7 +155,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     @Override
     public void needSubscribeUiFromViewModel() {
         QcLog.e("needSubscribeUiFromViewModel == ");
-        observerAllAnswer(viewModel.getAllAnswers());
+        observerAllAnswer(viewModel.getAllAnswersFromRoom());
     }
 
     @Override
@@ -197,7 +199,6 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             viewBinding.progressBar.setVisibility(View.VISIBLE);
         } else {
             viewBinding.progressBar.setVisibility(View.GONE);
-
         }
     }
 }

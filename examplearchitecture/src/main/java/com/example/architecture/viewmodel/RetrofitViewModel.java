@@ -7,15 +7,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.example.architecture.entities.room.User;
 import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.model.DatabaseModel;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
-
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -26,22 +21,17 @@ import java.util.concurrent.Executors;
  * https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
  */
 public class RetrofitViewModel extends AndroidViewModel {
-    private DatabaseModel mDatabaseModel;
-    //    private Application application;
     private Context qCon;
-    private int nThreads = 2;
-    private Executor executor = Executors.newFixedThreadPool(nThreads);
+    private DatabaseModel mDatabaseModel;
 
     public RetrofitViewModel(@NonNull Application application) {
         super(application);
 //        this.application = application;
     }
 
-    public void initViewModel(Context qCon, int nThreads, int dbTypeLocal, int remoteType, String baseUrl) {
+    public void initViewModel(Context qCon,   int dbTypeLocal, int remoteType, String baseUrl) {
         QcLog.e("initViewModel == ");
         this.qCon = qCon;
-        this.nThreads = nThreads;
-        this.executor = Executors.newFixedThreadPool(nThreads);
         // db model 초기화
         mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType, baseUrl);
 //        mDatabaseModel = new DatabaseModel(getApplication());
@@ -50,33 +40,54 @@ public class RetrofitViewModel extends AndroidViewModel {
 
     }
 
-
-    public void addUserDao(final User u) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                long resultIndex = mDatabaseModel.insertUser(u);
-                QcLog.e("addUser resultIndex == " + resultIndex);
-                QcToast.getInstance().show("add user seccess !! index = " + resultIndex, false);
-            }
-        });
+    /**
+     * 이 메서드는 ViewModel이 더이상 사용되지 않고 파괴될 때 호출됩니다.
+     * Realm 인스턴스같이 ViewModel이 어떤 데이터를 관찰하고 ViewModel이 새는 것을 막기 위해
+     * 구독을 취소할 필요가 있는 경우 유용합니다.
+     */
+    @Override
+    protected void onCleared() {
+        QcLog.e("onCleared == ");
+        if (mDatabaseModel != null)
+            mDatabaseModel.onCleared();
+        super.onCleared();
     }
 
-    public void deleteUserDao(final String userId) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                // result : 0 없는 경우  , 1: 성공
-                int result = mDatabaseModel.deleteUser(userId);
-                QcLog.e("deleteUser userId = " + userId + " , result = " + result);
-                if (result == 1) {
-                    QcToast.getInstance().show("delete user seccess !!", false);
-                } else {
-                    QcToast.getInstance().show("delete user fail !!", false);
-                }
-            }
-        });
+
+    public void getAnswersFromRemoteResponse(int page) {
+        if (mDatabaseModel != null)
+            mDatabaseModel.getAnswersFromRemoteResponse(page);
     }
+
+    public LiveData<AnswersResponse> getAnswersFromRemoteResponse() {
+        return mDatabaseModel.getAnswersFromRemoteResponse();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void deleteUserDaoAsyncTask(final String userId) {
         new AsyncTask<Void, String, Integer>() {
@@ -99,32 +110,5 @@ public class RetrofitViewModel extends AndroidViewModel {
 
     }
 
-//    public LiveData<User> getUserInfo(int userId) {
-//        return mDatabaseModel.getUserInfo(userId);
-//    }
 
-    public LiveData<List<User>> getAllUsers() {
-        return mDatabaseModel.getAllUsers();
-    }
-
-    public void getAnswers() {
-        mDatabaseModel.getAnswers();
-    }
-
-    public LiveData<AnswersResponse> getAnswersLiveData() {
-        return mDatabaseModel.answers();
-    }
-
-    /**
-     * 이 메서드는 ViewModel이 더이상 사용되지 않고 파괴될 때 호출됩니다.
-     * Realm 인스턴스같이 ViewModel이 어떤 데이터를 관찰하고 ViewModel이 새는 것을 막기 위해
-     * 구독을 취소할 필요가 있는 경우 유용합니다.
-     */
-    @Override
-    protected void onCleared() {
-        QcLog.e("onCleared == ");
-        if (mDatabaseModel != null)
-            mDatabaseModel.onCleared();
-        super.onCleared();
-    }
 }

@@ -3,10 +3,9 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.ulling.lib.core.entities.QcCommonResponse;
 
-import android.arch.lifecycle.LiveData;
-
-public class ItemResponse extends LiveData   {
+public class ItemResponse extends QcCommonResponse {
 //    public class Item extends LiveData implements BaseObservable {
 
 //    @Bindable

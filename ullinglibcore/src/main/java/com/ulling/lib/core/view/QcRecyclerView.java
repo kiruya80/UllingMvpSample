@@ -53,7 +53,7 @@ import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 public class QcRecyclerView extends RecyclerView {
     //    public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
     private Context context;
-//    private LinearLayoutManager layoutManager;
+    //    private LinearLayoutManager layoutManager;
 //    private GridLayoutManager gridLayoutManager;
 //    private StaggeredGridLayoutManager stgaggeredGridLayoutManager;
 //    private int transform = linear;
@@ -78,14 +78,40 @@ public class QcRecyclerView extends RecyclerView {
                 }
             }
         }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
+            super.onItemRangeChanged(positionStart, itemCount);
+        }
+
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+            super.onItemRangeChanged(positionStart, itemCount, payload);
+        }
+
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
+            super.onItemRangeInserted(positionStart, itemCount);
+        }
+
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
+            super.onItemRangeRemoved(positionStart, itemCount);
+        }
+
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+        }
     };
 
     @Override
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
         if (adapter != null && emptyObserver != null && emptyView != null) {
+           if (!adapter.hasObservers())
             adapter.registerAdapterDataObserver(emptyObserver);
-            emptyObserver.onChanged();
+//            emptyObserver.onChanged();
         }
     }
 
@@ -105,6 +131,7 @@ public class QcRecyclerView extends RecyclerView {
 
     public interface QcRecyclerListener {
         void onLoadMore(int page, int totalItemsCount, RecyclerView view);
+
         void onLoadEnd();
     }
 
@@ -127,9 +154,8 @@ public class QcRecyclerView extends RecyclerView {
 //        setLinearLayoutManager();
 //        setEndlessRecyclerScrollListener();
         if (endlessRecyclerScrollListener != null)
-        addOnScrollListener(endlessRecyclerScrollListener);
+            addOnScrollListener(endlessRecyclerScrollListener);
     }
-
 
     public void resetEndlessScrollState() {
         endlessRecyclerScrollListener.resetState();
@@ -150,6 +176,7 @@ public class QcRecyclerView extends RecyclerView {
                 qcRecyclerListener.onLoadEnd();
         }
     };
+
     public void setQcRecyclerListener(QcRecyclerListener qcRecyclerListener) {
         this.qcRecyclerListener = qcRecyclerListener;
     }
@@ -157,10 +184,6 @@ public class QcRecyclerView extends RecyclerView {
     public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
         return endlessRecyclerScrollListener;
     }
-
-
-
-
 
     private void initView() {
 //        String infService = Context.LAYOUT_INFLATER_SERVICE;
@@ -220,7 +243,6 @@ public class QcRecyclerView extends RecyclerView {
 //        text.setText(text_string);
         typedArray.recycle();
     }
-
 //    private void setLinearLayoutManager() {
 //        if (linear == orientation) {
 //            layoutManager = new LinearLayoutManager(getContext());
@@ -238,7 +260,6 @@ public class QcRecyclerView extends RecyclerView {
 //            setLayoutManager(stgaggeredGridLayoutManager);
 //        }
 //    }
-
     //    @Override
 //    public RecyclerView.LayoutManager getLayoutManager() {
 //        if (linear == orientation) {

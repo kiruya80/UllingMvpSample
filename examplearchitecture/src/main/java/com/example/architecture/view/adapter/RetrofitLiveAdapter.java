@@ -100,9 +100,6 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
     @Override
     protected void needUIBinding(QcBaseViewHolder holder, int position, Object object) {
         Answer item = (Answer) object;
-        // BindingHolder#getBinding()がViewDataBindingを返すのでsetVariable()を呼んでいる
-        // 専用のBinding（この場合だとListItemSampleBinding）を返すことが出来るなら普通にsetUser()でOK
-//        holder.getBinding().setVariable(BR.user, getItem(position));
         RowRetrofitLiveBinding hoderBinding = (RowRetrofitLiveBinding) holder.getBinding();
 
         hoderBinding.tvPosition.setTag(position);
@@ -152,7 +149,6 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
             }
         }
     };
-
 
     private View.OnLongClickListener mOnLongClickListener = new View.OnLongClickListener() {
         @Override
