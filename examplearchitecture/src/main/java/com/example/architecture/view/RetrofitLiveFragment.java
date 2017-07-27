@@ -53,8 +53,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     private FragRetrofitLiveBinding viewBinding;
     private RetrofitLiveViewModel viewModel;
     private RetrofitLiveAdapter adapter;
-    public boolean isLoading = false;
-
+    private boolean isLoading = false;
     private int page = 0;
 
     /**
@@ -107,7 +106,6 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
-
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
                 QcLog.e("onLoadMore =====");

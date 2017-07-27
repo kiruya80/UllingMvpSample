@@ -4,13 +4,16 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
-import com.example.architecture.databinding.FragUserProfileBinding;
+import com.example.architecture.databinding.FragLiveDataBinding;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.LiveDataAdapter;
 import com.example.architecture.viewmodel.LiveDataViewModel;
@@ -19,6 +22,7 @@ import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
+import com.ulling.lib.core.view.QcRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +34,17 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 /**
  * Created by P100651 on 2017-07-04.
  */
-public class LiveDataFragment extends QcBaseShowLifeFragement {
+public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
+
     private QUllingApplication qApp;
-    private FragUserProfileBinding viewBinding;
+    private FragLiveDataBinding viewBinding;
     private static final String UID_KEY = "uid";
     private LiveDataViewModel viewModel;
-    private String userId;
-    private int nThreads = 2;
     private LiveDataAdapter adapter;
     private int id_ = 1;
+    private String userId;
+    private boolean isLoading = false;
+    private int page = 0;
 
     public static LiveDataFragment newInstance(int sectionNumber) {
         LiveDataFragment fragment = new LiveDataFragment();
@@ -50,7 +56,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
 
     @Override
     protected int needGetLayoutId() {
-        return R.layout.frag_user_profile;
+        return R.layout.frag_live_data;
     }
 
     @Override
@@ -60,64 +66,59 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         userId = getArguments().getString(UID_KEY);
     }
 
-
     @Override
     protected void needInitToOnCreate() {
         QcLog.e("needInitToOnCreate == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
         id_ = QcPreferences.getInstance().get("index", 1);
-
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+            viewModel.initViewModel(qCon, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
         adapter = new LiveDataAdapter(this);
         if (adapter != null && !adapter.isViewModel())
             adapter.setViewModel(viewModel);
-
     }
 
     @Override
     protected void needResetData() {
         QcLog.e("needResetData == ");
+        isLoading = false;
     }
 
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
-        // 안드로이드가 ViewModel을 생성합니다.
-        // ViewModel 최고의 장점은 configurationChanges에서도 살아남는 점입니다!
-        // 내장된 ViewModelProviders.of(...)를 이용해서 onCreate가 ViewModel의 인스턴스를 얻는다는 점을 주의하세요. 이전에 이 액티비티 생애주기를 위한 CustomResultViewModel이 없었다면 새롭게 생성합니다.
-//        if (viewModel == null) {
-//            viewModel = ViewModelProviders.of(this).get(LiveDataViewModel.class);
-//            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
-//        }
-//        if (liveDataAdapter != null && !liveDataAdapter.isViewModel())
-//            liveDataAdapter.setViewModel(viewModel);
     }
 
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
-        viewBinding = (FragUserProfileBinding) getViewBinding();
-//        liveDataAdapter = new LiveDataAdapter(qCon);
+        viewBinding = (FragLiveDataBinding) getViewBinding();
+//        viewBinding.recyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
+        viewBinding.qcRecyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
+            @Override
+            public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
+                QcLog.e("onLoadMore =====");
+                page = page_;
+            }
 
-//        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(viewBinding.recyclerView.getLayoutManager()) {
-//            @Override
-//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-//            }
-//        };
-//        viewBinding.recyclerView.setLayoutManager(layoutManager);
-//        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
-        viewBinding.recyclerView.setAdapter(adapter);
-//        viewBinding.recyclerView.getLayoutManager()
-//        viewBinding.recyclerView.setHasFixedSize(true);
-        // 항목 구분선
-//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
-//        viewBinding.recyclerView.addItemDecoration(itemDecoration);
+            @Override
+            public void onLoadEnd() {
+                QcLog.e("onLoadEnd =====");
+                QcToast.getInstance().show("onLoadEnd !! ", false);
+            }
+        });
+        viewBinding.progressBar.setVisibility(View.GONE);
+        viewBinding.swipeRefreshLayout.setOnRefreshListener(this);
+        viewBinding.swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorAccent,
+                R.color.colorPrimary,
+                R.color.colorPrimaryDark);
     }
-
 
     @Override
     protected void needUIEventListener() {
@@ -140,14 +141,13 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
             @Override
             public void onSingleClick(View view) {
                 Random random = new Random();
-                int ranIndex = random.nextInt(100);
+                int ranIndex = random.nextInt(20);
                 QcLog.e("deleteUser == " + ranIndex);
 //                viewModel.deleteUserDao(Integer.toString(ranIndex));
                 viewModel.deleteUserDaoAsyncTask(Integer.toString(ranIndex));
             }
         });
     }
-
 
     @Override
     public void needSubscribeUiFromViewModel() {
@@ -178,14 +178,14 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
                 if (allUsers == null) {
                     return;
                 }
-               adapter.addAll((ArrayList<User>) allUsers);
+                adapter.addAll((ArrayList<User>) allUsers);
             }
         });
     }
 
     private User randomUser() {
         Random random = new Random();
-        int ranIndex = random.nextInt(100);
+        int ranIndex = random.nextInt(20);
         User user = new User();
         user.id = Integer.toString(id_);
         user.age = ranIndex;
@@ -195,5 +195,30 @@ public class LiveDataFragment extends QcBaseShowLifeFragement {
         QcPreferences.getInstance().put("index", id_);
         QcToast.getInstance().show("Add id = " + id_, false);
         return user;
+    }
+
+    @Override
+    public void onRefresh() {
+        if (isLoading) {
+            QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
+            return;
+        }
+        isLoading = true;
+        viewBinding.swipeRefreshLayout.setRefreshing(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewBinding.swipeRefreshLayout.setRefreshing(false);
+                isLoading = false;
+            }
+        }, 2000);
+    }
+
+    private void setProgress(boolean isProgress) {
+        if (isProgress) {
+            viewBinding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            viewBinding.progressBar.setVisibility(View.GONE);
+        }
     }
 }

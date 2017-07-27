@@ -34,10 +34,9 @@ public class LiveDataViewModel extends AndroidViewModel {
 //        this.application = application;
     }
 
-    public void initViewModel(Context qCon, int nThreads, int dbTypeLocal, int remoteType, String baseUrl) {
+    public void initViewModel(Context qCon, int dbTypeLocal, int remoteType, String baseUrl) {
         QcLog.e("initViewModel == ");
         this.qCon = qCon;
-        this.nThreads = nThreads;
         this.executor = Executors.newFixedThreadPool(nThreads);
         // db model 초기화
         mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType, baseUrl);

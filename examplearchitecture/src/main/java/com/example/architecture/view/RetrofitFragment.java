@@ -4,8 +4,11 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
@@ -19,39 +22,40 @@ import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
+import com.ulling.lib.core.view.QcRecyclerView;
 
 import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
 import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
- *
+ * <p>
  * http://devuryu.tistory.com/44
- *
+ * <p>
  * https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
- *
+ * <p>
  * http://kang6264.tistory.com/m/entry/Retrofit-기본-기능에-대해서-알아보자날씨를-조회하는-RestAPI
- *
- *
- *
- *https://github.com/square/retrofit
- *
+ * <p>
+ * <p>
+ * <p>
+ * https://github.com/square/retrofit
+ * <p>
  * https://github.com/googlesamples/android-architecture-components/tree/master/GithubBrowserSample/app/src/main/java/com/android/example/github
- *
- *
+ * <p>
+ * <p>
  * http://www.zoftino.com/android-livedata-examples
- *
+ * <p>
  * http://www.zoftino.com/android-persistence-library-room
- *
- *
  */
-public class RetrofitFragment extends QcBaseShowLifeFragement {
+public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
+
     private QUllingApplication qApp;
     private FragRetrofitBinding viewBinding;
     private RetrofitViewModel viewModel;
-
     private RetrofitAdapter adapter;
+    private boolean isLoading = false;
     private int page = 0;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -84,7 +88,6 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
             viewModel = ViewModelProviders.of(this).get(RetrofitViewModel.class);
             viewModel.initViewModel(qCon, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
-
         adapter = new RetrofitAdapter(this);
         if (adapter != null && !adapter.isViewModel())
             adapter.setViewModel(viewModel);
@@ -93,30 +96,36 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     @Override
     protected void needResetData() {
         QcLog.e("needResetData == ");
+        isLoading = false;
     }
 
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
+//        viewBinding.recyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
+        viewBinding.qcRecyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
 
+            @Override
+            public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
+                QcLog.e("onLoadMore =====");
+                page = page_;
+            }
 
-
-//        EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener(layoutManager) {
-//            @Override
-//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-//            }
-//        };
-//        viewBinding.recyclerView.setLayoutManager(layoutManager);
-//        viewBinding.recyclerView.addOnScrollListener(endlessRecyclerScrollListener);
-
-        viewBinding.recyclerView.setAdapter(adapter);
-//        viewBinding.recyclerView.getLayoutManager()
-//        viewBinding.recyclerView.setHasFixedSize(true);
-        // 항목 구분선
-//        RecyclerView.ItemDecoration itemDecoration = new DividerItemDecoration(qCon, DividerItemDecoration.VERTICAL);
-//        viewBinding.recyclerView.addItemDecoration(itemDecoration);
-
+            @Override
+            public void onLoadEnd() {
+                QcLog.e("onLoadEnd =====");
+                QcToast.getInstance().show("onLoadEnd !! ", false);
+            }
+        });
+        viewBinding.progressBar.setVisibility(View.GONE);
+        viewBinding.swipeRefreshLayout.setOnRefreshListener(this);
+        viewBinding.swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorAccent,
+                R.color.colorPrimary,
+                R.color.colorPrimaryDark);
 
     }
 
@@ -135,7 +144,6 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
-
     }
 
     @Override
@@ -160,7 +168,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
                     return;
                 }
                 QcToast.getInstance().show("observe answersLive", false);
-                Snackbar.make(viewBinding.recyclerView, "Success get data", Snackbar.LENGTH_LONG)
+                Snackbar.make(viewBinding.qcRecyclerView, "Success get data", Snackbar.LENGTH_LONG)
                         .setAction("Action", new OnSingleClickListener() {
                             @Override
                             public void onSingleClick(View v) {
@@ -178,4 +186,28 @@ public class RetrofitFragment extends QcBaseShowLifeFragement {
         });
     }
 
+    @Override
+    public void onRefresh() {
+        if (isLoading) {
+            QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
+            return;
+        }
+        isLoading = true;
+        viewBinding.swipeRefreshLayout.setRefreshing(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewBinding.swipeRefreshLayout.setRefreshing(false);
+                isLoading = false;
+            }
+        }, 2000);
+    }
+
+    private void setProgress(boolean isProgress) {
+        if (isProgress) {
+            viewBinding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            viewBinding.progressBar.setVisibility(View.GONE);
+        }
+    }
 }

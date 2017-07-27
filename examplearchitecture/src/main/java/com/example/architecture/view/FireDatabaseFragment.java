@@ -1,17 +1,10 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.example.architecture.QUllingApplication;
@@ -21,13 +14,24 @@ import com.example.architecture.databinding.FragFireDatabaseBinding;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.FireDatabaseAdapter;
 import com.example.architecture.viewmodel.FireDatabaseViewModel;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.util.QcToast;
+import com.ulling.lib.core.view.QcRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -42,23 +46,26 @@ import java.util.Random;
  * https://github.com/firebase/quickstart-android/tree/master/database
  * <p>
  * http://yookn.tistory.com/244
- *
- *
+ * <p>
+ * <p>
  * http://www.zoftino.com/android-livedata-examples
  */
-public class FireDatabaseFragment extends QcBaseShowLifeFragement {
+public class FireDatabaseFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
+
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private FragFireDatabaseBinding viewBinding;
     private FireDatabaseViewModel viewModel;
     private String userId;
     private int nThreads = 2;
-//    private FirebaseDatabase firebaseDatabase;
+    //    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private ChildEventListener childEventListener;
     private ValueEventListener valueEventListener;
-
     private FireDatabaseAdapter adapter;
+    private boolean isLoading = false;
+    private int page = 0;
+
 
     @Override
     public void needDestroyData() {
@@ -67,6 +74,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
         if (databaseReference != null && valueEventListener != null)
             databaseReference.removeEventListener(valueEventListener);
     }
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -91,24 +99,20 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
         userId = getArguments().getString(UID_KEY);
     }
 
-
     @Override
     protected void needInitToOnCreate() {
         QcLog.e("needInitToOnCreate == ");
         qApp = QUllingApplication.getInstance();
         APP_NAME = QUllingApplication.getAppName();
-         adapter = new FireDatabaseAdapter(this);
-
 //        firebaseDatabase = FirebaseDatabase.getInstance();
 //        databaseReference = firebaseDatabase.getReference("usersData");
 //        databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("usersData");
-
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(FireDatabaseViewModel.class);
-            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+            viewModel.initViewModel(qCon, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
-
+        adapter = new FireDatabaseAdapter(this);
         if (adapter != null && !adapter.isViewModel())
             adapter.setViewModel(viewModel);
     }
@@ -116,22 +120,39 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
     @Override
     protected void needResetData() {
         QcLog.e("needResetData == ");
+        isLoading = false;
     }
 
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
-//        if (viewModel == null) {
-//            viewModel = ViewModelProviders.of(this).get(FireDatabaseViewModel.class);
-//            viewModel.initViewModel(qCon, nThreads, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
-//        }
     }
 
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragFireDatabaseBinding) getViewBinding();
-        viewBinding.recyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
+        viewBinding.qcRecyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
+            @Override
+            public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
+                QcLog.e("onLoadMore =====");
+                page = page_;
+            }
+
+            @Override
+            public void onLoadEnd() {
+                QcLog.e("onLoadEnd =====");
+                QcToast.getInstance().show("onLoadEnd !! ", false);
+            }
+        });
+        viewBinding.progressBar.setVisibility(View.GONE);
+        viewBinding.swipeRefreshLayout.setOnRefreshListener(this);
+        viewBinding.swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorAccent,
+                R.color.colorPrimary,
+                R.color.colorPrimaryDark);
     }
 
     @Override
@@ -142,19 +163,17 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
             public void onSingleClick(View view) {
                 QcLog.e("addButton == ");
                 User user = new User();
-                user.setId(new Random().nextInt(100) + "_id");
-                user.setName(new Random().nextInt(100) + "_name");
-                user.setLastName(new Random().nextInt(100) + "_lastname");
-                user.setAge(new Random().nextInt(100));
+                user.setId(new Random().nextInt(20) + "_id");
+                user.setName(new Random().nextInt(20) + "_name");
+                user.setLastName(new Random().nextInt(20) + "_lastname");
+                user.setAge(new Random().nextInt(20));
 //                databaseReference.child("usersData").push().setValue(user);
 //                databaseReference.child("usersData").child(user.id).setValue(user);
                 if (databaseReference != null)
-                databaseReference.child(user.id).setValue(user);
+                    databaseReference.child(user.id).setValue(user);
             }
         });
     }
-
-
 
     @Override
     public void needSubscribeUiFromViewModel() {
@@ -172,7 +191,6 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
 //        getSingleAllData();
     }
 
-
     private void subscribeFirebaseDatabase() {
 //        databaseReference.addValueEventListener(new ValueEventListener() {
         valueEventListener = new ValueEventListener() {
@@ -181,9 +199,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
                 QcLog.e("ValueEventListener 11 onDataChange == ");
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-
-                 List<User> userList = new ArrayList<>();
-
+                List<User> userList = new ArrayList<>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     if (user != null) {
@@ -208,13 +224,43 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
             }
         };
         if (databaseReference != null)
-        databaseReference.addValueEventListener(valueEventListener);
+            databaseReference.addValueEventListener(valueEventListener);
+    }
+
+
+
+
+
+
+    @Override
+    public void onRefresh() {
+        if (isLoading) {
+            QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
+            return;
+        }
+        isLoading = true;
+        viewBinding.swipeRefreshLayout.setRefreshing(true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewBinding.swipeRefreshLayout.setRefreshing(false);
+                isLoading = false;
+            }
+        }, 2000);
+    }
+
+    private void setProgress(boolean isProgress) {
+        if (isProgress) {
+            viewBinding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            viewBinding.progressBar.setVisibility(View.GONE);
+        }
     }
 
 
     /**
      * 중복 방지
-     *
+     * <p>
      * 깜빡이는 현상이 생김
      */
 //    public void addUser(final List<? extends User> userList_) {
@@ -253,22 +299,6 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
 //            result.dispatchUpdatesTo(this);
 //        }
 //    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private void initFirebaseDatabase2() {
         childEventListener = new ChildEventListener() {
             /**
@@ -329,9 +359,8 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
             }
         };
         if (databaseReference != null)
-        databaseReference.addChildEventListener(childEventListener);
+            databaseReference.addChildEventListener(childEventListener);
     }
-
 
     private void getSingleAllData() {
 //        DatabaseReference keyRef = FirebaseDatabase.getInstance().getReference().child("usersData");
@@ -358,6 +387,6 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement {
             }
         };
         if (databaseReference != null)
-        databaseReference.addListenerForSingleValueEvent(valueEventListener);
+            databaseReference.addListenerForSingleValueEvent(valueEventListener);
     }
 }

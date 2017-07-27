@@ -1,1 +1,1 @@
-include ':app', ':googlemodule', ':ullinglibcore', ':examplearchitecture', ':myapplication2'
+include ':app', ':googlemodule', ':ullinglibcore', ':examplearchitecture'
