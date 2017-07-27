@@ -144,7 +144,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      */
     @Override
     public QcBaseViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewTypeResId) {
-        QcLog.e("onCreateViewHolder == ");
+        QcLog.i("onCreateViewHolder == ");
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewTypeResId, viewGroup, false);
         needUIEventListener(binding);
@@ -157,7 +157,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      */
     @Override
     public void onBindViewHolder(QcBaseViewHolder holder, int position) {
-        QcLog.e("onBindViewHolder == ");
+        QcLog.i("onBindViewHolder == ");
         if (holder == null) {
             return;
         }

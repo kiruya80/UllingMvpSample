@@ -54,7 +54,7 @@ public class MainActivity extends QcBaseLifeActivity {
 
         viewBinding.container.setAdapter(mSectionsPagerAdapter);
         viewBinding.tabs.setupWithViewPager(viewBinding.container);
-        viewBinding.tabs.setTabMode(TabLayout.MODE_FIXED);
+//        viewBinding.tabs.setTabMode(TabLayout.MODE_FIXED);
         viewBinding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -16,10 +16,10 @@ import java.util.List;
 
 /**
  * Created by P100651 on 2017-07-04.
- *
+ * <p>
  * UI의 데이터를 준비하는 클래스
  * livedata 1,2,3,....
- *
+ * <p>
  * https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
  */
 public class RetrofitLiveViewModel extends AndroidViewModel {
@@ -44,13 +44,11 @@ public class RetrofitLiveViewModel extends AndroidViewModel {
 //        mDatabaseModel = new DatabaseModel(getApplication());
 //        mDatabaseModel.initLocalDb(DB_TYPE_LOCAL_ROOM);
 //        mDatabaseModel.initRemoteDb(DB_TYPE_REMOTE_RETROFIT);
-
     }
 
     /**
      * userDao
      */
-
 //    public void addUserDao(final User u) {
 //        executor.execute(new Runnable() {
 //            @Override
@@ -98,15 +96,12 @@ public class RetrofitLiveViewModel extends AndroidViewModel {
 //        }.execute();
 //
 //    }
-
 //    public LiveData<User> getUserInfo(int userId) {
 //        return mDatabaseModel.getUserInfo(userId);
 //    }
-
     public LiveData<List<User>> getAllUsers() {
         return mDatabaseModel.getAllUsers();
     }
-
 
     /**
      * answerDao
@@ -127,10 +122,26 @@ public class RetrofitLiveViewModel extends AndroidViewModel {
         return mDatabaseModel.getAllAnswer();
     }
 
-
     public void getAnswers(boolean isRemote) {
+        if (mDatabaseModel != null)
         mDatabaseModel.getAnswers(isRemote);
     }
+
+    public void deleteAnswer() {
+        if (mDatabaseModel != null)
+        mDatabaseModel.deleteAnswer();
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     public LiveData<AnswersResponse> getAnswersLiveData() {
         return mDatabaseModel.answers();

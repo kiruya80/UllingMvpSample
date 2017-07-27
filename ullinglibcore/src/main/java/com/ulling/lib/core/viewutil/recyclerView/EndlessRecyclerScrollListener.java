@@ -1,8 +1,5 @@
 package com.ulling.lib.core.viewutil.recyclerView;
 
-import static com.ulling.lib.core.viewutil.QcRecyclerView.Grid;
-import static com.ulling.lib.core.viewutil.QcRecyclerView.StaggeredGrid;
-
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,9 +21,12 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
     private boolean loading = true;
     // Sets the starting page index
     private int startingPageIndex = 0;
+    private boolean isLastItem = false;
 
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
+
+    public abstract void onLoadEnd();
 
     // Call this method whenever performing new searches
     public void resetState() {
@@ -34,36 +34,51 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         this.currentPage = 0;
         this.previousTotalItemCount = 0;
         this.loading = true;
+        this.isLastItem = false;
     }
 
-    public EndlessRecyclerScrollListener(LinearLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
+    public void setStartingPageIndex(int startingPageIndex) {
+//        this.currentPage = startingPageIndex;
+        this.startingPageIndex = startingPageIndex;
     }
 
-    public EndlessRecyclerScrollListener(GridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
-    }
-
-    public EndlessRecyclerScrollListener(StaggeredGridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
-    }
-
-    public EndlessRecyclerScrollListener(RecyclerView.LayoutManager layoutManager, int orientation) {
-        this.mLayoutManager = layoutManager;
-        if (Grid == orientation) {
-            GridLayoutManager gridLayoutManager = (GridLayoutManager) mLayoutManager;
-            int spanCount = gridLayoutManager.getSpanCount();
-            visibleThreshold = visibleThreshold * spanCount;
-        } else if (StaggeredGrid == orientation) {
-            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) mLayoutManager;
+    public EndlessRecyclerScrollListener(RecyclerView.LayoutManager layoutManager) {
+        if (layoutManager instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) layoutManager;
             int spanCount = staggeredGridLayoutManager.getSpanCount();
             visibleThreshold = visibleThreshold * spanCount;
-
+            this.mLayoutManager = (StaggeredGridLayoutManager) layoutManager;
+        } else if (layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            int spanCount = gridLayoutManager.getSpanCount();
+            visibleThreshold = visibleThreshold * spanCount;
+            this.mLayoutManager = (GridLayoutManager) layoutManager;
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            this.mLayoutManager = (LinearLayoutManager) layoutManager;
         }
-
     }
+//    public EndlessRecyclerScrollListener(GridLayoutManager layoutManager) {
+//        this.mLayoutManager = layoutManager;
+//        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
+//    }
+//
+//    public EndlessRecyclerScrollListener(StaggeredGridLayoutManager layoutManager) {
+//        this.mLayoutManager = layoutManager;
+//        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
+//    }
+//
+//    public EndlessRecyclerScrollListener(RecyclerView.LayoutManager layoutManager, int orientation) {
+//        this.mLayoutManager = layoutManager;
+//        if (Grid == orientation) {
+//            GridLayoutManager gridLayoutManager = (GridLayoutManager) mLayoutManager;
+//            int spanCount = gridLayoutManager.getSpanCount();
+//            visibleThreshold = visibleThreshold * spanCount;
+//        } else if (StaggeredGrid == orientation) {
+//            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) mLayoutManager;
+//            int spanCount = staggeredGridLayoutManager.getSpanCount();
+//            visibleThreshold = visibleThreshold * spanCount;
+//        }
+//    }
 
     public int getLastVisibleItem(int[] lastVisibleItemPositions) {
         int maxSize = 0;
@@ -90,13 +105,10 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
             // get maximum element within the list
             lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions);
-
         } else if (mLayoutManager instanceof GridLayoutManager) {
             lastVisibleItemPosition = ((GridLayoutManager) mLayoutManager).findLastVisibleItemPosition();
-
         } else if (mLayoutManager instanceof LinearLayoutManager) {
             lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager).findLastVisibleItemPosition();
-
         } else {
             return;
         }
@@ -116,14 +128,36 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             loading = false;
             previousTotalItemCount = totalItemCount;
         }
+        isLastItem = false;
         // If it isn’t currently loading, we check to see if we have breached
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+            /**
+             * more
+             *
+             * lastVisibleItemPosition =====26 , visibleThreshold= 5 , totalItemCount= 30
+             */
             currentPage++;
             onLoadMore(currentPage, totalItemCount, view);
             loading = true;
+        }
+        /**
+         * find end
+         *
+         * lastVisibleItemPosition =====29 , visibleThreshold= 5 , totalItemCount= 30
+         */
+        if (lastVisibleItemPosition >= (totalItemCount - 1)) {
+            isLastItem = true;
+        }
+    }
+
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        super.onScrollStateChanged(recyclerView, newState);
+        if (isLastItem && newState == RecyclerView.SCROLL_STATE_IDLE) {
+            onLoadEnd();
         }
     }
 //    private LinearLayoutManager mLayoutManager;

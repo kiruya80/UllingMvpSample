@@ -18,8 +18,8 @@ android {
 //      }
       keyAlias 'androiddebugkey'
       keyPassword 'android'
-//            storeFile file('D:/debug.keystore')
-      storeFile file('/Users/KILHO/debug.keystore')
+            storeFile file('D:/debug.keystore')
+//      storeFile file('/Users/KILHO/debug.keystore')
       storePassword 'android'
     }
   }

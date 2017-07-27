@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide;
 import com.example.architecture.R;
 import com.example.architecture.databinding.RowRetrofitLiveBinding;
 import com.example.architecture.entities.room.Answer;
-import com.example.architecture.viewmodel.RetrofitViewModel;
+import com.example.architecture.viewmodel.RetrofitLiveViewModel;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
@@ -16,11 +16,11 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
-import jp.wasabeef.glide.transformations.BlurTransformation;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * @author : KILHO
@@ -34,7 +34,7 @@ import java.util.List;
 public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
     private List<Answer> itemList;
 
-    private RetrofitViewModel viewModel;
+    private RetrofitLiveViewModel viewModel;
 
     public void addAll(List<Answer> data) {
         QcLog.e("addAll == ");
@@ -58,7 +58,7 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     public void setViewModel(AndroidViewModel viewModel) {
-        this.viewModel = (RetrofitViewModel) viewModel;
+        this.viewModel = (RetrofitLiveViewModel) viewModel;
 //        observerUserListResults(this.viewModel.getAllUsers());
     }
 

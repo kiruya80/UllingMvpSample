@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 
 import com.example.architecture.common.ApiUrl;
+import com.example.architecture.common.QcDefine;
 import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.entities.retrofit.ItemResponse;
 import com.example.architecture.entities.retrofit.OwnerResponse;
@@ -36,8 +37,7 @@ import retrofit2.Response;
  * Created by P100651 on 2017-07-05.
  */
 public class DatabaseModel {
-    private int nThreads = 2;
-    private Executor executor = Executors.newFixedThreadPool(nThreads);
+    private Executor executor = Executors.newFixedThreadPool(QcDefine.THREAD_POOL_NUM);
     /**
      * local db type
      */
@@ -75,8 +75,7 @@ public class DatabaseModel {
 
     public DatabaseModel(Context context, int nThreads,  int localDbType, int remoteType, String baseUrl) {
         this.qCtx = context;
-        this.nThreads = nThreads;
-        this.executor = Executors.newFixedThreadPool(nThreads);
+        this.executor = Executors.newFixedThreadPool(QcDefine.THREAD_POOL_NUM);
         this.localDbType = localDbType;
         this.remoteType = remoteType;
         initLocalDb();
@@ -196,6 +195,25 @@ public class DatabaseModel {
     }
 
 
+    public int deleteAnswer(int answerId) {
+        if (answerDao != null) {
+            int rec = answerDao.deleteAnswer(answerId);
+            QcLog.e("deleteUser = " + rec);
+            return rec;
+        } else {
+            return -1;
+        }
+    }
+    public int deleteAllAnswer() {
+        if (answerDao != null) {
+            int rec = answerDao.deleteAll();
+            QcLog.e("deleteUser = " + rec);
+            return rec;
+        } else {
+            return -1;
+        }
+    }
+
     public void getAnswers(boolean isRemote) {
         if (isRemote) {
             Call<AnswersResponse> call = RetrofitRemoteData
@@ -271,13 +289,36 @@ public class DatabaseModel {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                long[] resultIndex = insertMultipleListAnswer(answers);
-                QcLog.e("addAnswer resultIndex == " + resultIndex);
-                QcToast.getInstance().show("addAnswer seccess !! index = " + resultIndex, false);
+
+                if (answerDao != null) {
+                    long[] resultIndex = answerDao.insertMultipleListAnswer(answers);
+                    QcLog.e("addAnswer resultIndex == " + resultIndex);
+                    QcToast.getInstance().show("addAnswer seccess !! index = " + resultIndex, false);
+                }
+
+
+//                long[] resultIndex = insertMultipleListAnswer(answers);
+//                QcLog.e("addAnswer resultIndex == " + resultIndex);
+//                QcToast.getInstance().show("addAnswer seccess !! index = " + resultIndex, false);
             }
         });
     }
 
+    public void deleteAnswer() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (answerDao != null) {
+                    int resultIndex = answerDao.deleteAll();
+                    QcLog.e("deleteAnswer resultIndex == " + resultIndex);
+                    QcToast.getInstance().show("deleteAnswer seccess !! index = " + resultIndex, false);
+                }
+//            int resultIndex = deleteAllAnswer();
+//                QcLog.e("deleteAnswer resultIndex == " + resultIndex);
+//                QcToast.getInstance().show("deleteAnswer seccess !! index = " + resultIndex, false);
+            }
+        });
+    }
 
 
 

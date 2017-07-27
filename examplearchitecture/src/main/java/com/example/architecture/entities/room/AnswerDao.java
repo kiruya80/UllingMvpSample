@@ -32,10 +32,15 @@ public interface AnswerDao {
     @Insert
     public long[] insertMultipleListAnswer(List<Answer> answers);
 
+    @Query("DELETE FROM Answer")
+    public int deleteAll();
+//    @Delete
+//    public int deleteAnswer(Answer answer);
+
     @Delete
     public int deleteAnswer(Answer answer);
 
+    @Query("delete from Answer where id = :answerId")
+    public int deleteAnswer(int answerId);
 
-    @Query("DELETE FROM Answer")
-    public int deleteAll();
 }
