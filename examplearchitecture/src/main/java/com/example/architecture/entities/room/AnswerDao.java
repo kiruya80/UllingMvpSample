@@ -26,10 +26,10 @@ public interface AnswerDao {
     public long insertAnswer(Answer answer);
 
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public long[] insertMultipleAnswer(Answer... answers);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     public long[] insertMultipleListAnswer(List<Answer> answers);
 
     @Query("DELETE FROM Answer")
@@ -40,7 +40,7 @@ public interface AnswerDao {
     @Delete
     public int deleteAnswer(Answer answer);
 
-    @Query("delete from Answer where id = :answerId")
-    public int deleteAnswer(int answerId);
+//    @Query("delete from Answer where id = :answerId")
+//    public int deleteAnswer(int answerId);
 
 }

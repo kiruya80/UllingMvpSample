@@ -16,9 +16,9 @@ import android.arch.persistence.room.PrimaryKey;
         (indices = {@Index("questionId")})
 public class Answer {
 
-        @PrimaryKey(autoGenerate = true)
-    private int id;
-//    @PrimaryKey
+//        @PrimaryKey(autoGenerate = true)
+//    private int id;
+    @PrimaryKey
     private int answerId;
     private int questionId;
     @Embedded
@@ -33,13 +33,47 @@ public class Answer {
 
     }
 
-    public int getId() {
-        return id;
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Answer answer = (Answer) obj;
+
+        if (answerId !=  answer.answerId) return false;
+        if (questionId !=  answer.questionId) return false;
+
+        if (isAccepted !=  answer.isAccepted) return false;
+
+        if (score !=  answer.score) return false;
+        if (lastActivityDate !=  answer.lastActivityDate) return false;
+        if (lastEditDate !=  answer.lastEditDate) return false;
+        if (creationDate !=  answer.creationDate) return false;
+
+        if (owner != null) {
+            return owner.equals(answer.owner);
+        } else {
+            return answer.owner == null;
+        }
+
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+//    @Override
+//    public int hashCode() {
+//        int result = answerId;
+//        result = result + (name != null ? name.hashCode() : 0);
+//        result = result + role.hashCode();
+//        return result;
+//    }
 
     public int getAnswerId() {
         return answerId;

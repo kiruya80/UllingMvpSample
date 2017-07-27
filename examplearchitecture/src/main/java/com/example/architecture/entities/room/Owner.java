@@ -19,6 +19,28 @@ public class Owner {
     private String link;
 
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Owner owner = (Owner) obj;
+
+        if (reputation !=  owner.reputation) return false;
+        if (userId !=  owner.userId) return false;
+        if (!userType.equalsIgnoreCase(owner.userType)) return false;
+
+        if (acceptRate !=  owner.acceptRate) return false;
+        if (!profileImage.equalsIgnoreCase(owner.profileImage)) return false;
+
+        if (!displayName.equalsIgnoreCase(owner.displayName)) return false;
+        if (!link.equalsIgnoreCase(owner.link)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public int getReputation() {
         return reputation;
     }

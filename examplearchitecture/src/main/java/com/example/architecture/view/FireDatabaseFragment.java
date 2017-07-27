@@ -1,5 +1,15 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,12 +24,6 @@ import com.example.architecture.databinding.FragFireDatabaseBinding;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.FireDatabaseAdapter;
 import com.example.architecture.viewmodel.FireDatabaseViewModel;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
@@ -29,9 +33,6 @@ import com.ulling.lib.core.view.QcRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -121,6 +122,11 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
+        page = 1;
+        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
+            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        if (adapter != null)
+            adapter.needResetData();
     }
 
     @Override
@@ -203,7 +209,6 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     User user = ds.getValue(User.class);
                     if (user != null) {
-                        QcLog.e("onDataChange == " + user.toString());
 //                        viewBinding.tvUsers.setText(viewBinding.tvUsers.getText() + "\n" + user.toString());
                         userList.add(user);
                     }
@@ -238,11 +243,14 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
             QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
             return;
         }
+        needResetData();
         isLoading = true;
         viewBinding.swipeRefreshLayout.setRefreshing(true);
+//        viewModel.getAllAnswersFromRoom().removeObservers(this);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                subscribeFirebaseDatabase();
                 viewBinding.swipeRefreshLayout.setRefreshing(false);
                 isLoading = false;
             }

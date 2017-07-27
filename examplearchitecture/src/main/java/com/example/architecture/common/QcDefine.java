@@ -33,6 +33,7 @@ public class QcDefine {
     public static final int THREAD_POOL_NUM = 2;
 
 
+    public static final int PAGE_SIZE = 20;
 
     /**
      * TimeOut

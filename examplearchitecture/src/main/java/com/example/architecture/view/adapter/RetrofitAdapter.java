@@ -54,6 +54,7 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
     @Override
     public void needResetData() {
         itemList = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override

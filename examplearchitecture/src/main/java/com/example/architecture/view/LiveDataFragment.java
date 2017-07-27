@@ -1,5 +1,8 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -27,9 +30,6 @@ import com.ulling.lib.core.view.QcRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -85,6 +85,11 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
+        page = 1;
+        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
+            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        if (adapter != null)
+            adapter.needResetData();
     }
 
     @Override
@@ -203,11 +208,14 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
             QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
             return;
         }
+        needResetData();
         isLoading = true;
         viewBinding.swipeRefreshLayout.setRefreshing(true);
+        viewModel.getAllUsers().removeObservers(this);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                observerUserListResults(viewModel.getAllUsers());
                 viewBinding.swipeRefreshLayout.setRefreshing(false);
                 isLoading = false;
             }

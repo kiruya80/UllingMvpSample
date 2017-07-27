@@ -76,19 +76,19 @@ public class DatabaseModel {
             answerDao = localData.answerDatabase();
     }
 
-    public DatabaseModel(Context context, int nThreads, int localDbType, int remoteType, String baseUrl) {
-        this.qCtx = context;
-        this.executor = Executors.newFixedThreadPool(QcDefine.THREAD_POOL_NUM);
-        this.localDbType = localDbType;
-        this.remoteType = remoteType;
-        initLocalDb();
-        if (baseUrl != null && !"".equals(baseUrl))
-            initRemoteDb(baseUrl);
-        if (localData != null)
-            userDao = localData.userDatabase();
-        if (localData != null)
-            answerDao = localData.answerDatabase();
-    }
+//    public DatabaseModel(Context context, int nThreads, int localDbType, int remoteType, String baseUrl) {
+//        this.qCtx = context;
+//        this.executor = Executors.newFixedThreadPool(QcDefine.THREAD_POOL_NUM);
+//        this.localDbType = localDbType;
+//        this.remoteType = remoteType;
+//        initLocalDb();
+//        if (baseUrl != null && !"".equals(baseUrl))
+//            initRemoteDb(baseUrl);
+//        if (localData != null)
+//            userDao = localData.userDatabase();
+//        if (localData != null)
+//            answerDao = localData.answerDatabase();
+//    }
 
     private void initLocalDb() {
         if (localDbType == DB_TYPE_LOCAL_ROOM) {
@@ -98,9 +98,9 @@ public class DatabaseModel {
 
     private void initRemoteDb(String baseUrl) {
         if (remoteType == REMOTE_TYPE_RETROFIT) {
-            retrofitRemoteData = RetrofitRemoteData.getInstance();
+            retrofitRemoteData = RetrofitRemoteData.getInstance(baseUrl);
             retrofitRemoteData.registerAdapterDataObserver(mObservable);
-            Retrofit retrofit = retrofitRemoteData.getRetrofitClient(baseUrl);
+            Retrofit retrofit = retrofitRemoteData.getRetrofitClient();
 //            getAnswersApi = retrofit.create(GetAnswersApi.class);
 //            RetrofitRemoteData.getRetrofitClient(baseUrl);
 //            getAnswersApi = RetrofitRemoteData
@@ -190,6 +190,7 @@ public class DatabaseModel {
     }
 
     public LiveData<List<Answer>> getAllAnswerFromRoom() {
+        QcLog.e("getAllAnswerFromRoom === ");
         if (answerDao != null) {
             return answerDao.getAllAnswer();
         } else {
@@ -197,15 +198,15 @@ public class DatabaseModel {
         }
     }
 
-    public int deleteAnswer(int answerId) {
-        if (answerDao != null) {
-            int rec = answerDao.deleteAnswer(answerId);
-            QcLog.e("deleteUser = " + rec);
-            return rec;
-        } else {
-            return -1;
-        }
-    }
+//    public int deleteAnswer(int answerId) {
+//        if (answerDao != null) {
+//            int rec = answerDao.deleteAnswer(answerId);
+//            QcLog.e("deleteUser = " + rec);
+//            return rec;
+//        } else {
+//            return -1;
+//        }
+//    }
 
     public int deleteAllAnswer() {
         if (answerDao != null) {
@@ -241,11 +242,12 @@ public class DatabaseModel {
 
             @Override
             public void onError(int statusCode, String msg) {
+                QcLog.e("onError = " + msg.toString());
             }
 
             @Override
             public void onFailure(Throwable t, String msg) {
-                QcLog.e("error = " + t.toString());
+                QcLog.e("onFailure = " + t.toString());
             }
         });
     }

@@ -1,5 +1,8 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -23,9 +26,6 @@ import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -97,6 +97,11 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
+        page = 1;
+        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
+            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        if (adapter != null)
+            adapter.needResetData();
     }
 
     @Override
@@ -192,11 +197,14 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
             return;
         }
+        needResetData();
         isLoading = true;
+        viewModel.getAnswersFromRemoteResponse().removeObservers(this);
         viewBinding.swipeRefreshLayout.setRefreshing(true);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                observerAnswersLiveData(viewModel.getAnswersFromRemoteResponse());
                 viewBinding.swipeRefreshLayout.setRefreshing(false);
                 isLoading = false;
             }

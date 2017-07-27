@@ -3,7 +3,7 @@ package com.example.architecture.remotedb;
 import android.arch.lifecycle.MutableLiveData;
 import android.database.Observable;
 
-import com.example.architecture.common.ApiUrl;
+import com.example.architecture.common.QcDefine;
 import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.entities.retrofit.ItemResponse;
 import com.example.architecture.network.RemoteDataListener;
@@ -29,11 +29,13 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  */
 public class RetrofitRemoteData {
     private static RetrofitRemoteData SINGLE_U;
+    private static String baseUrl;
     private static Retrofit retrofit = null;
     private final RemoteDataObservable mObservable = new RemoteDataObservable();
 
 
     private GetAnswersApi getAnswersApi;
+
     /**
      * observer 패턴
      */
@@ -58,15 +60,19 @@ public class RetrofitRemoteData {
         }
     }
 
-    public static synchronized RetrofitRemoteData getInstance() {
+    public static synchronized RetrofitRemoteData getInstance(String baseUrl) {
         if (SINGLE_U == null) {
-            SINGLE_U = new RetrofitRemoteData();
+            SINGLE_U = new RetrofitRemoteData(baseUrl);
         }
         return SINGLE_U;
     }
 
-    public static Retrofit getRetrofitClient(String baseUrl) {
-        if (retrofit == null) {
+    public RetrofitRemoteData(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public static Retrofit getRetrofitClient() {
+        if (retrofit == null && baseUrl != null && !"".equals(baseUrl)) {
             retrofit = new Retrofit.Builder()
                     .baseUrl(baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
@@ -77,8 +83,11 @@ public class RetrofitRemoteData {
         return retrofit;
     }
 
-    public void setGetAnswersApi() {
-        getAnswersApi = retrofit.create(GetAnswersApi.class);
+    public GetAnswersApi getGetAnswersApi() {
+        if (getAnswersApi == null) {
+            getAnswersApi = getRetrofitClient().create(GetAnswersApi.class);
+        }
+        return getAnswersApi;
     }
 
     // http://chuumong.github.io/android/2017/02/22/MVP-Dagger-RxJava-Retrofit을-사용한-간단한-Android-App
@@ -156,31 +165,34 @@ public class RetrofitRemoteData {
 
 
 
+    // /2.2/answers?page=3&pagesize=10&order=desc&sort=activity&site=stackoverflow
     public void getAnswers(int page, final RemoteDataListener remoteDataListener) {
-        Call<AnswersResponse> call = getRetrofitClient(ApiUrl.BASE_URL)
-                .create(GetAnswersApi.class).getAnswers();
+        Call<AnswersResponse> call = getGetAnswersApi().getAnswers(page, QcDefine.PAGE_SIZE);
         //rest service call runs on background thread and Callback also runs on background thread
         call.enqueue(new Callback<AnswersResponse>() {
             @Override
             public void onResponse(Call<AnswersResponse> call, Response<AnswersResponse> response) {
                 //use postValue since it is running on background thread.
+                QcLog.e("message == " + response.message().toString());
+                int statusCode = response.code();
+                QcLog.e("onResponse Error !!! " + statusCode);
                 if (response.isSuccessful()) {
                     QcLog.e("onResponse isSuccessful == ");
                     QcLog.e("getItems().size = " + response.body().getItemResponses().size());
                     AnswersResponse answersResponse = response.body();
                     remoteDataListener.onSuccess(1, answersResponse);
                 } else {
-                    int statusCode = response.code();
-                    QcLog.e("onResponse == " + statusCode);
-                    remoteDataListener.onError(statusCode, "");
-                    // handle request errors depending on status code
+                    QcLog.e("onResponse Error !!! " + statusCode);
+                    QcLog.e("errorBody == " + response.errorBody().toString());
+                    remoteDataListener.onError(statusCode, response.errorBody().toString());
                 }
-                QcLog.e("PROCESSING IN THREAD IN RETROFIT RESPONSE HANDLER " + Thread.currentThread().getName());
+//                QcLog.e("PROCESSING IN THREAD IN RETROFIT RESPONSE HANDLER " + Thread.currentThread().getName());
             }
 
             @Override
             public void onFailure(Call<AnswersResponse> call, Throwable t) {
-                QcLog.e("onFailure error loading from API");
+                QcLog.e("onFailure error loading from API == " +t.toString());
+                QcLog.e("onFailure error loading from API == " +t.getMessage());
                 remoteDataListener.onFailure(t, "");
             }
         });
@@ -206,9 +218,7 @@ public class RetrofitRemoteData {
     public void getAnswersResponse(int page) {
         QcLog.e("PROCESSING IN THREAD BEFORE RETROFIT CALL " + Thread.currentThread().getName());
 //        Call<StoreInfo> call = getRetrofitClient().create(StoreApi.class).getStoreInfo();
-        Call<AnswersResponse> call = RetrofitRemoteData
-                .getRetrofitClient(ApiUrl.BASE_URL)
-                .create(GetAnswersApi.class).getAnswers();
+        Call<AnswersResponse> call = getGetAnswersApi().getAnswers();
         //rest service call runs on background thread and Callback also runs on background thread
         call.enqueue(new Callback<AnswersResponse>() {
             @Override
@@ -267,9 +277,7 @@ public class RetrofitRemoteData {
      * call.enqueue(new Callback<SOAnswersResponse>() {
      */
     public void getAnswers() {
-        Call<AnswersResponse> call = RetrofitRemoteData
-                .getRetrofitClient(ApiUrl.BASE_URL)
-                .create(GetAnswersApi.class).getAnswers();
+        Call<AnswersResponse> call = getGetAnswersApi().getAnswers();
         //rest service call runs on background thread and Callback also runs on background thread
         call.enqueue(new Callback<AnswersResponse>() {
             @Override

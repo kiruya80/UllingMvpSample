@@ -101,6 +101,8 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             return;
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
+//        if (totalItemCount == 0)
+//            return;
         if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
             // get maximum element within the list
@@ -133,7 +135,8 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
-        if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+        if (totalItemCount != 0 && !loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+//            QcLog.e("lastVisibleItemPosition == " + lastVisibleItemPosition + " , visibleThreshold == " + visibleThreshold + " , totalItemCount == " + totalItemCount);
             /**
              * more
              *
@@ -148,7 +151,8 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
          *
          * lastVisibleItemPosition =====29 , visibleThreshold= 5 , totalItemCount= 30
          */
-        if (lastVisibleItemPosition >= (totalItemCount - 1)) {
+        if (totalItemCount != 0 && lastVisibleItemPosition >= (totalItemCount - 1)) {
+//            QcLog.e("lastVisibleItemPosition == " + lastVisibleItemPosition + " , visibleThreshold == " + visibleThreshold + " , totalItemCount == " + totalItemCount + " , loading == " + loading);
             isLastItem = true;
         }
     }

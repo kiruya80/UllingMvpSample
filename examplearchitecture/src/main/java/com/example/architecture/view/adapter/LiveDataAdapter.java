@@ -117,6 +117,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
     @Override
     public void needResetData() {
         userList = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override

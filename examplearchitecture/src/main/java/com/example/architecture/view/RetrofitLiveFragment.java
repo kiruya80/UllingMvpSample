@@ -1,5 +1,8 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -24,9 +27,6 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
 
 import java.util.List;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -54,7 +54,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     private RetrofitLiveViewModel viewModel;
     private RetrofitLiveAdapter adapter;
     private boolean isLoading = false;
-    private int page = 0;
+    private int page = 1;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -97,6 +97,11 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
+        page = 1;
+        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
+            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        if (adapter != null)
+        adapter.needResetData();
     }
 
     @Override
@@ -105,11 +110,14 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         viewBinding = (FragRetrofitLiveBinding) getViewBinding();
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
+        viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
                 QcLog.e("onLoadMore =====");
                 page = page_;
+                if (viewModel != null)
+                    viewModel.getAnswersFromRemote(page);
             }
 
             @Override
@@ -162,6 +170,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     }
 
     private void observerAllAnswer(LiveData<List<Answer>> answers) {
+        QcLog.e("observerAllAnswer == ");
         //observer LiveData
         answers.observe(this, new Observer<List<Answer>>() {
             @Override
@@ -170,7 +179,9 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
                 if (allanswers == null) {
                     return;
                 }
-                adapter.addAll(allanswers);
+//                adapter.addAll(allanswers);
+                adapter.addAnswer(allanswers);
+
             }
         });
     }
@@ -181,11 +192,16 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             QcToast.getInstance().show("isRefreshing !! " + isLoading, false);
             return;
         }
+        needResetData();
         isLoading = true;
         viewBinding.swipeRefreshLayout.setRefreshing(true);
+        viewModel.getAllAnswersFromRoom().removeObservers(this);
+//        adapter.needResetData();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                QcLog.e("allanswers observe == ");
+                observerAllAnswer(viewModel.getAllAnswersFromRoom());
                 viewBinding.swipeRefreshLayout.setRefreshing(false);
                 isLoading = false;
             }
@@ -199,4 +215,19 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             viewBinding.progressBar.setVisibility(View.GONE);
         }
     }
+
+
+//    public static List<Employee> getEmployeeListSortedByName() {
+//        final List<Employee> employeeList = getEmployeeList();
+//
+//        Collections.sort(employeeList, new Comparator<Employee>() {
+//            @Override
+//            public int compare(Employee a1, Employee a2) {
+//                return a1.getName().compareTo(a2.getName());
+//            }
+//        });
+//
+//        return employeeList;
+//    }
+
 }

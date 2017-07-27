@@ -69,6 +69,7 @@ public class RetrofitLiveViewModel extends AndroidViewModel {
     }
 
     public void getAnswersFromRemote(int page) {
+        QcLog.e("getAnswersFromRemote == " + page);
         if (mDatabaseModel != null)
             mDatabaseModel.getAnswersFromRemote(page);
     }

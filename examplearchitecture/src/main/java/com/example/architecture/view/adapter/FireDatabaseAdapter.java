@@ -118,6 +118,7 @@ public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
     @Override
     public void needResetData() {
         userList = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override

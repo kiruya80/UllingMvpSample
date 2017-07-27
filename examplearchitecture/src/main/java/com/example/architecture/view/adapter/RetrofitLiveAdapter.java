@@ -2,6 +2,8 @@ package com.example.architecture.view.adapter;
 
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ViewDataBinding;
+import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
@@ -16,11 +18,11 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : KILHO
@@ -30,17 +32,69 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  * @since : <p> https://medium.com/google-developers/android-data-binding-recyclerview-db7c40d9f0e4
  *
  * http://realignist.me/code/2016/05/25/data-binding-guide.html
+ *
+ *
+ * https://github.com/AnkitSinhal/DiffUtilExample/blob/master/app/src/main/java/com/sample/diffutil/EmployeeDiffCallback.java
  */
 public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
-    private List<Answer> itemList;
+    private List<Answer> itemList = new ArrayList<>();
 
     private RetrofitLiveViewModel viewModel;
 
     public void addAll(List<Answer> data) {
-        QcLog.e("addAll == ");
         this.itemList = data;
+        QcLog.e("addAll == " + itemList.size());
         notifyDataSetChanged();
     }
+
+        public void addAnswer(final List<Answer> itemList_) {
+        if (itemList == null) {
+            this.itemList = itemList_;
+            notifyItemRangeInserted(0, itemList.size());
+        } else {
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return itemList.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return itemList_.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return itemList.get(oldItemPosition).getAnswerId() ==
+                            itemList_.get(newItemPosition).getAnswerId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Answer newAnswer = itemList_.get(newItemPosition);
+                    Answer oldAnswer = itemList.get(oldItemPosition);
+
+                    return oldAnswer.equals(newAnswer);
+                }
+
+
+                @Nullable
+                @Override
+                public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+                    // Implement method if you're going to use ItemAnimator
+                    return super.getChangePayload(oldItemPosition, newItemPosition);
+                }
+            });
+
+            this.itemList.clear();
+            this.itemList.addAll(itemList_);
+            diffResult.dispatchUpdatesTo(this);
+
+//            itemList = itemList_;
+//            result.dispatchUpdatesTo(this);
+        }
+    }
+
 
     public RetrofitLiveAdapter(QcBaseLifeFragment qFragment) {
         super(qFragment);
@@ -54,6 +108,7 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
     @Override
     public void needResetData() {
         itemList = new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @Override
