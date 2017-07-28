@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -26,6 +23,10 @@ import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
+import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -54,7 +55,12 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     private RetrofitViewModel viewModel;
     private RetrofitAdapter adapter;
     private boolean isLoading = false;
-    private int page = 0;
+    private int page = 1;
+    // Sets the starting page index
+    private int viewStartingPageIndex = 1;
+    // The current offset index of data you have loaded
+    private int viewCurrentPage = 1;
+    private EndlessRecyclerScrollListener.QcScrollDataListener qcScrollListener;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -97,13 +103,17 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
-        page = 1;
-        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
-            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
-        if (adapter != null)
+        page = viewStartingPageIndex;
+        setResetScrollStatus();
+       if (adapter != null)
             adapter.needResetData();
     }
 
+
+    private void setResetScrollStatus() {
+        if (viewBinding != null && viewBinding.qcRecyclerView != null)
+            qcScrollListener.onResetStatus();
+    }
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
@@ -111,12 +121,30 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
 //        viewBinding.recyclerView.setAdapter(adapter);
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
+        qcScrollListener = viewBinding.qcRecyclerView.getQcScrollDataListener();
+        qcScrollListener.onStartingPageIndex(viewStartingPageIndex);
+        qcScrollListener.onCurrentPage(viewCurrentPage);
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
 
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
                 QcLog.e("onLoadMore =====");
                 page = page_;
+                QcToast.getInstance().show("onLoadMore !! " + page, false);
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (viewModel != null) {
+//                            viewModel.getAnswersFromRemoteResponse(page);
+//                            qcScrollListener.onNetworkLoading(true);
+//                        }
+//                    }
+//                }, 1000);
+
+                if (viewModel != null) {
+                    viewModel.getAnswersFromRemoteResponse(page);
+                    qcScrollListener.onNetworkLoading(true);
+                }
             }
 
             @Override
@@ -170,23 +198,28 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             public void onChanged(@Nullable AnswersResponse answers) {
                 if (answers == null) {
                     QcLog.e("answersLive observe answersLive == null ");
+                    if (qcScrollListener != null) {
+                        qcScrollListener.onNextPage(false);
+                        qcScrollListener.onNetworkLoading(false);
+                    }
                     return;
                 }
-                QcToast.getInstance().show("observe answersLive", false);
-                Snackbar.make(viewBinding.qcRecyclerView, "Success get data", Snackbar.LENGTH_LONG)
+                QcLog.e("Success page = " + page + " , hasNextPage ="+ answers.getHasMore());
+                QcToast.getInstance().show("observe page = " + page + " , hasNextPage ="+  answers.getHasMore(), false);
+                Snackbar.make(viewBinding.qcRecyclerView, "Success page = " + page + " , hasNextPage ="+ answers.getHasMore(), Snackbar.LENGTH_LONG)
                         .setAction("Action", new OnSingleClickListener() {
                             @Override
                             public void onSingleClick(View v) {
                                 QcLog.e("Snackbar onSingleClick ");
                             }
                         }).show();
-                QcLog.e("answersLive observe == ");
-//                String result = "";
-//                for (Item item : answers.getItems()) {
-//                    result = result + item.toString() + "\n\n";
-//                }
-//                QcLog.e("result == " + result);
-                adapter.addAll(answers.getItemResponses());
+                if (qcScrollListener != null) {
+                    qcScrollListener.onNextPage(answers.getHasMore());
+                    qcScrollListener.onNetworkLoading(false);
+                }
+
+                adapter.add(answers.getItemResponses());
+//                adapter.addAll(answers.getItemResponses());
             }
         });
     }

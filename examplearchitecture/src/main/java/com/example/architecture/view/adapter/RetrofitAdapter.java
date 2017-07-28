@@ -16,11 +16,11 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
-import jp.wasabeef.glide.transformations.BlurTransformation;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * @author : KILHO
@@ -39,6 +39,14 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
     public void addAll(List<ItemResponse> data) {
         QcLog.e("addAll == ");
         this.itemList = data;
+        notifyDataSetChanged();
+    }
+
+    public void add(List<ItemResponse> data) {
+        QcLog.e("addAll == ");
+        if (this.itemList == null)
+            this.itemList = new ArrayList<>();
+        this.itemList.addAll(data);
         notifyDataSetChanged();
     }
 

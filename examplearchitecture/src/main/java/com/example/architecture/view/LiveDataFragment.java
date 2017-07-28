@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -26,10 +23,14 @@ import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcPreferences;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
+import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -44,7 +45,12 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     private int id_ = 1;
     private String userId;
     private boolean isLoading = false;
-    private int page = 0;
+    private int page = 1;
+    // Sets the starting page index
+    private int viewStartingPageIndex = 1;
+    // The current offset index of data you have loaded
+    private int viewCurrentPage = 1;
+    private EndlessRecyclerScrollListener.QcScrollDataListener qcScrollListener;
 
     public static LiveDataFragment newInstance(int sectionNumber) {
         LiveDataFragment fragment = new LiveDataFragment();
@@ -85,11 +91,15 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
-        page = 1;
-        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
-            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
+        page = viewStartingPageIndex;
+        setResetScrollStatus();
         if (adapter != null)
             adapter.needResetData();
+    }
+
+    private void setResetScrollStatus() {
+        if (viewBinding != null && viewBinding.qcRecyclerView != null)
+            qcScrollListener.onResetStatus();
     }
 
     @Override
@@ -104,6 +114,9 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
 //        viewBinding.recyclerView.setAdapter(adapter);
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
+        qcScrollListener = viewBinding.qcRecyclerView.getQcScrollDataListener();
+        qcScrollListener.onStartingPageIndex(viewStartingPageIndex);
+        qcScrollListener.onCurrentPage(viewCurrentPage);
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {

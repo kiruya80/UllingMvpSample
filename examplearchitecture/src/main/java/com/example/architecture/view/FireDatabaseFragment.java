@@ -1,15 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,15 +14,25 @@ import com.example.architecture.databinding.FragFireDatabaseBinding;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.FireDatabaseAdapter;
 import com.example.architecture.viewmodel.FireDatabaseViewModel;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
+import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * Created by P100651 on 2017-07-04.
@@ -65,8 +65,12 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     private ValueEventListener valueEventListener;
     private FireDatabaseAdapter adapter;
     private boolean isLoading = false;
-    private int page = 0;
-
+    private int page = 1;
+    // Sets the starting page index
+    private int viewStartingPageIndex = 1;
+    // The current offset index of data you have loaded
+    private int viewCurrentPage = 1;
+    private EndlessRecyclerScrollListener.QcScrollDataListener qcScrollListener;
 
     @Override
     public void needDestroyData() {
@@ -122,13 +126,16 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     protected void needResetData() {
         QcLog.e("needResetData == ");
         isLoading = false;
-        page = 1;
-        if (viewBinding != null && viewBinding.qcRecyclerView != null && viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener() != null)
-            viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener().setStartingPageIndex(page);
-        if (adapter != null)
+        page = viewStartingPageIndex;
+        setResetScrollStatus();
+      if (adapter != null)
             adapter.needResetData();
     }
 
+    private void setResetScrollStatus() {
+        if (viewBinding != null && viewBinding.qcRecyclerView != null)
+            qcScrollListener.onResetStatus();
+    }
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
@@ -140,11 +147,24 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
         viewBinding = (FragFireDatabaseBinding) getViewBinding();
         viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
         viewBinding.qcRecyclerView.setAdapter(adapter);
+        qcScrollListener = viewBinding.qcRecyclerView.getQcScrollDataListener();
+        qcScrollListener.onStartingPageIndex(viewStartingPageIndex);
+        qcScrollListener.onCurrentPage(viewCurrentPage);
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
                 QcLog.e("onLoadMore =====");
                 page = page_;
+                QcToast.getInstance().show("onLoadMore !! " + page, false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+//                        if (viewModel != null)
+//                            viewModel.getAnswersFromRemote(page);
+                        qcScrollListener.onNetworkLoading(true);
+                        qcScrollListener.onNextPage(false);
+                    }
+                }, 1000);
             }
 
             @Override

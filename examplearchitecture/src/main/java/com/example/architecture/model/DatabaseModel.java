@@ -280,11 +280,28 @@ public class DatabaseModel {
             if (item.getLastEditDate() != null)
                 answer.setLastEditDate(item.getLastEditDate());
             answer.setCreationDate(item.getCreationDate());
+            answer.setHasMore(answersResponse.getHasMore());
             answers.add(answer);
         }
         if (answers != null && answers.size() > 0)
             insertAnswersToRoom(answers);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //    public void getAnswers(boolean isRemote) {
 //        if (isRemote) {
 //            Call<AnswersResponse> call = RetrofitRemoteData

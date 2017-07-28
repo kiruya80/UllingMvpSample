@@ -51,20 +51,10 @@ import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
  * Fail loading ?
  */
 public class QcRecyclerView extends RecyclerView {
-    //    public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
     private Context context;
-    //    private LinearLayoutManager layoutManager;
-//    private GridLayoutManager gridLayoutManager;
-//    private StaggeredGridLayoutManager stgaggeredGridLayoutManager;
-//    private int transform = linear;
-//    private int orientation = VERTICAL;
-//    private int spanCount = 1;
-//    public static final int linear = 0;
-//    public static final int Grid = 1;
-//    public static final int StaggeredGrid = 2;
-//    public static final int HORIZONTAL = 0;
-//    public static final int VERTICAL = 1;
-//    private boolean reverseLayout = false;
+    /**
+     * emptyView SETTING
+     */
     private View emptyView;
     private AdapterDataObserver emptyObserver = new AdapterDataObserver() {
         @Override
@@ -104,13 +94,14 @@ public class QcRecyclerView extends RecyclerView {
             super.onItemRangeMoved(fromPosition, toPosition, itemCount);
         }
     };
+    private QcRecyclerListener qcRecyclerListener;
 
     @Override
     public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
         if (adapter != null && emptyObserver != null && emptyView != null) {
-           if (!adapter.hasObservers())
-            adapter.registerAdapterDataObserver(emptyObserver);
+            if (!adapter.hasObservers())
+                adapter.registerAdapterDataObserver(emptyObserver);
 //            emptyObserver.onChanged();
         }
     }
@@ -128,23 +119,53 @@ public class QcRecyclerView extends RecyclerView {
     public void setEmptyView(View emptyView) {
         this.emptyView = emptyView;
     }
+    /**
+     * SCROLL PAGE SETTING
+     */
 
+    private EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener((RecyclerView.LayoutManager) getLayoutManager()) {
+        @Override
+        public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+            QcLog.i("onLoadMore =====");
+            if (qcRecyclerListener != null) {
+                qcRecyclerListener.onLoadMore(page, totalItemsCount, view);
+            }
+        }
 
+        @Override
+        public void onLoadEnd() {
+            QcLog.i("onLoadEnd =====");
+            if (qcRecyclerListener != null)
+                qcRecyclerListener.onLoadEnd();
+        }
+    };
 
-    public void setStartingPageIndex(int startingPageIndex) {
-        if (getEndlessRecyclerScrollListener() != null)
-            getEndlessRecyclerScrollListener().setStartingPageIndex(startingPageIndex);
+    /**
+     * 스크롤 데이터 리스너 가져오기
+     * 뷰에서 네트워크데이터 변경시 스크롤리스너에게 알려주기위해서
+     * @return
+     */
+    public EndlessRecyclerScrollListener.QcScrollDataListener getQcScrollDataListener() {
+        if (endlessRecyclerScrollListener != null)
+            return endlessRecyclerScrollListener.getQcScrollDataListener();
+        return null;
     }
-
-
 
     public interface QcRecyclerListener {
         void onLoadMore(int page, int totalItemsCount, RecyclerView view);
-
         void onLoadEnd();
     }
 
-    private QcRecyclerListener qcRecyclerListener;
+    /**
+     * 스크롤리스너 가져오기
+     * @param qcRecyclerListener
+     */
+    public void setQcRecyclerListener(QcRecyclerListener qcRecyclerListener) {
+        this.qcRecyclerListener = qcRecyclerListener;
+    }
+    /**
+     * 리사이클뷰 생성
+     */
 
     public QcRecyclerView(Context context) {
         // 자신의 생성자를 호출합니다.
@@ -162,37 +183,14 @@ public class QcRecyclerView extends RecyclerView {
 //        getAttrs(attrs);
 //        setLinearLayoutManager();
 //        setEndlessRecyclerScrollListener();
-        if (endlessRecyclerScrollListener != null)
+        if (endlessRecyclerScrollListener != null) {
             addOnScrollListener(endlessRecyclerScrollListener);
-    }
-
-    public void resetEndlessScrollState() {
-        endlessRecyclerScrollListener.resetState();
-    }
-
-    EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener((RecyclerView.LayoutManager) getLayoutManager()) {
-        @Override
-        public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-            QcLog.i("onLoadMore =====");
-            if (qcRecyclerListener != null)
-                qcRecyclerListener.onLoadMore(page, totalItemsCount, view);
         }
-
-        @Override
-        public void onLoadEnd() {
-            QcLog.i("onLoadEnd =====");
-            if (qcRecyclerListener != null)
-                qcRecyclerListener.onLoadEnd();
-        }
-    };
-
-    public void setQcRecyclerListener(QcRecyclerListener qcRecyclerListener) {
-        this.qcRecyclerListener = qcRecyclerListener;
     }
 
-    public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
-        return endlessRecyclerScrollListener;
-    }
+//    public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
+//        return endlessRecyclerScrollListener;
+//    }
 
     private void initView() {
 //        String infService = Context.LAYOUT_INFLATER_SERVICE;

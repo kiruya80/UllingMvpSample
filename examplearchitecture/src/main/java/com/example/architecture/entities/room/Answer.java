@@ -30,6 +30,7 @@ public class Answer {
     private int lastActivityDate;
     private int lastEditDate;
     private int creationDate;
+    private Boolean hasMore;
 
     public Answer() {
 
@@ -149,4 +150,11 @@ public class Answer {
         this.creationDate = creationDate;
     }
 
+    public Boolean getHasMore() {
+        return hasMore;
+    }
+
+    public void setHasMore(Boolean hasMore) {
+        this.hasMore = hasMore;
+    }
 }
