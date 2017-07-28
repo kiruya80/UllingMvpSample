@@ -2,8 +2,11 @@ package com.example.architecture.entities.room;
 
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+
+import com.ulling.lib.core.entities.QcBaseItem;
 
 /**
  * @author : KILHO
@@ -14,7 +17,7 @@ import android.arch.persistence.room.PrimaryKey;
  */
 @Entity
         (indices = {@Index("questionId")})
-public class Answer {
+public class Answer extends QcBaseItem {
 
 //        @PrimaryKey(autoGenerate = true)
 //    private int id;
@@ -31,6 +34,8 @@ public class Answer {
     private int lastEditDate;
     private int creationDate;
     private Boolean hasMore;
+    @Ignore
+    private int type = 0;
 
     public Answer() {
 

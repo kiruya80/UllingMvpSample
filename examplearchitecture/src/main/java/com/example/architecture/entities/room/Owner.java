@@ -1,5 +1,7 @@
 package com.example.architecture.entities.room;
 
+import com.ulling.lib.core.entities.QcBaseItem;
+
 /**
  * @author : KILHO
  * @project : UllingMvpSample
@@ -8,7 +10,7 @@ package com.example.architecture.entities.room;
  * @since :
  */
 
-public class Owner {
+public class Owner  extends QcBaseItem {
 
     private int reputation;
     private int userId;

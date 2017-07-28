@@ -148,7 +148,7 @@ public class FireDatabaseAdapter extends QcRecyclerBaseAdapter {
 
 
     @Override
-    protected void needUIEventListener(ViewDataBinding binding) {
+    protected void needUIEventListener(int viewTypeResId, ViewDataBinding binding) {
         RowFireDatabaseBinding hoderBinding = (RowFireDatabaseBinding) binding;
         hoderBinding.ivProfile.setOnClickListener(mOnSingleClickListener);
         hoderBinding.tvUserLastName.setOnClickListener(mOnSingleClickListener);

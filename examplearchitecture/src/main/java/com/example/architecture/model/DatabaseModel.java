@@ -17,7 +17,7 @@ import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.network.RemoteDataListener;
 import com.example.architecture.network.RemoteDataObserver;
 import com.example.architecture.remotedb.RetrofitRemoteData;
-import com.ulling.lib.core.entities.QcCommonResponse;
+import com.ulling.lib.core.entities.QcBaseResponse;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 
@@ -231,7 +231,7 @@ public class DatabaseModel {
     public void getAnswersFromRemote(final int page) {
         retrofitRemoteData.getAnswers(page, new RemoteDataListener() {
             @Override
-            public void onSuccess(int statusCode, QcCommonResponse answers) {
+            public void onSuccess(int statusCode, boolean hasNextPage, QcBaseResponse answers) {
                 QcLog.e("success = " + statusCode);
                 if (answers != null) {
                     AnswersResponse answersResponse = (AnswersResponse) answers;

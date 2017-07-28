@@ -22,12 +22,14 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.ulling.lib.core.entities.QcBaseItem;
+
 @Entity
         (foreignKeys = @ForeignKey(entity = User.class,
                 parentColumns = "id",
                 childColumns = "user_id"),
                 indices = {@Index("id"), @Index("user_id")}   )
-public class Book {
+public class Book extends QcBaseItem {
     @PrimaryKey
     public String id;
     public String title;

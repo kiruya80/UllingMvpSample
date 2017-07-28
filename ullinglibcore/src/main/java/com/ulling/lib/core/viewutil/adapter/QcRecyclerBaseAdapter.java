@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.ulling.lib.core.base.QcBaseLifeFragment;
@@ -17,19 +18,21 @@ import com.ulling.lib.core.util.QcLog;
  * https://github.com/googlesamples/android-architecture-components/blob/master/BasicSample/app/src/main/java/com/example/android/persistence/ui/ProductAdapter.java
  */
 public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
+    public static final int TYPE_LOAD_FAIL = 0;
+    public static final int TYPE_LOAD_PROGRESS = 999;
+    public static final int TYPE_DEFAULT = 1;
     public Context qCon;
     public QcBaseLifeFragment qFragment;
     private AndroidViewModel viewModel;
 //    public OnSingleClickListener listener;
-//    public interface QcRecyclerItemListener {
-//
-//        void onItemClick(View view, int position);
-//        void onItemLongClick(View view, int position);
-//        void onItemCheck(boolean checked, int position);
-//        void onDeleteItem(int itemPosition);
-//
-//        void onRefresh();
-//    }
+    public QcRecyclerItemListener qcRecyclerItemListener;
+    public interface QcRecyclerItemListener {
+        void onItemClick(View view, int position);
+        void onItemLongClick(View view, int position);
+        void onItemCheck(boolean checked, int position);
+        void onDeleteItem(int itemPosition);
+        void onReload();
+    }
     /**
      * 필수
      * need~ 시작
@@ -88,7 +91,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
      * 접근한 View에 이벤트에 따른 동작 설정
      * 버튼 및 기타 UI이벤트 설정
      */
-    protected abstract void needUIEventListener(ViewDataBinding binding);
+    protected abstract void needUIEventListener(int viewTypeResId, ViewDataBinding binding);
     /**
      * 4.
      * <p>
@@ -133,6 +136,14 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
         needInitToOnCreate();
         needResetData();
     }
+    public QcRecyclerBaseAdapter(QcBaseLifeFragment qFragment, QcRecyclerItemListener qcRecyclerItemListener) {
+        super();
+        this.qFragment = qFragment;
+        this.qCon = qFragment.getContext();
+        this.qcRecyclerItemListener = qcRecyclerItemListener;
+        needInitToOnCreate();
+        needResetData();
+    }
 
     /**
      * 1. 뷰모델 가져오기
@@ -147,7 +158,7 @@ public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseV
         QcLog.i("onCreateViewHolder == ");
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewTypeResId, viewGroup, false);
-        needUIEventListener(binding);
+        needUIEventListener(viewTypeResId, binding);
         return new QcBaseViewHolder(binding);
     }
 

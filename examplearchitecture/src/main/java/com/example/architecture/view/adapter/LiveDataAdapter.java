@@ -147,7 +147,7 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
 
 
     @Override
-    protected void needUIEventListener(ViewDataBinding binding) {
+    protected void needUIEventListener(int viewTypeResId, ViewDataBinding binding) {
         RowLiveDataBinding hoderBinding = (RowLiveDataBinding) binding;
         hoderBinding.rlProfile.setOnClickListener(mOnSingleClickListener);
         hoderBinding.rlProfile.setOnLongClickListener(mOnLongClickListener);

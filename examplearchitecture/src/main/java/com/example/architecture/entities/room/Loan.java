@@ -24,6 +24,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 
 import com.example.architecture.localdb.DateConverter;
+import com.ulling.lib.core.entities.QcBaseItem;
 
 import java.util.Date;
 
@@ -37,7 +38,7 @@ import java.util.Date;
                 childColumns = "user_id")},
         indices = {@Index("book_id"), @Index("user_id")} )
 @TypeConverters(DateConverter.class)
-public class Loan {
+public class Loan  extends QcBaseItem {
     // Fields can be public or private with getters and setters.
 
     @PrimaryKey

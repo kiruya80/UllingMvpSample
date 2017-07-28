@@ -180,7 +180,9 @@ public class RetrofitRemoteData {
                     QcLog.e("onResponse isSuccessful == ");
                     QcLog.e("getItems().size = " + response.body().getItemResponses().size());
                     AnswersResponse answersResponse = response.body();
-                    remoteDataListener.onSuccess(1, answersResponse);
+
+                    boolean hasNextPage = answersResponse.getHasMore();
+                    remoteDataListener.onSuccess(1, hasNextPage, answersResponse);
                 } else {
                     QcLog.e("onResponse Error !!! " + statusCode);
                     QcLog.e("errorBody == " + response.errorBody().toString());
@@ -230,7 +232,8 @@ public class RetrofitRemoteData {
                     AnswersResponse answersResponse_ = response.body();
                     answersResponse.postValue(answersResponse_);
 
-                    remoteDataListener.onSuccess(1, answersResponse_);
+                    boolean hasNextPage = answersResponse_.getHasMore();
+                    remoteDataListener.onSuccess(1, hasNextPage, answersResponse_);
 //                    mObservable.notifyChanged();
                 } else {
                     int statusCode = response.code();

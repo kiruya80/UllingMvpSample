@@ -1,5 +1,8 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -16,19 +19,18 @@ import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
 import com.example.architecture.entities.retrofit.AnswersResponse;
+import com.example.architecture.entities.retrofit.ItemResponse;
 import com.example.architecture.network.RemoteDataListener;
 import com.example.architecture.view.adapter.RetrofitAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
-import com.ulling.lib.core.entities.QcCommonResponse;
+import com.ulling.lib.core.entities.QcBaseResponse;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
+import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
-
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -96,7 +98,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             viewModel = ViewModelProviders.of(this).get(RetrofitViewModel.class);
             viewModel.initViewModel(qCon, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
-        adapter = new RetrofitAdapter(this);
+        adapter = new RetrofitAdapter(this, qcRecyclerItemListener);
         if (adapter != null && !adapter.isViewModel())
             adapter.setViewModel(viewModel);
     }
@@ -107,7 +109,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
         isLoading = false;
         page = viewStartingPageIndex;
         setResetScrollStatus();
-       if (adapter != null)
+        if (adapter != null)
             adapter.needResetData();
     }
 
@@ -116,6 +118,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
         if (viewBinding != null && viewBinding.qcRecyclerView != null)
             qcScrollListener.onResetStatus();
     }
+
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
@@ -133,20 +136,18 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
                 QcLog.e("onLoadMore =====");
                 page = page_;
                 QcToast.getInstance().show("onLoadMore !! " + page, false);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if (viewModel != null) {
-//                            viewModel.getAnswersFromRemoteResponse(page);
-//                            qcScrollListener.onNetworkLoading(true);
-//                        }
-//                    }
-//                }, 1000);
+                adapter.addProgress();
+                qcScrollListener.onNetworkLoading(true);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (viewModel != null) {
+                            viewModel.getAnswersFromRemoteResponse(page, remoteDataListener);
+                        }
+                    }
+                }, 1000);
 
-                if (viewModel != null) {
-                    viewModel.getAnswersFromRemoteResponse(page, remoteDataListener);
-                    qcScrollListener.onNetworkLoading(true);
-                }
+
             }
 
             @Override
@@ -176,19 +177,44 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
         });
     }
 
+    /**
+     * 리모트 데이터에서 가져온 결과 상태값 리스너
+     *
+     * 아답터 처리를 뷰모델에서 처리할지 고민중..
+     */
     private RemoteDataListener remoteDataListener = new RemoteDataListener() {
         @Override
-        public void onSuccess(int statusCode, QcCommonResponse answers) {
+        public void onSuccess(int statusCode, boolean hasNextPage, QcBaseResponse answers) {
+            // 성공한 경우 처리
+//            if (qcScrollListener != null) {
+//                qcScrollListener.onNextPage(hasNextPage);
+//                qcScrollListener.onNetworkLoading(false);
+//                qcScrollListener.onNetworkError(false);
+//            }
         }
 
         @Override
         public void onError(int statusCode, String msg) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.removeLoadFail();
+                            adapter.removeProgress();
+                            adapter.addLoadFail();
+                        }
+                    });
+                }
+            }).start();
+
             /**
              * 에러인 경우는 리스트 및 뷰에 표현하고
              * 다시시도 버튼등으로 표현한다
              *
              * 아답터에 푸터등에 추가하는방식
-              */
+             */
 
             QcToast.getInstance().show("RemoteDataListener onError !!!! " + msg, false);
             if (qcScrollListener != null) {
@@ -196,12 +222,32 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
                 qcScrollListener.onCurrentPage(page);
                 qcScrollListener.onNextPage(true);
                 // 에러인경우 네트워킹상태는 true로해서 계속 데이터를 불러오지 않기 위해서
-                qcScrollListener.onNetworkLoading(true);
+                qcScrollListener.onNetworkLoading(false);
+                qcScrollListener.onNetworkError(true);
             }
         }
 
         @Override
         public void onFailure(Throwable t, String msg) {
+            ItemResponse failItemResponse = new ItemResponse();
+            failItemResponse.setType(QcRecyclerBaseAdapter.TYPE_LOAD_FAIL);
+            adapter.add(failItemResponse);
+            /**
+             * 에러인 경우는 리스트 및 뷰에 표현하고
+             * 다시시도 버튼등으로 표현한다
+             *
+             * 아답터에 푸터등에 추가하는방식
+             */
+
+            QcToast.getInstance().show("RemoteDataListener onFailure !!!! " + msg, false);
+            if (qcScrollListener != null) {
+                page = page--;
+                qcScrollListener.onCurrentPage(page);
+                qcScrollListener.onNextPage(true);
+                // 에러인경우 네트워킹상태는 true로해서 계속 데이터를 불러오지 않기 위해서
+                qcScrollListener.onNetworkLoading(false);
+                qcScrollListener.onNetworkError(true);
+            }
         }
     };
 
@@ -235,30 +281,32 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
                     }
                     return;
                 }
-                QcLog.e("Success page = " + page + " , hasNextPage ="+ answers.getHasMore());
-                QcToast.getInstance().show("observe page = " + page + " , hasNextPage ="+  answers.getHasMore(), false);
-                Snackbar.make(viewBinding.qcRecyclerView, "Success page = " + page + " , hasNextPage ="+ answers.getHasMore(), Snackbar.LENGTH_LONG)
+                QcLog.e("Success page = " + page + " , hasNextPage =" + answers.getHasMore());
+                QcToast.getInstance().show("observe page = " + page + " , hasNextPage =" + answers.getHasMore(), false);
+                Snackbar.make(viewBinding.qcRecyclerView, "Success page = " + page + " , hasNextPage =" + answers.getHasMore(), Snackbar.LENGTH_LONG)
                         .setAction("Action", new OnSingleClickListener() {
                             @Override
                             public void onSingleClick(View v) {
                                 QcLog.e("Snackbar onSingleClick ");
                             }
                         }).show();
+
+                adapter.removeLoadFail();
+                adapter.removeProgress();
+                adapter.add(answers.getItemResponses());
+//                adapter.addAll(answers.getItemResponses());
+
                 if (qcScrollListener != null) {
                     qcScrollListener.onNextPage(answers.getHasMore());
                     qcScrollListener.onNetworkLoading(false);
                 }
 
-                adapter.add(answers.getItemResponses());
-//                adapter.addAll(answers.getItemResponses());
             }
         });
     }
 
     /**
      * 스크롤 리스너에서 페이지 리셋이 안되는듯 체크해야함
-     *
-     *
      */
     @Override
     public void onRefresh() {
@@ -287,4 +335,32 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             viewBinding.progressBar.setVisibility(View.GONE);
         }
     }
+
+    private QcRecyclerBaseAdapter.QcRecyclerItemListener qcRecyclerItemListener = new QcRecyclerBaseAdapter.QcRecyclerItemListener() {
+        @Override
+        public void onItemClick(View view, int position) {
+
+        }
+
+        @Override
+        public void onItemLongClick(View view, int position) {
+
+        }
+
+        @Override
+        public void onItemCheck(boolean checked, int position) {
+
+        }
+
+        @Override
+        public void onDeleteItem(int itemPosition) {
+
+        }
+
+        @Override
+        public void onReload() {
+            if (viewModel != null)
+                viewModel.getAnswersFromRemoteResponse(page, remoteDataListener);
+        }
+    };
 }

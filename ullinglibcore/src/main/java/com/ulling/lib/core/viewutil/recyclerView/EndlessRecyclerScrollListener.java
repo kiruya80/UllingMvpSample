@@ -33,6 +33,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
     // True if we are still waiting for the last set of data to load.
     private boolean loading = false;
     private boolean hasNextPage = true;
+    private boolean networkError = false;
     /**
      * 고정영역이 있는 경우
      */
@@ -62,6 +63,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         void onNetworkLoading(boolean loading_);
 
         void onNextPage(boolean hasNextPage_);
+        void onNetworkError(boolean networkError_);
     }
 
     // Call this method whenever performing new searches
@@ -91,7 +93,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
 
         @Override
         public void onNetworkLoading(boolean loading_) {
-            QcLog.e("onNetworkLoading =====" + loading_);
+             QcLog.e("onNetworkLoading =====" + loading_);
             loading = loading_;
         }
 
@@ -104,6 +106,11 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         @Override
         public void onResetStatus() {
             resetStatus();
+        }
+        @Override
+        public void onNetworkError(boolean networkError_) {
+            QcLog.e("onNetworkError =====" + networkError_);
+            networkError = networkError_;
         }
     };
 
@@ -189,7 +196,8 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         }
         QcLog.e("lastVisibleItemPosition == " + lastVisibleItemPosition
                 + " , visibleItemCount = " + visibleItemCount
-                + " , totalItemCount == " + totalItemCount + " , loading == " + loading);
+                + " , totalItemCount == " + totalItemCount
+                + " , hasNextPage == " + hasNextPage+ " , loading == " + loading+ " , networkError == " + networkError);
         /**
          * 화면에 보이는 아이템이 마지막 아이템보다 큰 경우
          * 즉, 화면에 보이는 갯수가 적은 경우는 패스한다
@@ -241,7 +249,8 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
          *
          */
 //        if (hasNextPage && !loading && (lastVisibleItemPosition + visibleItemCount) > totalItemCount) {
-        if (hasNextPage && !loading && (totalItemCount - visibleItemCount) <= (lastVisibleItemPosition + visibleThreshold)) {
+        if (hasNextPage && !loading && !networkError
+                && (totalItemCount - visibleItemCount) <= (lastVisibleItemPosition + visibleThreshold)) {
             /**
              * more
              *
@@ -250,7 +259,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             QcLog.e("onLoadMore ======================== " + currentPage + " , loading = " + loading);
             currentPage++;
             loading = true;
-            QcLog.e("마지막, 더보기 호출 onLoadMore == " + currentPage + " , loading = " + loading);
+            QcLog.e("onLoadMore  마지막, 더보기 호출  == " + currentPage + " , loading = " + loading);
             onLoadMore(currentPage, totalItemCount, view);
         }
         isEdgetype = EDGE_TYPE_NONE;

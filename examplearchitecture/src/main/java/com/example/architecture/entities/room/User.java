@@ -9,6 +9,8 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.graphics.Bitmap;
 
+import com.ulling.lib.core.entities.QcBaseItem;
+
 /**
  * PrimaryKey: marks a field as primary key field.
  * 필드를 기본 키 필드로 표시합니다.
@@ -63,7 +65,7 @@ import android.graphics.Bitmap;
 
 //        (indices = {@Index(value = {"first_name", "last_name"},
 //                unique = true)})
-public class User {
+public class User extends QcBaseItem {
 //    @PrimaryKey(autoGenerate = true)
 //    private int slNo;
 

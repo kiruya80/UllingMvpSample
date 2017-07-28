@@ -1,5 +1,7 @@
 package com.example.architecture.view.adapter;
 
+import static com.example.architecture.R.layout.row_retrofit_live;
+
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.Nullable;
@@ -8,6 +10,7 @@ import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.example.architecture.R;
+import com.example.architecture.databinding.RowLoadFailBinding;
 import com.example.architecture.databinding.RowRetrofitLiveBinding;
 import com.example.architecture.entities.room.Answer;
 import com.example.architecture.viewmodel.RetrofitLiveViewModel;
@@ -18,11 +21,11 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : KILHO
@@ -38,15 +41,35 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
  */
 public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
     private List<Answer> itemList = new ArrayList<>();
-
     private RetrofitLiveViewModel viewModel;
 
-    public void addAll(List<Answer> data) {
-        QcLog.e("addAll 111 == " + data.size());
-        this.itemList = data;
-//        this.itemList.addAll(data);
+    public void addAll(List<Answer> itemList_) {
+        QcLog.e("addAll 111 == " + itemList_.size());
+        this.itemList = itemList_;
         QcLog.e("addAll 222 == " + itemList.size());
-        notifyDataSetChanged();
+//        notifyDataSetChanged();
+        notifyItemRangeChanged(0, itemList.size());
+    }
+
+    public void add(List<Answer> itemList_) {
+        QcLog.e("addAll == ");
+        if (this.itemList == null) {
+            this.itemList = itemList_;
+            this.itemList.addAll(itemList_);
+            notifyDataSetChanged();
+        } else {
+            int positionStart = itemList.size();
+            this.itemList.addAll(itemList_);
+            notifyItemRangeChanged(positionStart, itemList.size());
+        }
+    }
+
+    public void add(Answer item_) {
+        QcLog.e("add == ");
+        if (this.itemList == null)
+            this.itemList = new ArrayList<>();
+        this.itemList.add(item_);
+        notifyItemChanged(itemList.size(), 0);
     }
 
     public void addAnswer(final List<Answer> itemList_) {
@@ -91,9 +114,6 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
             this.itemList.clear();
             this.itemList.addAll(itemList_);
             diffResult.dispatchUpdatesTo(this);
-
-//            itemList = itemList_;
-//            result.dispatchUpdatesTo(this);
         }
     }
 
@@ -122,7 +142,17 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
 
     @Override
     protected int needLayoutIdFromItemViewType(int position) {
-        return R.layout.row_retrofit_live;
+        if (itemList != null && itemList.size() > 0) {
+            if (itemList.get(position).getType() == TYPE_DEFAULT) {
+                return R.layout.row_retrofit_live;
+
+            } else if (itemList.get(position).getType() == TYPE_LOAD_FAIL) {
+                return R.layout.row_load_fail;
+
+            }
+
+        }
+        return row_retrofit_live;
     }
 
 
@@ -142,42 +172,57 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
 
 
     @Override
-    protected void needUIEventListener(ViewDataBinding binding) {
-        RowRetrofitLiveBinding hoderBinding = (RowRetrofitLiveBinding) binding;
+    protected void needUIEventListener(int viewTypeResId, ViewDataBinding binding) {
+        if (viewTypeResId == R.layout.row_retrofit_live) {
+            RowRetrofitLiveBinding hoderBinding = (RowRetrofitLiveBinding) binding;
 
-        hoderBinding.tvPosition.setOnClickListener(mOnSingleClickListener);
-        hoderBinding.rlProfile.setOnClickListener(mOnSingleClickListener);
-        hoderBinding.rlProfile.setOnLongClickListener(mOnLongClickListener);
+            hoderBinding.tvPosition.setOnClickListener(mOnSingleClickListener);
+            hoderBinding.rlProfile.setOnClickListener(mOnSingleClickListener);
+            hoderBinding.rlProfile.setOnLongClickListener(mOnLongClickListener);
 
-        hoderBinding.tvUserId.setOnClickListener(mOnSingleClickListener);
-        hoderBinding.tvUserName.setOnClickListener(mOnSingleClickListener);
-        hoderBinding.tvUserName.setOnLongClickListener(mOnLongClickListener);
+            hoderBinding.tvUserId.setOnClickListener(mOnSingleClickListener);
+            hoderBinding.tvUserName.setOnClickListener(mOnSingleClickListener);
+            hoderBinding.tvUserName.setOnLongClickListener(mOnLongClickListener);
+        } else if (viewTypeResId == R.layout.row_load_fail) {
+            RowLoadFailBinding hoderBinding = (RowLoadFailBinding) binding;
+            hoderBinding.btnReload.setOnClickListener(mOnSingleClickListener);
+        }
+
     }
 
     @Override
     protected void needUIBinding(QcBaseViewHolder holder, int position, Object object) {
         Answer item = (Answer) object;
-        RowRetrofitLiveBinding hoderBinding = (RowRetrofitLiveBinding) holder.getBinding();
+        if (item.getType() == TYPE_DEFAULT) {
+            RowRetrofitLiveBinding hoderBinding = (RowRetrofitLiveBinding) holder.getBinding();
 
-        hoderBinding.tvPosition.setTag(position);
-        hoderBinding.tvPosition.setText("" + position);
+            hoderBinding.tvPosition.setTag(position);
+            hoderBinding.tvPosition.setText("" + position);
 
-        hoderBinding.tvUserId.setTag(position);
-        hoderBinding.tvUserId.setText("" + item.getOwner().getUserId());
-        hoderBinding.tvUserName.setTag(position);
-        hoderBinding.tvUserName.setText(item.getOwner().getDisplayName());
+            hoderBinding.tvUserId.setTag(position);
+            hoderBinding.tvUserId.setText("" + item.getOwner().getUserId());
+            hoderBinding.tvUserName.setTag(position);
+            hoderBinding.tvUserName.setText(item.getOwner().getDisplayName());
 
 
-        hoderBinding.rlProfile.setTag(position);
-        if (item.getOwner().getProfileImage() != null)
-            Glide.with(qCon)
-                    .load(item.getOwner().getProfileImage())
-                    .error(R.mipmap.ic_launcher)
-                    .placeholder(R.mipmap.ic_launcher)
-                    .crossFade(R.anim.fade_in, 300)
-                    .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
+            hoderBinding.rlProfile.setTag(position);
+            if (item.getOwner().getProfileImage() != null)
+                Glide.with(qCon)
+                        .load(item.getOwner().getProfileImage())
+                        .error(R.mipmap.ic_launcher)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .crossFade(R.anim.fade_in, 300)
+                        .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
 //                    .bitmapTransform(new BlurTransformation(qCon))
-                    .into(hoderBinding.ivProfile);
+                        .into(hoderBinding.ivProfile);
+
+        } else if (item.getType() == TYPE_LOAD_FAIL) {
+            RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
+            hoderBinding.btnReload.setTag(position);
+
+
+        }
+
     }
 
 
@@ -187,6 +232,10 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
             int position = (int) v.getTag();
             QcLog.e("onItemClick ==== " + position);
             switch (v.getId()) {
+                case R.id.btnReload:
+                    QcLog.e("btnReload ==== " + position);
+                    QcToast.getInstance().show("btnReload = ", false);
+                    break;
                 case R.id.rlProfile:
                     QcLog.e("rlProfile ==== " + position);
                     QcToast.getInstance().show("rlProfile = ", false);
