@@ -255,6 +255,11 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
         });
     }
 
+    /**
+     * 스크롤 리스너에서 페이지 리셋이 안되는듯 체크해야함
+     *
+     *
+     */
     @Override
     public void onRefresh() {
         if (isLoading) {
