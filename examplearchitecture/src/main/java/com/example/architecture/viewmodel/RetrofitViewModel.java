@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 
 import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.model.DatabaseModel;
+import com.example.architecture.network.RemoteDataListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 
@@ -54,9 +55,9 @@ public class RetrofitViewModel extends AndroidViewModel {
     }
 
 
-    public void getAnswersFromRemoteResponse(int page) {
+    public void getAnswersFromRemoteResponse(int page, RemoteDataListener remoteDataListener) {
         if (mDatabaseModel != null)
-            mDatabaseModel.getAnswersFromRemoteResponse(page);
+            mDatabaseModel.getAnswersFromRemoteResponse(page, remoteDataListener);
     }
 
     public LiveData<AnswersResponse> getAnswersFromRemoteResponse() {

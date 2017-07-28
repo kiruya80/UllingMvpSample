@@ -224,8 +224,8 @@ public class DatabaseModel {
     }
 
 
-    public void getAnswersFromRemoteResponse(int page) {
-        retrofitRemoteData.getAnswersResponse(page);
+    public void getAnswersFromRemoteResponse(int page, RemoteDataListener remoteDataListener) {
+        retrofitRemoteData.getAnswersResponse(page, remoteDataListener);
     }
 
     public void getAnswersFromRemote(final int page) {

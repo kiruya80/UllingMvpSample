@@ -16,9 +16,11 @@ import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
 import com.example.architecture.databinding.FragRetrofitBinding;
 import com.example.architecture.entities.retrofit.AnswersResponse;
+import com.example.architecture.network.RemoteDataListener;
 import com.example.architecture.view.adapter.RetrofitAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
+import com.ulling.lib.core.entities.QcCommonResponse;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
@@ -142,7 +144,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
 //                }, 1000);
 
                 if (viewModel != null) {
-                    viewModel.getAnswersFromRemoteResponse(page);
+                    viewModel.getAnswersFromRemoteResponse(page, remoteDataListener);
                     qcScrollListener.onNetworkLoading(true);
                 }
             }
@@ -169,10 +171,39 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             @Override
             public void onSingleClick(View v) {
                 if (viewModel != null)
-                    viewModel.getAnswersFromRemoteResponse(page);
+                    viewModel.getAnswersFromRemoteResponse(page, remoteDataListener);
             }
         });
     }
+
+    private RemoteDataListener remoteDataListener = new RemoteDataListener() {
+        @Override
+        public void onSuccess(int statusCode, QcCommonResponse answers) {
+        }
+
+        @Override
+        public void onError(int statusCode, String msg) {
+            /**
+             * 에러인 경우는 리스트 및 뷰에 표현하고
+             * 다시시도 버튼등으로 표현한다
+             *
+             * 아답터에 푸터등에 추가하는방식
+              */
+
+            QcToast.getInstance().show("RemoteDataListener onError !!!! " + msg, false);
+            if (qcScrollListener != null) {
+                page = page--;
+                qcScrollListener.onCurrentPage(page);
+                qcScrollListener.onNextPage(true);
+                // 에러인경우 네트워킹상태는 true로해서 계속 데이터를 불러오지 않기 위해서
+                qcScrollListener.onNetworkLoading(true);
+            }
+        }
+
+        @Override
+        public void onFailure(Throwable t, String msg) {
+        }
+    };
 
     @Override
     public void needInitViewModel() {

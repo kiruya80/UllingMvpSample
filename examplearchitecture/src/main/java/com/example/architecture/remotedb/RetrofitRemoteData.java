@@ -215,7 +215,7 @@ public class RetrofitRemoteData {
         return answersResponse;
     }
 
-    public void getAnswersResponse(int page) {
+    public void getAnswersResponse(int page, final  RemoteDataListener remoteDataListener ) {
         QcLog.e("PROCESSING IN THREAD BEFORE RETROFIT CALL " + Thread.currentThread().getName());
 //        Call<StoreInfo> call = getRetrofitClient().create(StoreApi.class).getStoreInfo();
         Call<AnswersResponse> call = getGetAnswersApi().getAnswers();
@@ -227,24 +227,25 @@ public class RetrofitRemoteData {
                 if (response.isSuccessful()) {
                     QcLog.e("onResponse isSuccessful == ");
                     QcLog.e("getItems().size = " + response.body().getItemResponses().size());
-                    AnswersResponse si = response.body();
-                    answersResponse.postValue(si);
-//                    data.setValue(si);
-//                    for (Item item : response.body().getItems()) {
-//                        QcLog.e("item == " + item.toString());
-//                    }
-                    mObservable.notifyChanged();
+                    AnswersResponse answersResponse_ = response.body();
+                    answersResponse.postValue(answersResponse_);
+
+                    remoteDataListener.onSuccess(1, answersResponse_);
+//                    mObservable.notifyChanged();
                 } else {
                     int statusCode = response.code();
-                    QcLog.e("onResponse == " + statusCode);
-                    // handle request errors depending on status code
+                    QcLog.e("onResponse Error !!! " + statusCode);
+                    QcLog.e("errorBody == " + response.errorBody().toString());
+                    remoteDataListener.onError(statusCode, response.errorBody().toString());
                 }
                 QcLog.e("PROCESSING IN THREAD IN RETROFIT RESPONSE HANDLER " + Thread.currentThread().getName());
             }
 
             @Override
             public void onFailure(Call<AnswersResponse> call, Throwable t) {
-                QcLog.e("onFailure error loading from API");
+                QcLog.e("onFailure error loading from API == " +t.toString());
+                QcLog.e("onFailure error loading from API == " +t.getMessage());
+                remoteDataListener.onFailure(t, "");
             }
         });
     }

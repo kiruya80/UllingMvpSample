@@ -247,9 +247,10 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
              *
              * lastVisibleItemPosition =====26 , visibleThreshold= 5 , totalItemCount= 30
              */
-            QcLog.e("마지막, 더보기 호출 onLoadMore == " + currentPage + " , loading = " + loading);
+            QcLog.e("onLoadMore ======================== " + currentPage + " , loading = " + loading);
             currentPage++;
             loading = true;
+            QcLog.e("마지막, 더보기 호출 onLoadMore == " + currentPage + " , loading = " + loading);
             onLoadMore(currentPage, totalItemCount, view);
         }
         isEdgetype = EDGE_TYPE_NONE;
