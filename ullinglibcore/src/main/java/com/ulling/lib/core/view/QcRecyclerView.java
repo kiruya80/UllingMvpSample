@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.ulling.lib.core.util.QcLog;
+import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
 /**
@@ -52,6 +53,92 @@ import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
  */
 public class QcRecyclerView extends RecyclerView {
     private Context context;
+    private QcRecyclerListener qcRecyclerListener;
+    private QcRecyclerBaseAdapter adapter;
+
+
+    public interface QcRecyclerListener {
+        void onLoadMore(int page, int totalItemsCount, RecyclerView view);
+
+        void onPositionTop();
+
+        void onPositionBottom();
+    }
+
+
+    /**
+     * SCROLL PAGE SETTING
+     */
+
+    private EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener((RecyclerView.LayoutManager) getLayoutManager()) {
+        @Override
+        public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+            QcLog.i("onLoadMore =====");
+            if (endlessRecyclerScrollListener != null)
+            endlessRecyclerScrollListener.onNetworkLoading(true);
+            if (qcRecyclerListener != null) {
+                qcRecyclerListener.onLoadMore(page, totalItemsCount, view);
+            }
+        }
+
+        @Override
+        public void onPositionTop() {
+            QcLog.i("onPositionTop =====");
+            if (qcRecyclerListener != null)
+                qcRecyclerListener.onPositionTop();
+        }
+
+        @Override
+        public void onPositionBottom() {
+            QcLog.i("onPositionBottom =====");
+            if (qcRecyclerListener != null)
+                qcRecyclerListener.onPositionBottom();
+        }
+    };
+
+    /**
+     * 스크롤 데이터 리스너 가져오기
+     * 뷰에서 네트워크데이터 변경시 스크롤리스너에게 알려주기위해서
+     */
+    public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
+        if (endlessRecyclerScrollListener != null)
+            return endlessRecyclerScrollListener;
+        return null;
+    }
+
+    /**
+     * 스크롤리스너 가져오기
+     */
+    public void setQcRecyclerListener(QcRecyclerListener qcRecyclerListener) {
+        this.qcRecyclerListener = qcRecyclerListener;
+    }
+
+    /**
+     * 리사이클뷰 생성
+     */
+
+    public QcRecyclerView(Context context) {
+        // 자신의 생성자를 호출합니다.
+        this(context, null);
+    }
+
+    public QcRecyclerView(Context context, @Nullable AttributeSet attrs) {
+        // 자신의 생성자를 호출합니다.
+        this(context, attrs, 0);
+    }
+
+    public QcRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+//        initView();
+//        getAttrs(attrs);
+//        setLinearLayoutManager();
+//        setEndlessRecyclerScrollListener();
+        if (endlessRecyclerScrollListener != null) {
+            addOnScrollListener(endlessRecyclerScrollListener);
+        }
+    }
+
+
     /**
      * emptyView SETTING
      */
@@ -94,7 +181,15 @@ public class QcRecyclerView extends RecyclerView {
             super.onItemRangeMoved(fromPosition, toPosition, itemCount);
         }
     };
-    private QcRecyclerListener qcRecyclerListener;
+
+    public void setAdapter(QcRecyclerBaseAdapter adapter, View emptyView) {
+        if (!(adapter instanceof QcRecyclerBaseAdapter)) {
+            throw new IllegalArgumentException("please use QcRecyclerBaseAdapter to instead of Adapter");
+        }
+        this.emptyView = emptyView;
+        this.adapter = adapter;
+        this.setAdapter(adapter);
+    }
 
     @Override
     public void setAdapter(Adapter adapter) {
@@ -105,8 +200,7 @@ public class QcRecyclerView extends RecyclerView {
 //            emptyObserver.onChanged();
         }
     }
-
-    public void setEmptyView(boolean isEmpty) {
+    private void setEmptyView(boolean isEmpty) {
         if (isEmpty) {
             emptyView.setVisibility(View.VISIBLE);
             QcRecyclerView.this.setVisibility(View.GONE);
@@ -116,77 +210,6 @@ public class QcRecyclerView extends RecyclerView {
         }
     }
 
-    public void setEmptyView(View emptyView) {
-        this.emptyView = emptyView;
-    }
-    /**
-     * SCROLL PAGE SETTING
-     */
-
-    private EndlessRecyclerScrollListener endlessRecyclerScrollListener = new EndlessRecyclerScrollListener((RecyclerView.LayoutManager) getLayoutManager()) {
-        @Override
-        public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-            QcLog.i("onLoadMore =====");
-            if (qcRecyclerListener != null) {
-                qcRecyclerListener.onLoadMore(page, totalItemsCount, view);
-            }
-        }
-
-        @Override
-        public void onLoadEnd() {
-            QcLog.i("onLoadEnd =====");
-            if (qcRecyclerListener != null)
-                qcRecyclerListener.onLoadEnd();
-        }
-    };
-
-    /**
-     * 스크롤 데이터 리스너 가져오기
-     * 뷰에서 네트워크데이터 변경시 스크롤리스너에게 알려주기위해서
-     * @return
-     */
-    public EndlessRecyclerScrollListener.QcScrollDataListener getQcScrollDataListener() {
-        if (endlessRecyclerScrollListener != null)
-            return endlessRecyclerScrollListener.getQcScrollDataListener();
-        return null;
-    }
-
-    public interface QcRecyclerListener {
-        void onLoadMore(int page, int totalItemsCount, RecyclerView view);
-        void onLoadEnd();
-    }
-
-    /**
-     * 스크롤리스너 가져오기
-     * @param qcRecyclerListener
-     */
-    public void setQcRecyclerListener(QcRecyclerListener qcRecyclerListener) {
-        this.qcRecyclerListener = qcRecyclerListener;
-    }
-    /**
-     * 리사이클뷰 생성
-     */
-
-    public QcRecyclerView(Context context) {
-        // 자신의 생성자를 호출합니다.
-        this(context, null);
-    }
-
-    public QcRecyclerView(Context context, @Nullable AttributeSet attrs) {
-        // 자신의 생성자를 호출합니다.
-        this(context, attrs, 0);
-    }
-
-    public QcRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-//        initView();
-//        getAttrs(attrs);
-//        setLinearLayoutManager();
-//        setEndlessRecyclerScrollListener();
-        if (endlessRecyclerScrollListener != null) {
-            addOnScrollListener(endlessRecyclerScrollListener);
-        }
-    }
 
 //    public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
 //        return endlessRecyclerScrollListener;
@@ -277,5 +300,111 @@ public class QcRecyclerView extends RecyclerView {
 //            return stgaggeredGridLayoutManager;
 //        }
 //        return layoutManager;
+//    }
+
+
+
+
+
+
+
+
+
+//    /**
+//     * set list divider
+//     *
+//     * @param dividerRes divider resource
+//     */
+//    public void setDivider(int dividerRes) {
+//        setDivider(dividerRes, WRAP_CONTENT);
+//    }
+//
+//    /**
+//     * set list divider
+//     *
+//     * @param dividerRes    divider resource
+//     * @param dividerHeight divider height
+//     */
+//    public void setDivider(int dividerRes, int dividerHeight) {
+//        Drawable drawable = getResources().getDrawable(dividerRes);
+//        setDivider(drawable, dividerHeight);
+//    }
+//
+//    /**
+//     * set list divider
+//     *
+//     * @param drawable      drawable
+//     * @param dividerHeight divider height
+//     */
+//    public void setDivider(final Drawable drawable, final int dividerHeight) {
+//        if (null == drawable) {
+//            throw new NullPointerException("drawable resource is null");
+//        }
+//        addItemDecoration(new RecyclerView.ItemDecoration() {
+//            @Override
+//            public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+//                int left = parent.getPaddingLeft();
+//                int right = parent.getWidth() - parent.getPaddingRight();
+//
+//                int childCount = parent.getChildCount();
+//                for (int i = 0; i < childCount; i++) {
+//                    View child = parent.getChildAt(i);
+//
+//                    RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+//
+//                    int top = child.getBottom() + params.bottomMargin;
+//                    int bottom;
+//                    if (dividerHeight == WRAP_CONTENT) {
+//                        bottom = top + drawable.getIntrinsicHeight();
+//                    } else {
+//                        if (dividerHeight < 0) {
+//                            bottom = top;
+//                        } else {
+//                            bottom = top + dividerHeight;
+//                        }
+//
+//                    }
+//
+//                    drawable.setBounds(left, top, right, bottom);
+//                    drawable.draw(c);
+//                }
+//            }
+//        });
+//    }
+//
+//    /**
+//     * set list divider
+//     *
+//     * @param drawable drawable
+//     */
+//    public void setDivider(Drawable drawable) {
+//        setDivider(drawable, WRAP_CONTENT);
+//    }
+
+
+
+//    /**
+//     * enable list view auto load more
+//     *
+//     * @param loadMoreListener load more listener
+//     */
+//    public void enableAutoLoadMore(final HiInterface.OnLoadMoreListener loadMoreListener) {
+//        addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (null == mLayoutManager || null == mAdapter || mAdapter.mIsAddingFooter) {
+//                    return;
+//                }
+//                mVisibleItemCount = mLayoutManager.getChildCount();
+//                mTotalItemCount = mLayoutManager.getItemCount();
+//                mFirstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+//                if ((mVisibleItemCount + mFirstVisibleItemPosition) >= mTotalItemCount) {
+//                    if (null != loadMoreListener) {
+//                        loadMoreListener.loadMore();
+//                    }
+//                }
+//            }
+//        });
 //    }
 }

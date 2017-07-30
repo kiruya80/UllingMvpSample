@@ -64,7 +64,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     private int viewStartingPageIndex = 1;
     // The current offset index of data you have loaded
     private int viewCurrentPage = 1;
-    private EndlessRecyclerScrollListener.QcScrollDataListener qcScrollListener;
+    private EndlessRecyclerScrollListener qcEndlessScroll;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -108,27 +108,21 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
         QcLog.e("needResetData == ");
         isLoading = false;
         page = viewStartingPageIndex;
-        setResetScrollStatus();
         if (adapter != null)
             adapter.needResetData();
+        if (viewBinding != null && qcEndlessScroll != null) {
+            qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
+            qcEndlessScroll.onResetStatus();
+        }
     }
 
-
-    private void setResetScrollStatus() {
-        if (viewBinding != null && viewBinding.qcRecyclerView != null)
-            qcScrollListener.onResetStatus();
-    }
 
     @Override
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitBinding) getViewBinding();
-//        viewBinding.recyclerView.setAdapter(adapter);
-        viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
-        viewBinding.qcRecyclerView.setAdapter(adapter);
-        qcScrollListener = viewBinding.qcRecyclerView.getQcScrollDataListener();
-        qcScrollListener.onStartingPageIndex(viewStartingPageIndex);
-        qcScrollListener.onCurrentPage(viewCurrentPage);
+        viewBinding.qcRecyclerView.setAdapter(adapter, viewBinding.tvEmpty);
+        qcEndlessScroll = viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener();
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
 
             @Override
@@ -137,7 +131,6 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
                 page = page_;
                 QcToast.getInstance().show("onLoadMore !! " + page, false);
                 adapter.addProgress();
-                qcScrollListener.onNetworkLoading(true);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -151,9 +144,14 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             }
 
             @Override
-            public void onLoadEnd() {
-                QcLog.e("onLoadEnd =====");
-                QcToast.getInstance().show("onLoadEnd !! ", false);
+            public void onPositionTop() {
+                QcLog.e("onPositionTop =====");
+                QcToast.getInstance().show("onPositionTop !! ", false);
+            }
+            @Override
+            public void onPositionBottom() {
+                QcLog.e("onPositionBottom =====");
+                QcToast.getInstance().show("onPositionBottom !! ", false);
             }
         });
         viewBinding.progressBar.setVisibility(View.GONE);
@@ -217,14 +215,7 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
              */
 
             QcToast.getInstance().show("RemoteDataListener onError !!!! " + msg, false);
-            if (qcScrollListener != null) {
-                page = page--;
-                qcScrollListener.onCurrentPage(page);
-                qcScrollListener.onNextPage(true);
-                // 에러인경우 네트워킹상태는 true로해서 계속 데이터를 불러오지 않기 위해서
-                qcScrollListener.onNetworkLoading(false);
-                qcScrollListener.onNetworkError(true);
-            }
+            setScrollLoadFail();
         }
 
         @Override
@@ -240,16 +231,20 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
              */
 
             QcToast.getInstance().show("RemoteDataListener onFailure !!!! " + msg, false);
-            if (qcScrollListener != null) {
-                page = page--;
-                qcScrollListener.onCurrentPage(page);
-                qcScrollListener.onNextPage(true);
-                // 에러인경우 네트워킹상태는 true로해서 계속 데이터를 불러오지 않기 위해서
-                qcScrollListener.onNetworkLoading(false);
-                qcScrollListener.onNetworkError(true);
-            }
+            setScrollLoadFail();
         }
     };
+
+    private void setScrollLoadFail() {
+        page = page--;
+        if (qcEndlessScroll != null) {
+            qcEndlessScroll.onCurrentPage(page);
+            qcEndlessScroll.onNextPage(true);
+            // 에러인경우 네트워킹상태는 true로해서 계속 데이터를 불러오지 않기 위해서
+            qcEndlessScroll.onNetworkLoading(false);
+            qcEndlessScroll.onNetworkError(true);
+        }
+    }
 
     @Override
     public void needInitViewModel() {
@@ -275,9 +270,9 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
             public void onChanged(@Nullable AnswersResponse answers) {
                 if (answers == null) {
                     QcLog.e("answersLive observe answersLive == null ");
-                    if (qcScrollListener != null) {
-                        qcScrollListener.onNextPage(false);
-                        qcScrollListener.onNetworkLoading(false);
+                    if (qcEndlessScroll != null) {
+                        qcEndlessScroll.onNextPage(false);
+                        qcEndlessScroll.onNetworkLoading(false);
                     }
                     return;
                 }
@@ -293,12 +288,12 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
 
                 adapter.removeLoadFail();
                 adapter.removeProgress();
-                adapter.add(answers.getItemResponses());
+                adapter.addAll(answers.getItemResponses());
 //                adapter.addAll(answers.getItemResponses());
 
-                if (qcScrollListener != null) {
-                    qcScrollListener.onNextPage(answers.getHasMore());
-                    qcScrollListener.onNetworkLoading(false);
+                if (qcEndlessScroll != null) {
+                    qcEndlessScroll.onNextPage(answers.getHasMore());
+                    qcEndlessScroll.onNetworkLoading(false);
                 }
 
             }
@@ -337,24 +332,30 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     }
 
     private QcRecyclerBaseAdapter.QcRecyclerItemListener qcRecyclerItemListener = new QcRecyclerBaseAdapter.QcRecyclerItemListener() {
-        @Override
-        public void onItemClick(View view, int position) {
 
+
+        @Override
+        public void onItemClick(View view, int position, Object o) {
+            ItemResponse item = (ItemResponse)o;
+            QcLog.e("onItemClick == " + item.toString());
         }
 
         @Override
-        public void onItemLongClick(View view, int position) {
-
+        public void onItemLongClick(View view, int position, Object o) {
+            ItemResponse item = (ItemResponse)o;
+            QcLog.e("onItemClick == " + item.toString());
         }
 
         @Override
-        public void onItemCheck(boolean checked, int position) {
-
+        public void onItemCheck(boolean checked, int position, Object o) {
+            ItemResponse item = (ItemResponse)o;
+            QcLog.e("onItemClick == " + item.toString());
         }
 
         @Override
-        public void onDeleteItem(int itemPosition) {
-
+        public void onDeleteItem(int itemPosition, Object o) {
+            ItemResponse item = (ItemResponse)o;
+            QcLog.e("onItemClick == " + item.toString());
         }
 
         @Override

@@ -34,19 +34,25 @@ import java.util.List;
  *
  * http://realignist.me/code/2016/05/25/data-binding-guide.html
  */
-public class RetrofitAdapter extends QcRecyclerBaseAdapter {
-    private List<ItemResponse> itemList;
+public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
+//    private List<ItemResponse> itemList;
 
     private RetrofitViewModel viewModel;
 
-    public void addAll(List<ItemResponse> itemList_) {
-        QcLog.e("addAll == " + itemList_.size());
-        this.itemList = itemList_;
-//        notifyDataSetChanged();
-        notifyItemRangeChanged(0, itemList.size());
-    }
+//    public void addAll(List<ItemResponse> itemList_) {
+//        if (null == itemList_ || itemList_.isEmpty()) {
+//            return;
+//        }
+//        QcLog.e("addAll == " + itemList_.size());
+//        this.itemList = itemList_;
+////        notifyDataSetChanged();
+//        notifyItemRangeChanged(0, itemList.size());
+//    }
 
-    public void add(List<ItemResponse> itemList_) {
+    public void addAll(List<ItemResponse> itemList_) {
+        if (null == itemList_ || itemList_.isEmpty()) {
+            return;
+        }
         QcLog.e("add == " + itemList_.size());
         if (this.itemList == null) {
             this.itemList = itemList_;
@@ -60,12 +66,16 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
     }
 
     public void add(ItemResponse item_) {
+        if (null == item_) {
+            return;
+        }
         QcLog.e("add == ");
         if (this.itemList == null)
             this.itemList = new ArrayList<>();
         this.itemList.add(item_);
         notifyItemChanged(itemList.size(), 0);
     }
+
 
     public void addProgress() {
         if (isProgress())
@@ -256,14 +266,16 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
                 case R.id.rlProfile:
                     QcLog.e("rlProfile ==== " + position);
                     QcToast.getInstance().show("rlProfile = ", false);
+                    if (qcRecyclerItemListener != null)
+                        qcRecyclerItemListener.onItemClick(v, position, itemList.get(position));
                     break;
                 case R.id.tvUserId:
                     QcLog.e("tvUserId ==== " + position);
-                    QcToast.getInstance().show("tvUserId = " + itemList.get(position).getOwnerResponse().getUserId(), false);
+//                    QcToast.getInstance().show("tvUserId = " + itemList.get(position).getOwnerResponse().getUserId(), false);
                     break;
                 case R.id.tvUserName:
                     QcLog.e("tvUserName ==== " + position);
-                    QcToast.getInstance().show("tvUserName = " + itemList.get(position).getOwnerResponse().getDisplayName(), false);
+//                    QcToast.getInstance().show("tvUserName = " + itemList.get(position).getOwnerResponse().getDisplayName(), false);
                     break;
                 default:
                     QcLog.e("default ==== " + position);
@@ -280,13 +292,13 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
             if (v.getId() == R.id.rlProfile) {
-                QcToast.getInstance().show("onLongClick rlProfile = " + itemList.get(position).getOwnerResponse().getProfileImage(), false);
+//                QcToast.getInstance().show("onLongClick rlProfile = " + itemList.get(position).getOwnerResponse().getProfileImage(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserId) {
-                QcToast.getInstance().show("onLongClick tvUserId = " + itemList.get(position).getOwnerResponse().getUserId(), false);
+//                QcToast.getInstance().show("onLongClick tvUserId = " + itemList.get(position).getOwnerResponse().getUserId(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserName) {
-                QcToast.getInstance().show("onLongClick tvUserName = " + itemList.get(position).getOwnerResponse().getDisplayName(), false);
+//                QcToast.getInstance().show("onLongClick tvUserName = " + itemList.get(position).getOwnerResponse().getDisplayName(), false);
 
                 return false;
 

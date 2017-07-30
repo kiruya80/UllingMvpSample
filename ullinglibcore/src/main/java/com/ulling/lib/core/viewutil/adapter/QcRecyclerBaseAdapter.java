@@ -12,25 +12,38 @@ import android.view.ViewGroup;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.util.QcLog;
 
+import java.util.List;
+
 /**
  * Created by P100651 on 2017-07-20.
  *
  * https://github.com/googlesamples/android-architecture-components/blob/master/BasicSample/app/src/main/java/com/example/android/persistence/ui/ProductAdapter.java
+ *
+ *
+ * 해결 및 최적화가 가능한지 체크 리스트
+ *
+ * 1. 공통으로 사용할 수 있는 데이터 리스트?
+ * 2. 데이터 모델이 필요할까
+ *
  */
-public abstract class QcRecyclerBaseAdapter extends RecyclerView.Adapter<QcBaseViewHolder> {
+public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBaseViewHolder> {
     public static final int TYPE_LOAD_FAIL = 0;
     public static final int TYPE_LOAD_PROGRESS = 999;
     public static final int TYPE_DEFAULT = 1;
     public Context qCon;
     public QcBaseLifeFragment qFragment;
     private AndroidViewModel viewModel;
-//    public OnSingleClickListener listener;
     public QcRecyclerItemListener qcRecyclerItemListener;
-    public interface QcRecyclerItemListener {
-        void onItemClick(View view, int position);
-        void onItemLongClick(View view, int position);
-        void onItemCheck(boolean checked, int position);
-        void onDeleteItem(int itemPosition);
+    /**
+     * data set
+     */
+    public List<T> itemList;
+
+    public interface QcRecyclerItemListener<T> {
+        void onItemClick(View view, int position, T t);
+        void onItemLongClick(View view, int position, T t);
+        void onItemCheck(boolean checked, int position, T t);
+        void onDeleteItem(int itemPosition, T t);
         void onReload();
     }
     /**

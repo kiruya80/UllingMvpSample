@@ -1,5 +1,8 @@
 package com.example.architecture.view;
 
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -29,9 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 /**
  * Created by P100651 on 2017-07-04.
  */
@@ -50,7 +50,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     private int viewStartingPageIndex = 1;
     // The current offset index of data you have loaded
     private int viewCurrentPage = 1;
-    private EndlessRecyclerScrollListener.QcScrollDataListener qcScrollListener;
+    private EndlessRecyclerScrollListener qcEndlessScroll;
 
     public static LiveDataFragment newInstance(int sectionNumber) {
         LiveDataFragment fragment = new LiveDataFragment();
@@ -98,8 +98,8 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     }
 
     private void setResetScrollStatus() {
-        if (viewBinding != null && viewBinding.qcRecyclerView != null)
-            qcScrollListener.onResetStatus();
+        if (viewBinding != null && qcEndlessScroll != null)
+            qcEndlessScroll.onResetStatus();
     }
 
     @Override
@@ -112,11 +112,10 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
         QcLog.e("needUIBinding == ");
         viewBinding = (FragLiveDataBinding) getViewBinding();
 //        viewBinding.recyclerView.setAdapter(adapter);
-        viewBinding.qcRecyclerView.setEmptyView(viewBinding.tvEmpty);
-        viewBinding.qcRecyclerView.setAdapter(adapter);
-        qcScrollListener = viewBinding.qcRecyclerView.getQcScrollDataListener();
-        qcScrollListener.onStartingPageIndex(viewStartingPageIndex);
-        qcScrollListener.onCurrentPage(viewCurrentPage);
+        viewBinding.qcRecyclerView.setAdapter(adapter, viewBinding.tvEmpty);
+        qcEndlessScroll = viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener();
+        qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
+        qcEndlessScroll.onResetStatus();
         viewBinding.qcRecyclerView.setQcRecyclerListener(new QcRecyclerView.QcRecyclerListener() {
             @Override
             public void onLoadMore(int page_, int totalItemsCount, RecyclerView view) {
@@ -125,9 +124,14 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
             }
 
             @Override
-            public void onLoadEnd() {
-                QcLog.e("onLoadEnd =====");
-                QcToast.getInstance().show("onLoadEnd !! ", false);
+            public void onPositionTop() {
+                QcLog.e("onPositionTop =====");
+                QcToast.getInstance().show("onPositionTop !! ", false);
+            }
+            @Override
+            public void onPositionBottom() {
+                QcLog.e("onPositionBottom =====");
+                QcToast.getInstance().show("onPositionBottom !! ", false);
             }
         });
         viewBinding.progressBar.setVisibility(View.GONE);

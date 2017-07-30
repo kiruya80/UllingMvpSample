@@ -19,4 +19,8 @@ public abstract class QcBaseResponse extends LiveData {
     public void setType(int type) {
         this.type = type;
     }
+
+    public QcBaseResponse() {
+
+    }
 }
