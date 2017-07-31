@@ -3,9 +3,9 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.ulling.lib.core.entities.QcBaseResponse;
+import com.ulling.lib.core.entities.QcBaseItem;
 
-public class OwnerResponse extends QcBaseResponse {
+public class OwnerResponse extends QcBaseItem {
 
     @SerializedName("reputation")
     @Expose

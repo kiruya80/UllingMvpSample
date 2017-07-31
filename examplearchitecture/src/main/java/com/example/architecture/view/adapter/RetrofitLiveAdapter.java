@@ -1,7 +1,5 @@
 package com.example.architecture.view.adapter;
 
-import static com.example.architecture.R.layout.row_retrofit_live;
-
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.Nullable;
@@ -21,11 +19,13 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.example.architecture.R.layout.row_retrofit_live;
 
 /**
  * @author : KILHO
@@ -39,7 +39,7 @@ import java.util.List;
  *
  * https://github.com/AnkitSinhal/DiffUtilExample/blob/master/app/src/main/java/com/sample/diffutil/EmployeeDiffCallback.java
  */
-public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
+public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
     private List<Answer> itemList = new ArrayList<>();
     private RetrofitLiveViewModel viewModel;
 
@@ -225,6 +225,17 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter {
 
     }
 
+
+    @Override
+    protected void needUILoadFailBinding(QcBaseViewHolder holder, int position, Object object) {
+//        RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
+//        hoderBinding.btnReload.setTag(position);
+    }
+
+    @Override
+    protected void needUILoadProgressBinding(QcBaseViewHolder holder, int position, Object object) {
+//            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
+    }
 
     private OnSingleClickListener mOnSingleClickListener = new OnSingleClickListener() {
         @Override

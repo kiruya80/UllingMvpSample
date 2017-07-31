@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Created by P100651 on 2017-07-20.
  */
-public class LiveDataAdapter extends QcRecyclerBaseAdapter {
+public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
     //    QcRecyclerItemListener qcRecyclerItemListener;
 //    ArrayList<User> userList = new ArrayList<>();
     private List<? extends User> userList;
@@ -170,6 +170,17 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter {
         hoderBinding.tvUserName.setText(user.getName());
     }
 
+
+    @Override
+    protected void needUILoadFailBinding(QcBaseViewHolder holder, int position, Object object) {
+//        RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
+//        hoderBinding.btnReload.setTag(position);
+    }
+
+    @Override
+    protected void needUILoadProgressBinding(QcBaseViewHolder holder, int position, Object object) {
+//            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
+    }
     private OnSingleClickListener mOnSingleClickListener = new OnSingleClickListener() {
         @Override
         public void onSingleClick(View v) {

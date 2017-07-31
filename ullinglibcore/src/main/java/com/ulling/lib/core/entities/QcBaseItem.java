@@ -23,4 +23,7 @@ public abstract class QcBaseItem {
     public void setType(int type) {
         this.type = type;
     }
+
+//    public QcBaseItem() {
+//    }
 }

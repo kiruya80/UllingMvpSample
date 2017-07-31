@@ -1,7 +1,5 @@
 package com.example.architecture.view.adapter;
 
-import static com.example.architecture.R.layout.row_retrofit_live;
-
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ViewDataBinding;
 import android.view.View;
@@ -19,11 +17,13 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.example.architecture.R.layout.row_retrofit_live;
 
 /**
  * @author : KILHO
@@ -164,7 +164,6 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
         if (itemList != null && itemList.size() > 0) {
             if (itemList.get(position).getType() == TYPE_DEFAULT) {
                 return row_retrofit_live;
-
             } else if (itemList.get(position).getType() == TYPE_LOAD_FAIL) {
                 return R.layout.row_load_fail;
             } else if (itemList.get(position).getType() == TYPE_LOAD_PROGRESS) {
@@ -238,16 +237,24 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
                         .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
 //                    .bitmapTransform(new BlurTransformation(qCon))
                         .into(hoderBinding.ivProfile);
-        } else if (item.getType() == TYPE_LOAD_FAIL) {
-            RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
-            hoderBinding.btnReload.setTag(position);
-        } else if (item.getType() == TYPE_LOAD_PROGRESS) {
-//            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
-
-
+//        } else if (item.getType() == TYPE_LOAD_FAIL) {
+//            RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
+//            hoderBinding.btnReload.setTag(position);
+//        } else if (item.getType() == TYPE_LOAD_PROGRESS) {
+////            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
         }
     }
 
+    @Override
+    protected void needUILoadFailBinding(QcBaseViewHolder holder, int position, Object object) {
+        RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
+        hoderBinding.btnReload.setTag(position);
+    }
+
+    @Override
+    protected void needUILoadProgressBinding(QcBaseViewHolder holder, int position, Object object) {
+//            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
+    }
 
     private OnSingleClickListener mOnSingleClickListener = new OnSingleClickListener() {
         @Override

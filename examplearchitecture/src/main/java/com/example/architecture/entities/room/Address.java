@@ -2,8 +2,6 @@ package com.example.architecture.entities.room;
 
 import android.arch.persistence.room.ColumnInfo;
 
-import com.ulling.lib.core.entities.QcBaseItem;
-
 /**
  * @author : KILHO
  * @project : UllingMvpSample
@@ -12,7 +10,7 @@ import com.ulling.lib.core.entities.QcBaseItem;
  * @since :
  */
 
-public class Address  extends QcBaseItem {
+public class Address   {
     public String street;
     public String state;
     public String city;

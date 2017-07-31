@@ -3,11 +3,11 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.ulling.lib.core.entities.QcBaseResponse;
+import com.ulling.lib.core.entities.QcBaseItem;
 
 import java.util.List;
 
-public class AnswersResponse extends QcBaseResponse {
+public class AnswersResponse extends QcBaseItem {
 
     @SerializedName("items")
     @Expose

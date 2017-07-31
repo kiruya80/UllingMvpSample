@@ -1,8 +1,5 @@
 package com.example.architecture.view;
 
-import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
-import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
-
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -24,13 +21,16 @@ import com.example.architecture.network.RemoteDataListener;
 import com.example.architecture.view.adapter.RetrofitAdapter;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseShowLifeFragement;
-import com.ulling.lib.core.entities.QcBaseResponse;
+import com.ulling.lib.core.entities.QcBaseItem;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
+
+import static com.example.architecture.model.DatabaseModel.DB_TYPE_LOCAL_ROOM;
+import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 
 /**
  * https://news.realm.io/kr/news/retrofit2-for-http-requests/
@@ -180,10 +180,11 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
      *
      * 아답터 처리를 뷰모델에서 처리할지 고민중..
      */
-    private RemoteDataListener remoteDataListener = new RemoteDataListener() {
+    private RemoteDataListener<QcBaseItem> remoteDataListener = new RemoteDataListener<QcBaseItem>() {
+
         @Override
-        public void onSuccess(int statusCode, boolean hasNextPage, QcBaseResponse answers) {
-            // 성공한 경우 처리
+        public void onSuccess(int statusCode, boolean hasNextPage, QcBaseItem data) {
+//            // 성공한 경우 처리
 //            if (qcScrollListener != null) {
 //                qcScrollListener.onNextPage(hasNextPage);
 //                qcScrollListener.onNetworkLoading(false);
@@ -289,7 +290,6 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
                 adapter.removeLoadFail();
                 adapter.removeProgress();
                 adapter.addAll(answers.getItemResponses());
-//                adapter.addAll(answers.getItemResponses());
 
                 if (qcEndlessScroll != null) {
                     qcEndlessScroll.onNextPage(answers.getHasMore());

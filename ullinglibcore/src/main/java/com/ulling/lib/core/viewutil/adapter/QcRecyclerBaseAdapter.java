@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ulling.lib.core.base.QcBaseLifeFragment;
+import com.ulling.lib.core.entities.QcBaseItem;
 import com.ulling.lib.core.util.QcLog;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBa
     /**
      * data set
      */
+//    public LiveData<List<T>> itemList;
     public List<T> itemList;
 
     public interface QcRecyclerItemListener<T> {
@@ -113,6 +115,7 @@ public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBa
      */
     protected abstract void needUIBinding(QcBaseViewHolder holder, int position, Object object);
 
+
     /**
      * 6.
      *
@@ -171,6 +174,7 @@ public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBa
         QcLog.i("onCreateViewHolder == ");
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
         ViewDataBinding binding = DataBindingUtil.inflate(layoutInflater, viewTypeResId, viewGroup, false);
+
         needUIEventListener(viewTypeResId, binding);
         return new QcBaseViewHolder(binding);
     }
@@ -192,9 +196,22 @@ public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBa
         if (object == null) {
             return;
         }
+        if (object instanceof QcBaseItem) {
+            QcBaseItem item = (QcBaseItem) object;
+            if (item.getType() == TYPE_LOAD_FAIL) {
+                needUILoadFailBinding(holder, position, object);
+                return;
+            } else if (item.getType() == TYPE_LOAD_PROGRESS) {
+                needUILoadProgressBinding(holder, position, object);
+                return;
+            }
+        }
+
         needUIBinding(holder, position, object);
     }
 
+    protected abstract void needUILoadFailBinding(QcBaseViewHolder holder, int position, Object object);
+    protected abstract void needUILoadProgressBinding(QcBaseViewHolder holder, int position, Object object);
     /**
      * @param position
      * @return
@@ -202,6 +219,15 @@ public abstract class QcRecyclerBaseAdapter<T> extends RecyclerView.Adapter<QcBa
     @Override
     public int getItemViewType(int position) {
 //        return getLayoutIdForPosition(position);
+//        if (itemList != null && itemList.size() > 0) {
+//            if (itemList.get(position).getType() == TYPE_DEFAULT) {
+//                return row_retrofit_live;
+//            } else if (itemList.get(position).getType() == TYPE_LOAD_FAIL) {
+//                return R.layout.row_load_fail;
+//            } else if (itemList.get(position).getType() == TYPE_LOAD_PROGRESS) {
+//                return R.layout.row_load_progress;
+//            }
+//        }
         return needLayoutIdFromItemViewType(position);
     }
 }

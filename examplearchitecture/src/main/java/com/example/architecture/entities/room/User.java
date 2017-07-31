@@ -2,7 +2,6 @@
 package com.example.architecture.entities.room;
 
 import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
@@ -79,9 +78,9 @@ public class User extends QcBaseItem {
     @Ignore
     Bitmap picture;
 
-    @Embedded
-//    @Embedded(prefix = "clg") // prefix + Address ex) clgstreet
-    public Address address;
+//    @Embedded
+////    @Embedded(prefix = "clg") // prefix + Address ex) clgstreet
+//    public Address address;
 //    @Ignore
     public User() {
     }
@@ -128,13 +127,6 @@ public class User extends QcBaseItem {
         this.picture = picture;
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
 
     @Override
     public String toString() {
@@ -144,7 +136,6 @@ public class User extends QcBaseItem {
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 ", picture=" + picture +
-                ", address=" + address +
                 '}';
     }
 }

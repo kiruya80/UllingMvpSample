@@ -17,7 +17,6 @@ import com.example.architecture.localdb.RoomLocalData;
 import com.example.architecture.network.RemoteDataListener;
 import com.example.architecture.network.RemoteDataObserver;
 import com.example.architecture.remotedb.RetrofitRemoteData;
-import com.ulling.lib.core.entities.QcBaseResponse;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 
@@ -61,7 +60,7 @@ public class DatabaseModel {
     //    private final PersonDAO personDAO;
     private UserDao userDao = null;
     private AnswerDao answerDao = null;
-    private LiveData<AnswersResponse> answers = new AnswersResponse();
+//    private LiveData<AnswersResponse> answers = new AnswersResponse();
 
     public DatabaseModel(Context context, int localDbType, int remoteType, String baseUrl) {
         this.qCtx = context;
@@ -230,11 +229,21 @@ public class DatabaseModel {
 
     public void getAnswersFromRemote(final int page) {
         retrofitRemoteData.getAnswers(page, new RemoteDataListener() {
+//            @Override
+//            public void onSuccess(int statusCode, boolean hasNextPage, QcBaseLiveItem answers) {
+//                QcLog.e("success = " + statusCode);
+//                if (answers != null) {
+//                    AnswersResponse answersResponse = (AnswersResponse) answers;
+//                    if (answersResponse != null)
+//                    getAnswersResponse(page, answersResponse);
+//                }
+//            }
+
             @Override
-            public void onSuccess(int statusCode, boolean hasNextPage, QcBaseResponse answers) {
+            public void onSuccess(int statusCode, boolean hasNextPage, Object data) {
                 QcLog.e("success = " + statusCode);
-                if (answers != null) {
-                    AnswersResponse answersResponse = (AnswersResponse) answers;
+                if (data != null) {
+                    AnswersResponse answersResponse = (AnswersResponse) data;
                     if (answersResponse != null)
                     getAnswersResponse(page, answersResponse);
                 }

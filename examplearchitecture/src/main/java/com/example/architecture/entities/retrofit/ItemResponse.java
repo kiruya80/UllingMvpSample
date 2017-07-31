@@ -3,9 +3,9 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.ulling.lib.core.entities.QcBaseResponse;
+import com.ulling.lib.core.entities.QcBaseItem;
 
-public class ItemResponse extends QcBaseResponse {
+public class ItemResponse extends QcBaseItem {
 //    public class Item extends LiveData implements BaseObservable {
 
 //    @Bindable
