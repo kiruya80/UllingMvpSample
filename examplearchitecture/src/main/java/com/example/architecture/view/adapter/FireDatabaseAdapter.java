@@ -25,7 +25,6 @@ import java.util.List;
  * Created by P100651 on 2017-07-20.
  */
 public class FireDatabaseAdapter extends QcRecyclerBaseAdapter<User> {
-    //    QcRecyclerItemListener qcRecyclerItemListener;
 //    ArrayList<User> userList = new ArrayList<>();
     private List<? extends User> userList;
     private FireDatabaseViewModel viewModel;

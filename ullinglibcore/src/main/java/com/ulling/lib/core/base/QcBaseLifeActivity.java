@@ -143,6 +143,7 @@ public abstract class QcBaseLifeActivity extends LifecycleActivity {
         needResetData();
         needUIBinding();
         optGetArgument(savedInstanceState);
+        needSubscribeUiFromViewModel();
     }
 
     /**

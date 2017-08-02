@@ -6,10 +6,14 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,8 +30,10 @@ import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.view.QcRecyclerView;
+import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -63,6 +69,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     // The current offset index of data you have loaded
     private int viewCurrentPage = 1;
     private EndlessRecyclerScrollListener qcEndlessScroll;
+
     /**
      * Returns a new instance of this fragment for the given section
      * number.
@@ -93,11 +100,13 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         APP_NAME = QUllingApplication.getAppName();
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(RetrofitLiveViewModel.class);
-            viewModel.initViewModel(qCon, DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+            viewModel.initViewModel(qCon, getActivity(), DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
         adapter = new RetrofitLiveAdapter(this);
-        if (adapter != null && !adapter.isViewModel())
+        if (adapter != null && !adapter.isViewModel()) {
             adapter.setViewModel(viewModel);
+            adapter.setQcRecyclerItemListener(qcRecyclerItemListener);
+        }
     }
 
     @Override
@@ -153,11 +162,13 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
                     qcEndlessScroll.onNetworkLoading(true);
                 }
             }
+
             @Override
             public void onPositionTop() {
                 QcLog.e("onPositionTop =====");
                 QcToast.getInstance().show("onPositionTop !! ", false);
             }
+
             @Override
             public void onPositionBottom() {
                 QcLog.e("onPositionBottom =====");
@@ -219,16 +230,16 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             public void onChanged(@Nullable List<Answer> allanswers) {
                 QcLog.e("allanswers observe == ");
                 if (allanswers != null && allanswers.size() > 0) {
-                    if (qcEndlessScroll!= null) {
+                    if (qcEndlessScroll != null) {
                         boolean hasNextPage = allanswers.get(allanswers.size() - 1).getHasMore();
-                        QcLog.e("Success page = " + page + " , hasNextPage ="+ hasNextPage);
+                        QcLog.e("Success page = " + page + " , hasNextPage =" + hasNextPage);
                         page = allanswers.get(allanswers.size() - 1).getLastPage();
                         qcEndlessScroll.onNextPage(hasNextPage);
                         qcEndlessScroll.onCurrentPage(page);
                         qcEndlessScroll.onNetworkLoading(false);
 
-                        QcToast.getInstance().show("observe page = " + page + " , hasNextPage ="+ hasNextPage, false);
-                        Snackbar.make(viewBinding.qcRecyclerView, "Success page = " + page + " , hasNextPage ="+ hasNextPage, Snackbar.LENGTH_LONG)
+                        QcToast.getInstance().show("observe page = " + page + " , hasNextPage =" + hasNextPage, false);
+                        Snackbar.make(viewBinding.qcRecyclerView, "Success page = " + page + " , hasNextPage =" + hasNextPage, Snackbar.LENGTH_LONG)
                                 .setAction("Action", new OnSingleClickListener() {
                                     @Override
                                     public void onSingleClick(View v) {
@@ -269,6 +280,59 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         }, 2000);
     }
 
+
+    QcRecyclerBaseAdapter.QcRecyclerItemListener qcRecyclerItemListener = new QcRecyclerBaseAdapter.QcRecyclerItemListener() {
+        @Override
+        public void onItemClick(View view, int position, Object object) {
+            moveFragment(view, object);
+        }
+
+        @Override
+        public void onItemLongClick(View view, int position, Object o) {
+
+        }
+
+        @Override
+        public void onItemCheck(boolean checked, int position, Object o) {
+
+        }
+
+        @Override
+        public void onDeleteItem(int itemPosition, Object o) {
+
+        }
+
+        @Override
+        public void onReload() {
+
+        }
+    };
+
+    /**
+     * http://overcome26.tistory.com/71
+     * http://www.androidauthority.com/using-shared-element-transitions-activities-fragments-631996/
+     *
+     * http://mikescamell.com/shared-element-transitions-part-4-recyclerview/
+     *
+     */
+    public void moveFragment(View view, Object object) {
+        Answer item = (Answer) object;
+        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        intent.putExtra("item", (Serializable) item);
+//        intent.putExtra("ProfileImage", item.getOwner().getProfileImage());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            QcLog.e("Build.VERSION_CODES.LOLLIPOP == ");
+
+            intent.putExtra("TransitionName", view.getTransitionName());
+            Pair<View, String> pair = Pair.create(view, view.getTransitionName());
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair);
+            getActivity().startActivity(intent, options.toBundle());
+        } else {
+            getActivity().startActivity(intent);
+        }
+    }
+
+
     private void setProgress(boolean isProgress) {
         if (isProgress) {
             viewBinding.progressBar.setVisibility(View.VISIBLE);
@@ -276,6 +340,8 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             viewBinding.progressBar.setVisibility(View.GONE);
         }
     }
+
+
 //    public static List<Employee> getEmployeeListSortedByName() {
 //        final List<Employee> employeeList = getEmployeeList();
 //

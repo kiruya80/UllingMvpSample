@@ -8,6 +8,8 @@ import android.arch.persistence.room.PrimaryKey;
 
 import com.ulling.lib.core.entities.QcBaseItem;
 
+import java.io.Serializable;
+
 /**
  * @author : KILHO
  * @project : UllingMvpSample
@@ -15,9 +17,11 @@ import com.ulling.lib.core.entities.QcBaseItem;
  * @description :
  * @since :
  */
+@SuppressWarnings("serial")
 @Entity
         (indices = {@Index("questionId")})
-public class Answer extends QcBaseItem {
+//public class Answer extends QcBaseItem {
+    public class Answer extends QcBaseItem implements Serializable {
 
 //        @PrimaryKey(autoGenerate = true)
 //    private int id;
@@ -161,5 +165,22 @@ public class Answer extends QcBaseItem {
 
     public void setHasMore(Boolean hasMore) {
         this.hasMore = hasMore;
+    }
+
+    @Override
+    public String toString() {
+        return "Answer{" +
+                "answerId=" + answerId +
+                ", lastPage=" + lastPage +
+                ", questionId=" + questionId +
+                ", owner=" + owner +
+                ", isAccepted=" + isAccepted +
+                ", score=" + score +
+                ", lastActivityDate=" + lastActivityDate +
+                ", lastEditDate=" + lastEditDate +
+                ", creationDate=" + creationDate +
+                ", hasMore=" + hasMore +
+                ", type=" + type +
+                '}';
     }
 }

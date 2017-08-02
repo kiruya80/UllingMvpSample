@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 
 import com.example.architecture.entities.room.Answer;
 import com.example.architecture.model.DatabaseModel;
@@ -22,6 +23,7 @@ import java.util.List;
  */
 public class RetrofitLiveViewModel extends AndroidViewModel {
     private Context qCon;
+    private FragmentActivity qActivity;
     private DatabaseModel mDatabaseModel;
 
     public RetrofitLiveViewModel(@NonNull Application application) {
@@ -31,6 +33,17 @@ public class RetrofitLiveViewModel extends AndroidViewModel {
     public void initViewModel(Context qCon, int dbTypeLocal, int remoteType, String baseUrl) {
         QcLog.e("initViewModel == ");
         this.qCon = qCon;
+        // db model 초기화
+        mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType, baseUrl);
+//        mDatabaseModel = new DatabaseModel(getApplication());
+//        mDatabaseModel.initLocalDb(DB_TYPE_LOCAL_ROOM);
+//        mDatabaseModel.initRemoteDb(DB_TYPE_REMOTE_RETROFIT);
+    }
+
+    public void initViewModel(Context qCon, FragmentActivity qActivity, int dbTypeLocal, int remoteType, String baseUrl) {
+        QcLog.e("initViewModel == ");
+        this.qCon = qCon;
+        this.qActivity = qActivity;
         // db model 초기화
         mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType, baseUrl);
 //        mDatabaseModel = new DatabaseModel(getApplication());
@@ -73,5 +86,6 @@ public class RetrofitLiveViewModel extends AndroidViewModel {
         if (mDatabaseModel != null)
             mDatabaseModel.getAnswersFromRemote(page);
     }
+
 
 }

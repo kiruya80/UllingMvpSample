@@ -8,6 +8,20 @@
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
+
+    <!-- enable window content transitions -->
+    <item name="android:windowContentTransitions">true</item>
+
+    <!--&lt;!&ndash; specify enter and exit transitions &ndash;&gt;-->
+    <!--&lt;!&ndash; options are: explode, slide, fade &ndash;&gt;-->
+    <!--<item name="android:windowEnterTransition">@transition/change_image_trans</item>-->
+    <!--<item name="android:windowExitTransition">@transition/change_image_trans</item>-->
+
+    <!--&lt;!&ndash; specify shared element transitions &ndash;&gt;-->
+    <!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_trans</item>-->
+    <!--<item name="android:windowSharedElementExitTransition">@transition/change_image_trans</item>-->
+
+
   </style>
 
   <!-- Base application theme. -->
@@ -15,6 +29,8 @@
     <!-- Customize your theme here. -->
     <!-- 멀티터치 막기 -->
     <item name="android:splitMotionEvents">false</item>
+    <!-- Customize your theme here. -->
+    <!--<item name="android:windowContentTransitions">true</item>-->
   </style>
 
   <!--<style name="AppTheme.NoActionBar" parent="AppTheme">-->

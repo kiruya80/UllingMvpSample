@@ -1,17 +1,20 @@
 package com.example.architecture.view.adapter;
 
+import static com.example.architecture.R.layout.row_retrofit_live;
+
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ViewDataBinding;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
 import com.example.architecture.R;
 import com.example.architecture.databinding.RowLoadFailBinding;
 import com.example.architecture.databinding.RowRetrofitLiveBinding;
 import com.example.architecture.entities.room.Answer;
 import com.example.architecture.viewmodel.RetrofitLiveViewModel;
+import com.squareup.picasso.Picasso;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
 import com.ulling.lib.core.util.QcLog;
@@ -21,11 +24,6 @@ import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import jp.wasabeef.glide.transformations.BlurTransformation;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
-
-import static com.example.architecture.R.layout.row_retrofit_live;
 
 /**
  * @author : KILHO
@@ -41,6 +39,7 @@ import static com.example.architecture.R.layout.row_retrofit_live;
  */
 public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
     private List<Answer> itemList = new ArrayList<>();
+    private QcRecyclerItemListener qcRecyclerItemListener;
     private RetrofitLiveViewModel viewModel;
 
     public void addAll(List<Answer> itemList_) {
@@ -118,6 +117,9 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
     }
 
 
+    public void setQcRecyclerItemListener(QcRecyclerItemListener qcRecyclerItemListener) {
+        this.qcRecyclerItemListener = qcRecyclerItemListener;
+    }
     public RetrofitLiveAdapter(QcBaseLifeFragment qFragment) {
         super(qFragment);
     }
@@ -177,8 +179,8 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
             RowRetrofitLiveBinding hoderBinding = (RowRetrofitLiveBinding) binding;
 
             hoderBinding.tvPosition.setOnClickListener(mOnSingleClickListener);
-            hoderBinding.rlProfile.setOnClickListener(mOnSingleClickListener);
-            hoderBinding.rlProfile.setOnLongClickListener(mOnLongClickListener);
+            hoderBinding.ivProfile.setOnClickListener(mOnSingleClickListener);
+//            hoderBinding.ivProfile.setOnLongClickListener(mOnLongClickListener);
 
             hoderBinding.tvUserId.setOnClickListener(mOnSingleClickListener);
             hoderBinding.tvUserName.setOnClickListener(mOnSingleClickListener);
@@ -204,17 +206,26 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
             hoderBinding.tvUserName.setTag(position);
             hoderBinding.tvUserName.setText(item.getOwner().getDisplayName());
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                hoderBinding.ivProfile.setTransitionName(qCon.getString(R.string.activity_image_trans) + position);
+            }
 
-            hoderBinding.rlProfile.setTag(position);
+            hoderBinding.ivProfile.setTag(position);
             if (item.getOwner().getProfileImage() != null)
-                Glide.with(qCon)
-                        .load(item.getOwner().getProfileImage())
-                        .error(R.mipmap.ic_launcher)
-                        .placeholder(R.mipmap.ic_launcher)
-                        .crossFade(R.anim.fade_in, 300)
-                        .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
-//                    .bitmapTransform(new BlurTransformation(qCon))
-                        .into(hoderBinding.ivProfile);
+//                Glide.with(qCon)
+//                        .load(item.getOwner().getProfileImage())
+//                        .error(R.mipmap.ic_launcher)
+//                        .placeholder(R.mipmap.ic_launcher)
+//                        .crossFade(R.anim.fade_in, 300)
+//                        .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
+////                    .bitmapTransform(new BlurTransformation(qCon))
+//                        .into(hoderBinding.ivProfile);
+
+            Picasso.with(qCon)
+                    .load(item.getOwner().getProfileImage())
+                    .error(R.mipmap.ic_launcher)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(hoderBinding.ivProfile);
 
         } else if (item.getType() == TYPE_LOAD_FAIL) {
             RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
@@ -247,9 +258,10 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
                     QcLog.e("btnReload ==== " + position);
                     QcToast.getInstance().show("btnReload = ", false);
                     break;
-                case R.id.rlProfile:
-                    QcLog.e("rlProfile ==== " + position);
-                    QcToast.getInstance().show("rlProfile = ", false);
+                case R.id.ivProfile:
+                    QcLog.e("ivProfile ==== " + position);
+                    QcToast.getInstance().show("ivProfile = ", false);
+                    qcRecyclerItemListener.onItemClick(v, position, needItemFromPosition(position));
                     break;
                 case R.id.tvUserId:
                     QcLog.e("tvUserId ==== " + position);
@@ -272,7 +284,7 @@ public class RetrofitLiveAdapter extends QcRecyclerBaseAdapter<Answer> {
         public boolean onLongClick(View v) {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
-            if (v.getId() == R.id.rlProfile) {
+            if (v.getId() == R.id.ivProfile) {
                 QcToast.getInstance().show("onLongClick rlProfile = " + itemList.get(position).getOwner().getProfileImage(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserId) {

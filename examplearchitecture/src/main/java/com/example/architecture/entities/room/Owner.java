@@ -2,6 +2,8 @@ package com.example.architecture.entities.room;
 
 import com.ulling.lib.core.entities.QcBaseItem;
 
+import java.io.Serializable;
+
 /**
  * @author : KILHO
  * @project : UllingMvpSample
@@ -10,7 +12,8 @@ import com.ulling.lib.core.entities.QcBaseItem;
  * @since :
  */
 
-public class Owner  extends QcBaseItem {
+@SuppressWarnings("serial")
+public class Owner  extends QcBaseItem  implements Serializable {
 
     private int reputation;
     private int userId;
@@ -97,5 +100,18 @@ public class Owner  extends QcBaseItem {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    @Override
+    public String toString() {
+        return "Owner{" +
+                "reputation=" + reputation +
+                ", userId=" + userId +
+                ", userType='" + userType + '\'' +
+                ", acceptRate=" + acceptRate +
+                ", profileImage='" + profileImage + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", link='" + link + '\'' +
+                '}';
     }
 }
