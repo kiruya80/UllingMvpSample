@@ -63,6 +63,9 @@
     <string name="id_fmt">User ID: %s</string>
     <string name="email_fmt">Email: %s</string>
 
-
+    <!--setTransitionName -->
+    <string name="trans_image_profile">trans_image_profile</string>
+    <string name="trans_text_name">trans_text_name</string>
+    <string name="trans_text_id">trans_text_id</string>
     <string name="activity_image_trans">activity_image_trans</string>
 </resources>

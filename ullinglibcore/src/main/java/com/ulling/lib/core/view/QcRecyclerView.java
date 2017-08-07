@@ -3,7 +3,10 @@ package com.ulling.lib.core.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -56,6 +59,9 @@ public class QcRecyclerView extends RecyclerView {
     private QcRecyclerListener qcRecyclerListener;
     private QcRecyclerBaseAdapter adapter;
 
+    private boolean reverseLayout = false;
+    private int pageSize = 0;
+
 
     public interface QcRecyclerListener {
         void onLoadMore(int page, int totalItemsCount, RecyclerView view);
@@ -75,7 +81,7 @@ public class QcRecyclerView extends RecyclerView {
         public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
             QcLog.i("onLoadMore =====");
             if (endlessRecyclerScrollListener != null)
-            endlessRecyclerScrollListener.onNetworkLoading(true);
+                endlessRecyclerScrollListener.onNetworkLoading(true);
             if (qcRecyclerListener != null) {
                 qcRecyclerListener.onLoadMore(page, totalItemsCount, view);
             }
@@ -148,6 +154,7 @@ public class QcRecyclerView extends RecyclerView {
         public void onChanged() {
             Adapter<?> adapter = getAdapter();
             if (adapter != null && emptyView != null) {
+                QcLog.e("adapter != null && emptyView != null =====" + adapter.getItemCount());
                 if (adapter.getItemCount() == 0) {
                     setEmptyView(true);
                 } else {
@@ -158,16 +165,20 @@ public class QcRecyclerView extends RecyclerView {
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount) {
+            QcLog.e("onItemRangeChanged =====");
             super.onItemRangeChanged(positionStart, itemCount);
         }
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+
+            QcLog.e("onItemRangeChanged payload =====");
             super.onItemRangeChanged(positionStart, itemCount, payload);
         }
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
+            QcLog.e("onItemRangeInserted =====");
             super.onItemRangeInserted(positionStart, itemCount);
         }
 
@@ -182,10 +193,13 @@ public class QcRecyclerView extends RecyclerView {
         }
     };
 
-    public void setAdapter(QcRecyclerBaseAdapter adapter, View emptyView) {
+    public void setAdapter(QcRecyclerBaseAdapter adapter, int pageSize, View emptyView) {
         if (!(adapter instanceof QcRecyclerBaseAdapter)) {
             throw new IllegalArgumentException("please use QcRecyclerBaseAdapter to instead of Adapter");
         }
+        this.pageSize = pageSize;
+        if (endlessRecyclerScrollListener != null)
+            endlessRecyclerScrollListener.setPgeSize(pageSize);
         this.emptyView = emptyView;
         this.adapter = adapter;
         this.setAdapter(adapter);
@@ -200,6 +214,7 @@ public class QcRecyclerView extends RecyclerView {
 //            emptyObserver.onChanged();
         }
     }
+
     private void setEmptyView(boolean isEmpty) {
         if (isEmpty) {
             emptyView.setVisibility(View.VISIBLE);
@@ -210,8 +225,48 @@ public class QcRecyclerView extends RecyclerView {
         }
     }
 
+    @Override
+    public LayoutManager getLayoutManager() {
+        LayoutManager layoutManager = super.getLayoutManager();
+        if (layoutManager instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) layoutManager;
+            reverseLayout = staggeredGridLayoutManager.getReverseLayout();
 
-//    public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
+        } else if (layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            reverseLayout = gridLayoutManager.getReverseLayout();
+
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+            reverseLayout = linearLayoutManager.getReverseLayout();
+        }
+        return layoutManager;
+    }
+
+    public boolean isReverseLayout() {
+        return reverseLayout;
+    }
+
+    public void setReverseLayout(boolean reverseLayout) {
+        LayoutManager layoutManager = super.getLayoutManager();
+        if (layoutManager instanceof StaggeredGridLayoutManager) {
+            StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) layoutManager;
+            staggeredGridLayoutManager.setReverseLayout(reverseLayout);
+            this.reverseLayout = reverseLayout;
+
+        } else if (layoutManager instanceof GridLayoutManager) {
+            GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            gridLayoutManager.setReverseLayout(reverseLayout);
+            this.reverseLayout = reverseLayout;
+
+        } else if (layoutManager instanceof LinearLayoutManager) {
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+            linearLayoutManager.setReverseLayout(reverseLayout);
+            this.reverseLayout = reverseLayout;
+        }
+    }
+
+    //    public EndlessRecyclerScrollListener getEndlessRecyclerScrollListener() {
 //        return endlessRecyclerScrollListener;
 //    }
 
@@ -303,13 +358,6 @@ public class QcRecyclerView extends RecyclerView {
 //    }
 
 
-
-
-
-
-
-
-
 //    /**
 //     * set list divider
 //     *
@@ -380,7 +428,6 @@ public class QcRecyclerView extends RecyclerView {
 //    public void setDivider(Drawable drawable) {
 //        setDivider(drawable, WRAP_CONTENT);
 //    }
-
 
 
 //    /**

@@ -164,7 +164,6 @@ public class RetrofitRemoteData {
 
 
 
-
     // /2.2/answers?page=3&pagesize=10&order=desc&sort=activity&site=stackoverflow
     public void getAnswers(int page, final RemoteDataListener remoteDataListener) {
         Call<AnswersResponse> call = getGetAnswersApi().getAnswers(page, QcDefine.PAGE_SIZE);
@@ -204,13 +203,6 @@ public class RetrofitRemoteData {
 
 
 
-
-
-
-
-
-
-
     private static MutableLiveData<AnswersResponse> answersResponse = new MutableLiveData<AnswersResponse>();
 
     public static MutableLiveData<AnswersResponse> getAnswersResponse() {
@@ -220,7 +212,7 @@ public class RetrofitRemoteData {
     public void getAnswersResponse(int page, final  RemoteDataListener remoteDataListener ) {
         QcLog.e("PROCESSING IN THREAD BEFORE RETROFIT CALL " + Thread.currentThread().getName());
 //        Call<StoreInfo> call = getRetrofitClient().create(StoreApi.class).getStoreInfo();
-        Call<AnswersResponse> call = getGetAnswersApi().getAnswers();
+        Call<AnswersResponse> call = getGetAnswersApi().getAnswers(page, QcDefine.PAGE_SIZE);
         //rest service call runs on background thread and Callback also runs on background thread
         call.enqueue(new Callback<AnswersResponse>() {
             @Override
@@ -230,6 +222,7 @@ public class RetrofitRemoteData {
                     QcLog.e("onResponse isSuccessful == ");
                     QcLog.e("getItems().size = " + response.body().getItemResponses().size());
                     AnswersResponse answersResponse_ = response.body();
+                    QcLog.e("answersResponse_ == " +answersResponse_);
                     answersResponse.postValue(answersResponse_);
 
                     boolean hasNextPage = answersResponse_.getHasMore();

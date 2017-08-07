@@ -73,6 +73,8 @@ public class DatabaseModel {
             userDao = localData.userDatabase();
         if (localData != null)
             answerDao = localData.answerDatabase();
+
+
     }
 
 //    public DatabaseModel(Context context, int nThreads, int localDbType, int remoteType, String baseUrl) {
@@ -196,6 +198,14 @@ public class DatabaseModel {
             return null;
         }
     }
+    public LiveData<Answer> getAnswerFromRoom(int answerId) {
+        QcLog.e("getAnswerFromRoom === ");
+        if (answerDao != null) {
+            return answerDao.getAnswerById(answerId);
+        } else {
+            return null;
+        }
+    }
 
 //    public int deleteAnswer(int answerId) {
 //        if (answerDao != null) {
@@ -227,41 +237,45 @@ public class DatabaseModel {
         retrofitRemoteData.getAnswersResponse(page, remoteDataListener);
     }
 
-    public void getAnswersFromRemote(final int page) {
-        retrofitRemoteData.getAnswers(page, new RemoteDataListener() {
+    public void getAnswersFromRemote(final int page, RemoteDataListener remoteDataListener) {
+        QcLog.e("getAnswersFromRemote == ");
+        retrofitRemoteData.getAnswers(page, remoteDataListener);
+
+//        retrofitRemoteData.getAnswers(page, new RemoteDataListener() {
+////            @Override
+////            public void onSuccess(int statusCode, boolean hasNextPage, QcBaseLiveItem answers) {
+////                QcLog.e("success = " + statusCode);
+////                if (answers != null) {
+////                    AnswersResponse answersResponse = (AnswersResponse) answers;
+////                    if (answersResponse != null)
+////                    getAnswersResponse(page, answersResponse);
+////                }
+////            }
+//
 //            @Override
-//            public void onSuccess(int statusCode, boolean hasNextPage, QcBaseLiveItem answers) {
+//            public void onSuccess(int statusCode, boolean hasNextPage, Object data) {
 //                QcLog.e("success = " + statusCode);
-//                if (answers != null) {
-//                    AnswersResponse answersResponse = (AnswersResponse) answers;
+//                if (data != null) {
+//                    AnswersResponse answersResponse = (AnswersResponse) data;
 //                    if (answersResponse != null)
 //                    getAnswersResponse(page, answersResponse);
 //                }
 //            }
-
-            @Override
-            public void onSuccess(int statusCode, boolean hasNextPage, Object data) {
-                QcLog.e("success = " + statusCode);
-                if (data != null) {
-                    AnswersResponse answersResponse = (AnswersResponse) data;
-                    if (answersResponse != null)
-                    getAnswersResponse(page, answersResponse);
-                }
-            }
-
-            @Override
-            public void onError(int statusCode, String msg) {
-                QcLog.e("onError = " + msg.toString());
-            }
-
-            @Override
-            public void onFailure(Throwable t, String msg) {
-                QcLog.e("onFailure = " + t.toString());
-            }
-        });
+//
+//            @Override
+//            public void onError(int statusCode, String msg) {
+//                QcLog.e("onError = " + msg.toString());
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable t, String msg) {
+//                QcLog.e("onFailure = " + t.toString());
+//            }
+//        });
     }
 
-    private void getAnswersResponse(final int page, AnswersResponse answersResponse) {
+    public void setAnswersResponseToRoom(final int page, AnswersResponse answersResponse) {
+        QcLog.e("setAnswersResponseToRoom == " + page);
         /**
          * get data -> insert
          */
@@ -290,6 +304,42 @@ public class DatabaseModel {
                 answer.setLastEditDate(item.getLastEditDate());
             answer.setCreationDate(item.getCreationDate());
             answer.setHasMore(answersResponse.getHasMore());
+            answers.add(answer);
+        }
+        if (answers != null && answers.size() > 0)
+            insertAnswersToRoom(answers);
+    }
+
+
+    public void setAnswersResponseToRoom(List<ItemResponse> answerList) {
+        QcLog.e("setAnswersResponseToRoom == " );
+        /**
+         * get data -> insert
+         */
+        List<Answer> answers = new ArrayList<Answer>();
+        for (ItemResponse item : answerList) {
+            Answer answer = new Answer();
+            answer.setAnswerId(item.getAnswerId());
+//            answer.setLastPage(page);
+            answer.setQuestionId(item.getQuestionId());
+            OwnerResponse ownerResponse = item.getOwnerResponse();
+            Owner owner = new Owner();
+            owner.setReputation(ownerResponse.getReputation());
+            owner.setUserId(ownerResponse.getUserId());
+            owner.setUserType(ownerResponse.getUserType());
+            if (ownerResponse.getAcceptRate() != null)
+                owner.setAcceptRate(ownerResponse.getAcceptRate());
+            owner.setProfileImage(ownerResponse.getProfileImage());
+            owner.setDisplayName(ownerResponse.getDisplayName());
+            owner.setLink(ownerResponse.getLink());
+            answer.setOwner(owner);
+            answer.setAccepted(item.getIsAccepted());
+            answer.setScore(item.getScore());
+            answer.setLastActivityDate(item.getLastActivityDate());
+            if (item.getLastEditDate() != null)
+                answer.setLastEditDate(item.getLastEditDate());
+            answer.setCreationDate(item.getCreationDate());
+//            answer.setHasMore(answersResponse.getHasMore());
             answers.add(answer);
         }
         if (answers != null && answers.size() > 0)

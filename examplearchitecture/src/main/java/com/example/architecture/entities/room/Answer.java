@@ -42,9 +42,12 @@ import java.io.Serializable;
     private int type = 0;
 
     public Answer() {
-
     }
 
+    @Ignore
+    public Answer(int type) {
+        this.type = type;
+    }
 //    public int getId() {
 //        return id;
 //    }

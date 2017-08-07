@@ -1,15 +1,16 @@
 package com.example.architecture.viewmodel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.example.architecture.entities.retrofit.AnswersResponse;
 import com.example.architecture.model.DatabaseModel;
 import com.example.architecture.network.RemoteDataListener;
+import com.example.architecture.view.RetrofitFragment;
+import com.ulling.lib.core.base.QcBaseAndroidViewModel;
+import com.ulling.lib.core.entities.QcBaseItem;
 import com.ulling.lib.core.util.QcLog;
 import com.ulling.lib.core.util.QcToast;
 
@@ -21,23 +22,17 @@ import com.ulling.lib.core.util.QcToast;
  *
  * https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
  */
-public class RetrofitViewModel extends AndroidViewModel {
-    private Context qCon;
+public class RetrofitViewModel extends QcBaseAndroidViewModel {
     private DatabaseModel mDatabaseModel;
 
     public RetrofitViewModel(@NonNull Application application) {
         super(application);
-//        this.application = application;
     }
 
-    public void initViewModel(Context qCon,   int dbTypeLocal, int remoteType, String baseUrl) {
-        QcLog.e("initViewModel == ");
-        this.qCon = qCon;
+    @Override
+    public void needDatabaseModel(int dbTypeLocal, int remoteType, String baseUrl) {
         // db model 초기화
         mDatabaseModel = new DatabaseModel(getApplication(), dbTypeLocal, remoteType, baseUrl);
-//        mDatabaseModel = new DatabaseModel(getApplication());
-//        mDatabaseModel.initLocalDb(DB_TYPE_LOCAL_ROOM);
-//        mDatabaseModel.initRemoteDb(DB_TYPE_REMOTE_RETROFIT);
 
     }
 
@@ -55,16 +50,44 @@ public class RetrofitViewModel extends AndroidViewModel {
     }
 
 
-    public void getAnswersFromRemoteResponse(int page, RemoteDataListener remoteDataListener) {
+    public void getAnswersFromRemoteResponse(int page) {
         if (mDatabaseModel != null)
             mDatabaseModel.getAnswersFromRemoteResponse(page, remoteDataListener);
     }
-
     public LiveData<AnswersResponse> getAnswersFromRemoteResponse() {
         return mDatabaseModel.getAnswersFromRemoteResponse();
     }
 
 
+
+    /**
+     * 리모트 데이터에서 가져온 결과 상태값 리스너
+     *
+     * 아답터 처리를 뷰모델에서 처리할지 고민중..
+     */
+    private RemoteDataListener<QcBaseItem> remoteDataListener = new RemoteDataListener<QcBaseItem>() {
+
+        @Override
+        public void onSuccess(int statusCode, boolean hasNextPage, QcBaseItem data) {
+            RetrofitFragment mRetrofitFragment = (RetrofitFragment) qFrag;
+            if (mRetrofitFragment != null)
+                mRetrofitFragment.onSuccess(statusCode, hasNextPage, data);
+        }
+
+        @Override
+        public void onError(int statusCode, String msg) {
+            RetrofitFragment mRetrofitFragment = (RetrofitFragment) qFrag;
+            if (mRetrofitFragment != null)
+                mRetrofitFragment.onError(statusCode, msg);
+        }
+
+        @Override
+        public void onFailure(Throwable t, String msg) {
+            RetrofitFragment mRetrofitFragment = (RetrofitFragment) qFrag;
+            if (mRetrofitFragment != null)
+                mRetrofitFragment.onFailure(t, msg);
+        }
+    };
 
 
 

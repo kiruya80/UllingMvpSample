@@ -20,6 +20,8 @@ public interface AnswerDao {
 //    @Query("select * from user")
 //    List<User> loadAllUsers();
 
+    @Query("SELECT * FROM Answer where answerId = :answerId")
+    LiveData<Answer> getAnswerById(int answerId);
 
     //    @Insert(onConflict = IGNORE)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

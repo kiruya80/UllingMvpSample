@@ -3,6 +3,9 @@ package com.example.architecture.entities.retrofit;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import android.arch.persistence.room.Ignore;
+
 import com.ulling.lib.core.entities.QcBaseItem;
 
 public class ItemResponse extends QcBaseItem {
@@ -33,6 +36,14 @@ public class ItemResponse extends QcBaseItem {
     @SerializedName("question_id")
     @Expose
     private Integer questionId;
+
+    public ItemResponse() {
+    }
+
+    @Ignore
+    public ItemResponse(int type) {
+        this.type = type;
+    }
 
     public OwnerResponse getOwnerResponse() {
         return ownerResponse;
@@ -101,8 +112,9 @@ public class ItemResponse extends QcBaseItem {
 
     @Override
     public String toString() {
-        return "Item{" +
-                "owner=" + ownerResponse +
+        return "ItemResponse{" +
+                "type=" + type +
+                ", ownerResponse=" + ownerResponse +
                 ", isAccepted=" + isAccepted +
                 ", score=" + score +
                 ", lastActivityDate=" + lastActivityDate +

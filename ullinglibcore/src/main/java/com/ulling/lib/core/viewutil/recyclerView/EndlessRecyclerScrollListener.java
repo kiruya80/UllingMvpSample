@@ -39,8 +39,8 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
     private int currentPage = 1;
     // True if we are still waiting for the last set of data to load.
     private boolean loading = false;
-    private boolean hasNextPage = true;
-    private boolean networkError = false;
+//    private boolean hasNextPage = true;
+//    private boolean networkError = false;
     /**
      * 고정영역이 있는 경우
      */
@@ -54,6 +54,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
     public static final int EDGE_TYPE_TOP = 1;
     public static final int EDGE_TYPE_BOTTOM = 2;
     private int isEdgetype = EDGE_TYPE_NONE;
+    private int pageSize = 1;
 
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
@@ -80,9 +81,13 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
         viewStartingPageIndex = viewStartingPageIndex_;
     }
 
+    public void setPgeSize(int pageSize) {
+        QcLog.e("setPgeSize =====" + pageSize);
+        this.pageSize = pageSize;
+    }
+
     /**
      * 데이터 로딩이 실패한 경우
-     * @param reLoadCurrentPage
      */
     public void onCurrentPage(int reLoadCurrentPage) {
         QcLog.e("onCurrentPage =====" + reLoadCurrentPage);
@@ -91,12 +96,12 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
 
     public void onNetworkLoading(boolean loading_) {
         QcLog.e("onNetworkLoading =====" + loading_);
-        loading = loading_;
+//        loading = loading_;
     }
 
     public void onNextPage(boolean hasNextPage_) {
         QcLog.e("onNextPage =====" + hasNextPage_);
-        hasNextPage = hasNextPage_;
+//        hasNextPage = hasNextPage_;
     }
 
     public void onResetStatus() {
@@ -105,14 +110,15 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
 
     public void onNetworkError(boolean networkError_) {
         QcLog.e("onNetworkError =====" + networkError_);
-        networkError = networkError_;
+//        networkError = networkError_;
     }
 
     private void resetStatus() {
         startingPageIndex = viewStartingPageIndex;
         currentPage = this.startingPageIndex;
-        loading = false;
-        hasNextPage = true;
+//        networkError = false;
+//        loading = false;
+//        hasNextPage = true;
     }
 
     /**
@@ -204,11 +210,11 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
             return;
         }
         isEdgetype = EDGE_TYPE_NONE;
-        QcLog.e("lastVisibleItemPosition == " + lastVisibleItemPosition
-                + " ,firstVisibleItemPosition == " + firstVisibleItemPosition
-                + " , visibleItemCount = " + visibleItemCount
-                + " , totalItemCount == " + totalItemCount
-                + " , hasNextPage == " + hasNextPage + " , loading == " + loading + " , networkError == " + networkError);
+//        QcLog.e("lastVisibleItemPosition == " + lastVisibleItemPosition
+//                + " ,firstVisibleItemPosition == " + firstVisibleItemPosition
+//                + " , visibleItemCount = " + visibleItemCount
+//                + " , totalItemCount == " + totalItemCount
+//                + " , hasNextPage == " + hasNextPage + " , loading == " + loading + " , networkError == " + networkError);
         /**
          * 화면에 보이는 아이템이 마지막 아이템보다 큰 경우
          * 즉, 화면에 보이는 갯수가 적은 경우는 패스한다
@@ -235,13 +241,18 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
 //            if (totalItemCount == 0) {
 //                this.loading = true;
 //            }
-        } else if (totalItemCount > previousTotalItemCount) {
+        } else if (totalItemCount > (previousTotalItemCount + 1)) {
             /**
              * If it’s still loading, we check to see if the dataset count has
              *  changed, if so we conclude it has finished loading and update the current page
              *  number and total item count.
              *
              * 이전 아이템 갯수가 현재 아이템 갯수보다 작은 경우
+             * +페이지 사이즈보다 커지는 경우
+             * 작은 경우는 마지막 페이지로 인식?
+             * 실패한 경우는
+             *
+             *
              * 처음과 로딩이 완료된 시점에 호출됨
              *  프로그레스바등이 추가되는 경우
              *
@@ -249,10 +260,11 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
              */
             if (this.loading) {
                 this.loading = false;
-                this.networkError = false;
+//                this.networkError = false;
                 previousTotalItemCount = totalItemCount;
             }
         }
+//        QcLog.e("hasNextPage == " + hasNextPage + " , loading = " + loading+ " , networkError = " + networkError);
         /**
          * If it isn’t currently loading, we check to see if we have breached
          * the visibleThreshold and need to reload more data.
@@ -266,17 +278,21 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
          *
          */
 //        if (hasNextPage && !loading && (lastVisibleItemPosition + visibleItemCount) > totalItemCount) {
-        if (hasNextPage && !loading && !networkError
-                && (totalItemCount - visibleItemCount) <= (lastVisibleItemPosition + visibleThreshold)) {
+//        if (hasNextPage && !networkError && !loading
+//                && (totalItemCount - visibleItemCount) <= (lastVisibleItemPosition + visibleThreshold)) {
+
+        if (!loading && (totalItemCount - visibleItemCount) <= (lastVisibleItemPosition + visibleThreshold)) {
+
             /**
              * more
              *
              * lastVisibleItemPosition =====26 , visibleThreshold= 5 , totalItemCount= 30
              */
-            QcLog.e("onLoadMore ======================== " + currentPage + " , loading = " + loading);
+            if (pageSize > 1)
+                currentPage = (totalItemCount / pageSize);
             currentPage++;
             loading = true;
-            QcLog.e("onLoadMore  마지막, 더보기 호출  == " + currentPage + " , loading = " + loading);
+            QcLog.e("onLoadMore  마지막, 더보기 호출  == " + currentPage);
             onLoadMore(currentPage, totalItemCount, view);
             return;
         }
@@ -287,7 +303,7 @@ public abstract class EndlessRecyclerScrollListener extends RecyclerView.OnScrol
          *
          * lastVisibleItemPosition =====29 , visibleThreshold= 5 , totalItemCount= 30
          */
-        if (!loading && lastVisibleItemPosition > visibleItemCount && lastVisibleItemPosition >= (totalItemCount - 1)) {
+        if (lastVisibleItemPosition > visibleItemCount && lastVisibleItemPosition >= (totalItemCount - 1)) {
 //            if (!loading &&  lastVisibleItemPosition >= (totalItemCount - 1)) {
             QcLog.e("로딩중이 아닌경우, 마지막일때 == ");
             isEdgetype = EDGE_TYPE_BOTTOM;

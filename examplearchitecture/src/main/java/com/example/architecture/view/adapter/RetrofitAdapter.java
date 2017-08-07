@@ -1,5 +1,7 @@
 package com.example.architecture.view.adapter;
 
+import static com.example.architecture.R.layout.row_retrofit_live;
+
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ViewDataBinding;
 import android.view.View;
@@ -9,6 +11,7 @@ import com.example.architecture.R;
 import com.example.architecture.databinding.RowLoadFailBinding;
 import com.example.architecture.databinding.RowRetrofitLiveBinding;
 import com.example.architecture.entities.retrofit.ItemResponse;
+import com.example.architecture.view.RetrofitFragment;
 import com.example.architecture.viewmodel.RetrofitViewModel;
 import com.ulling.lib.core.base.QcBaseLifeFragment;
 import com.ulling.lib.core.listener.OnSingleClickListener;
@@ -17,13 +20,10 @@ import com.ulling.lib.core.util.QcToast;
 import com.ulling.lib.core.viewutil.adapter.QcBaseViewHolder;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
-import static com.example.architecture.R.layout.row_retrofit_live;
+import java.util.ArrayList;
 
 /**
  * @author : KILHO
@@ -35,102 +35,22 @@ import static com.example.architecture.R.layout.row_retrofit_live;
  * http://realignist.me/code/2016/05/25/data-binding-guide.html
  */
 public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
-//    private List<ItemResponse> itemList;
-
     private RetrofitViewModel viewModel;
 
-//    public void addAll(List<ItemResponse> itemList_) {
-//        if (null == itemList_ || itemList_.isEmpty()) {
-//            return;
-//        }
-//        QcLog.e("addAll == " + itemList_.size());
-//        this.itemList = itemList_;
-////        notifyDataSetChanged();
-//        notifyItemRangeChanged(0, itemList.size());
-//    }
-
-    public void addAll(List<ItemResponse> itemList_) {
-        if (null == itemList_ || itemList_.isEmpty()) {
-            return;
-        }
-        QcLog.e("add == " + itemList_.size());
-        if (this.itemList == null) {
-            this.itemList = itemList_;
-            this.itemList.addAll(itemList_);
-            notifyDataSetChanged();
-        } else {
-            int positionStart = itemList.size();
-            this.itemList.addAll(itemList_);
-            notifyItemRangeChanged(positionStart, itemList.size());
-        }
-    }
-
-    public void add(ItemResponse item_) {
-        if (null == item_) {
-            return;
-        }
-        QcLog.e("add == ");
-        if (this.itemList == null)
-            this.itemList = new ArrayList<>();
-        this.itemList.add(item_);
-        notifyItemChanged(itemList.size(), 0);
-    }
-
-
     public void addProgress() {
-        if (isProgress())
-            return;
-        ItemResponse progressItemResponse = new ItemResponse();
-        progressItemResponse.setType(QcRecyclerBaseAdapter.TYPE_LOAD_PROGRESS);
-        add(progressItemResponse);
-    }
-
-    public void removeProgress() {
-        if (!isProgress())
-            return;
-        if (this.itemList != null && itemList.size() > 0) {
-            if (itemList.get(itemList.size() - 1).getType() == TYPE_LOAD_PROGRESS) {
-                itemList.remove(itemList.size() - 1);
-                notifyItemChanged(itemList.size(), 0);
-            }
-        }
-    }
-
-    public boolean isProgress() {
-        if (this.itemList != null && itemList.size() > 0) {
-            if (itemList.get(itemList.size() - 1).getType() == TYPE_LOAD_PROGRESS) {
-                return true;
-            }
-        }
-        return false;
+        QcLog.e("addProgress =====");
+        ItemResponse mItemResponse =  new ItemResponse();
+        mItemResponse.setType(QcRecyclerBaseAdapter.TYPE_LOAD_PROGRESS);
+        addProgress(mItemResponse);
+//        addProgress(new ItemResponse(QcRecyclerBaseAdapter.TYPE_LOAD_PROGRESS));
     }
 
     public void addLoadFail() {
-        if (isLoadFail())
-            return;
-        ItemResponse failItemResponse = new ItemResponse();
-        failItemResponse.setType(QcRecyclerBaseAdapter.TYPE_LOAD_FAIL);
-        add(failItemResponse);
-    }
-
-    public void removeLoadFail() {
-        if (!isLoadFail())
-            return;
-        if (this.itemList != null && itemList.size() > 0) {
-            if (itemList.get(itemList.size() - 1).getType() == TYPE_LOAD_FAIL) {
-                itemList.remove(itemList.size() - 1);
-                notifyItemChanged(itemList.size(), 0);
-            }
-        }
-    }
-
-    public boolean isLoadFail() {
-        if (this.itemList != null && itemList.size() > 0) {
-            if (itemList.get(itemList.size() - 1).getType() == TYPE_LOAD_FAIL) {
-                return true;
-            }
-        }
-        return false;
+        QcLog.e("addLoadFail =====");
+        ItemResponse mItemResponse =  new ItemResponse();
+        mItemResponse.setType(QcRecyclerBaseAdapter.TYPE_LOAD_FAIL);
+        addLoadFail(mItemResponse);
+//        addProgress(new ItemResponse(QcRecyclerBaseAdapter.TYPE_LOAD_FAIL));
     }
 
     public RetrofitAdapter(QcBaseLifeFragment qFragment) {
@@ -155,7 +75,6 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
     @Override
     public void setViewModel(AndroidViewModel viewModel) {
         this.viewModel = (RetrofitViewModel) viewModel;
-//        observerUserListResults(this.viewModel.getAllUsers());
     }
 
 
@@ -172,22 +91,6 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
         }
         return row_retrofit_live;
     }
-
-
-    @Override
-    protected Object needItemFromPosition(int position) {
-        if (itemList != null && itemList.size() >= position) {
-            return itemList.get(position);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return itemList == null ? 0 : itemList.size();
-    }
-
 
     @Override
     protected void needUIEventListener(int viewTypeResId, ViewDataBinding binding) {
@@ -211,6 +114,7 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
 
     @Override
     protected void needUIBinding(QcBaseViewHolder holder, int position, Object object) {
+        QcLog.i("needUIBinding == ");
         ItemResponse item = (ItemResponse) object;
         if (item.getType() == TYPE_DEFAULT) {
             // BindingHolder#getBinding()がViewDataBindingを返すのでsetVariable()を呼んでいる
@@ -226,7 +130,6 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
             hoderBinding.tvUserName.setTag(position);
             hoderBinding.tvUserName.setText(item.getOwnerResponse().getDisplayName());
 
-
             hoderBinding.rlProfile.setTag(position);
             if (item.getOwnerResponse().getProfileImage() != null)
                 Glide.with(qCon)
@@ -237,25 +140,24 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
                         .bitmapTransform(new BlurTransformation(qCon, 3), new CropCircleTransformation(qCon))
 //                    .bitmapTransform(new BlurTransformation(qCon))
                         .into(hoderBinding.ivProfile);
-//        } else if (item.getType() == TYPE_LOAD_FAIL) {
-//            RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
-//            hoderBinding.btnReload.setTag(position);
-//        } else if (item.getType() == TYPE_LOAD_PROGRESS) {
-////            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
         }
     }
 
     @Override
     protected void needUILoadFailBinding(QcBaseViewHolder holder, int position, Object object) {
+        QcLog.i("needUILoadFailBinding == ");
         RowLoadFailBinding hoderBinding = (RowLoadFailBinding) holder.getBinding();
         hoderBinding.btnReload.setTag(position);
     }
 
     @Override
     protected void needUILoadProgressBinding(QcBaseViewHolder holder, int position, Object object) {
-//            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
+        QcLog.i("needUILoadProgressBinding == ");
     }
-
+    @Override
+    protected void needUIOtherBinding(QcBaseViewHolder holder, int position, Object object) {
+        QcLog.i("needUIOtherBinding == ");
+    }
     private OnSingleClickListener mOnSingleClickListener = new OnSingleClickListener() {
         @Override
         public void onSingleClick(View v) {
@@ -267,8 +169,10 @@ public class RetrofitAdapter extends QcRecyclerBaseAdapter<ItemResponse> {
                     QcToast.getInstance().show("btnReload = ", false);
                     removeLoadFail();
                     addProgress();
-                    if (qcRecyclerItemListener != null)
-                        qcRecyclerItemListener.onReload();
+                    RetrofitFragment mRetrofitFragment = (RetrofitFragment) qFragment;
+                    int page = mRetrofitFragment.getPage();
+                    if (viewModel != null)
+                        viewModel.getAnswersFromRemoteResponse(page);
                     break;
                 case R.id.rlProfile:
                     QcLog.e("rlProfile ==== " + position);

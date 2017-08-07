@@ -22,6 +22,7 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textColor="@color/color_black"
+          android:transitionName="@string/trans_text_id"
           android:textSize="@dimen/p40"/>
 
 
@@ -29,6 +30,7 @@
           android:id="@+id/tvUserName"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:transitionName="@string/trans_text_name"
           android:layout_marginTop="@dimen/p10"
           android:textColor="@color/color_black"
           android:textSize="@dimen/p60"/>
@@ -38,8 +40,7 @@
         android:id="@+id/rlProfile"
         android:layout_width="match_parent"
         android:background="@color/color_black_trance_10"
-        android:layout_height="match_parent"
-        android:gravity="center" >
+        android:layout_height="match_parent"  >
 
       <ImageView
           android:id="@+id/ivProfile"

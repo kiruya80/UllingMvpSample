@@ -27,15 +27,15 @@ import java.util.List;
 public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
     //    QcRecyclerItemListener qcRecyclerItemListener;
 //    ArrayList<User> userList = new ArrayList<>();
-    private List<? extends User> userList;
+//    private List<? extends User> userList;
     private LiveDataViewModel viewModel;
 
 
-    public void addAll(List<User> data) {
-        QcLog.e("addAll == ");
-        this.userList = data;
-        notifyDataSetChanged();
-    }
+//    public void addAll(List<User> data) {
+//        QcLog.e("addAll == ");
+//        this.userList = data;
+//        notifyDataSetChanged();
+//    }
 
 //    public void add(User data) {
 //        QcLog.e("add == ");
@@ -111,12 +111,12 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
 
     @Override
     public void needInitToOnCreate() {
-        userList = new ArrayList<>();
+        itemList = new ArrayList<>();
     }
 
     @Override
     public void needResetData() {
-        userList = new ArrayList<>();
+        itemList = new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -131,19 +131,19 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
         return R.layout.row_live_data;
     }
 
-    @Override
-    protected Object needItemFromPosition(int position) {
-        if (userList != null && userList.size() >= position) {
-            return userList.get(position);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return userList == null ? 0 : userList.size();
-    }
+//    @Override
+//    protected Object needItemFromPosition(int position) {
+//        if (userList != null && userList.size() >= position) {
+//            return userList.get(position);
+//        } else {
+//            return null;
+//        }
+//    }
+//
+//    @Override
+//    public int getItemCount() {
+//        return userList == null ? 0 : userList.size();
+//    }
 
 
     @Override
@@ -179,13 +179,18 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
 
     @Override
     protected void needUILoadProgressBinding(QcBaseViewHolder holder, int position, Object object) {
-//            RowLoadProgressBinding hoderBinding = (RowLoadProgressBinding) binding;
+        QcLog.i("needUILoadProgressBinding == ");
+    }
+    @Override
+    protected void needUIOtherBinding(QcBaseViewHolder holder, int position, Object object) {
+        QcLog.i("needUIOtherBinding == ");
     }
     private OnSingleClickListener mOnSingleClickListener = new OnSingleClickListener() {
         @Override
         public void onSingleClick(View v) {
             int position = (int) v.getTag();
             QcLog.e("onItemClick ==== " + position);
+            User item = (User) needItemFromPosition(position);
             switch (v.getId()) {
                 case R.id.rlProfile:
                     QcLog.e("rlProfile ==== " + position);
@@ -193,11 +198,11 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
                     break;
                 case R.id.tvUserLastName:
                     QcLog.e("tvUserLastName ==== " + position);
-                    QcToast.getInstance().show("tvUserLastName = " + userList.get(position).getLastName(), false);
+                    QcToast.getInstance().show("tvUserLastName = " + item.getLastName(), false);
                     break;
                 case R.id.tvUserName:
                     QcLog.e("tvUserName ==== " + position);
-                    QcToast.getInstance().show("tvUserName = " + userList.get(position).getName(), false);
+                    QcToast.getInstance().show("tvUserName = " + item.getName(), false);
                     break;
                 default:
                     QcLog.e("default ==== " + position);
@@ -213,14 +218,15 @@ public class LiveDataAdapter extends QcRecyclerBaseAdapter <User> {
         public boolean onLongClick(View v) {
             int position = (int) v.getTag();
             QcLog.e("OnLongClickListener ==== " + position);
+            User item = (User) needItemFromPosition(position);
             if (v.getId() == R.id.rlProfile) {
-                QcToast.getInstance().show("onLongClick rlProfile = " + userList.get(position).getLastName(), false);
+                QcToast.getInstance().show("onLongClick rlProfile = " + item.getLastName(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserLastName) {
-                QcToast.getInstance().show("onLongClick tvUserLastName = " + userList.get(position).getLastName(), false);
+                QcToast.getInstance().show("onLongClick tvUserLastName = " + item.getLastName(), false);
                 return false;
             } else if (v.getId() == R.id.tvUserName) {
-                QcToast.getInstance().show("onLongClick tvUserName = " + userList.get(position).getName(), false);
+                QcToast.getInstance().show("onLongClick tvUserName = " + item.getName(), false);
 
                 return false;
 

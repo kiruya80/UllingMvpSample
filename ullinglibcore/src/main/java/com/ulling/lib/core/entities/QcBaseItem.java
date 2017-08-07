@@ -12,7 +12,7 @@ import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
  * @since :
  */
 
-public abstract class QcBaseItem {
+public class QcBaseItem {
     @Ignore
     public int type = QcRecyclerBaseAdapter.TYPE_DEFAULT;
 
@@ -24,6 +24,4 @@ public abstract class QcBaseItem {
         this.type = type;
     }
 
-//    public QcBaseItem() {
-//    }
 }

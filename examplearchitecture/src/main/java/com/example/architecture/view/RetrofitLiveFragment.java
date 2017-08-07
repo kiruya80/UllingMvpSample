@@ -6,14 +6,10 @@ import static com.example.architecture.model.DatabaseModel.REMOTE_TYPE_RETROFIT;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -21,6 +17,7 @@ import android.view.View;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
+import com.example.architecture.common.QcDefine;
 import com.example.architecture.databinding.FragRetrofitLiveBinding;
 import com.example.architecture.entities.room.Answer;
 import com.example.architecture.view.adapter.RetrofitLiveAdapter;
@@ -33,7 +30,6 @@ import com.ulling.lib.core.view.QcRecyclerView;
 import com.ulling.lib.core.viewutil.adapter.QcRecyclerBaseAdapter;
 import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -65,10 +61,17 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     private int page = 1;
 
     // Sets the starting page index
-    private int viewStartingPageIndex = 1;
+    private final int viewStartingPageIndex = 1;
     // The current offset index of data you have loaded
     private int viewCurrentPage = 1;
     private EndlessRecyclerScrollListener qcEndlessScroll;
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -100,12 +103,12 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         APP_NAME = QUllingApplication.getAppName();
         if (viewModel == null) {
             viewModel = ViewModelProviders.of(this).get(RetrofitLiveViewModel.class);
-            viewModel.initViewModel(qCon, getActivity(), DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
+            viewModel.needInitViewModel(getActivity(), this);
+            viewModel.needDatabaseModel(DB_TYPE_LOCAL_ROOM, REMOTE_TYPE_RETROFIT, ApiUrl.BASE_URL);
         }
-        adapter = new RetrofitLiveAdapter(this);
-        if (adapter != null && !adapter.isViewModel()) {
+        if (adapter == null) {
+            adapter = new RetrofitLiveAdapter(this, qcRecyclerItemListener);
             adapter.setViewModel(viewModel);
-            adapter.setQcRecyclerItemListener(qcRecyclerItemListener);
         }
     }
 
@@ -114,14 +117,12 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
         QcLog.e("needResetData == ");
         isLoading = false;
         page = viewStartingPageIndex;
-        setResetScrollStatus();
         if (adapter != null)
             adapter.needResetData();
-    }
-
-    private void setResetScrollStatus() {
-        if (viewBinding != null && qcEndlessScroll != null)
+        if (viewBinding != null && qcEndlessScroll != null) {
+            qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
             qcEndlessScroll.onResetStatus();
+        }
     }
 
 
@@ -129,7 +130,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragRetrofitLiveBinding) getViewBinding();
-        viewBinding.qcRecyclerView.setAdapter(adapter, viewBinding.tvEmpty);
+        viewBinding.qcRecyclerView.setAdapter(adapter, QcDefine.PAGE_SIZE, viewBinding.tvEmpty);
         qcEndlessScroll = viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener();
         qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
         qcEndlessScroll.onResetStatus();
@@ -148,19 +149,17 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
                 QcLog.e("onLoadMore =====");
                 page = page_;
                 QcToast.getInstance().show("onLoadMore !! " + page, false);
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if (viewModel != null) {
-//                            viewModel.getAnswersFromRemote(page);
-//                            qcScrollListener.onNetworkLoading(true);
-//                        }
-//                    }
-//                }, 1000);
-                if (viewBinding != null && viewBinding.qcRecyclerView != null) {
-                    viewModel.getAnswersFromRemote(page);
-                    qcEndlessScroll.onNetworkLoading(true);
-                }
+                adapter.addProgress();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (viewBinding != null && viewBinding.qcRecyclerView != null) {
+                            viewModel.getAnswersFromRemote(page);
+                            qcEndlessScroll.onNetworkLoading(true);
+                        }
+                    }
+                }, 1000);
+
             }
 
             @Override
@@ -199,6 +198,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             @Override
             public void onSingleClick(View v) {
                 if (viewModel != null) {
+                    // 생성이 안되었다고 오류가 나오는 경우 체크
                     viewModel.deleteAnswerFromRoom();
                     needResetData();
                 }
@@ -230,7 +230,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
             public void onChanged(@Nullable List<Answer> allanswers) {
                 QcLog.e("allanswers observe == ");
                 if (allanswers != null && allanswers.size() > 0) {
-                    if (qcEndlessScroll != null) {
+                    if (qcEndlessScroll != null && allanswers.get(allanswers.size() - 1).getHasMore() != null) {
                         boolean hasNextPage = allanswers.get(allanswers.size() - 1).getHasMore();
                         QcLog.e("Success page = " + page + " , hasNextPage =" + hasNextPage);
                         page = allanswers.get(allanswers.size() - 1).getLastPage();
@@ -247,8 +247,9 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
                                     }
                                 }).show();
                     }
+                    adapter.removeLoadFail();
+                    adapter.removeProgress();
                     adapter.addAll(allanswers);
-//                    adapter.addAnswer(allanswers);
                 } else {
                     if (qcEndlessScroll != null) {
                         qcEndlessScroll.onNextPage(false);
@@ -284,7 +285,7 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     QcRecyclerBaseAdapter.QcRecyclerItemListener qcRecyclerItemListener = new QcRecyclerBaseAdapter.QcRecyclerItemListener() {
         @Override
         public void onItemClick(View view, int position, Object object) {
-            moveFragment(view, object);
+//            public void onItemClick(View view, int position, Object object, String... transName) {
         }
 
         @Override
@@ -307,30 +308,6 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
 
         }
     };
-
-    /**
-     * http://overcome26.tistory.com/71
-     * http://www.androidauthority.com/using-shared-element-transitions-activities-fragments-631996/
-     *
-     * http://mikescamell.com/shared-element-transitions-part-4-recyclerview/
-     *
-     */
-    public void moveFragment(View view, Object object) {
-        Answer item = (Answer) object;
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
-        intent.putExtra("item", (Serializable) item);
-//        intent.putExtra("ProfileImage", item.getOwner().getProfileImage());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            QcLog.e("Build.VERSION_CODES.LOLLIPOP == ");
-
-            intent.putExtra("TransitionName", view.getTransitionName());
-            Pair<View, String> pair = Pair.create(view, view.getTransitionName());
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair);
-            getActivity().startActivity(intent, options.toBundle());
-        } else {
-            getActivity().startActivity(intent);
-        }
-    }
 
 
     private void setProgress(boolean isProgress) {

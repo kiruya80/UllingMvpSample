@@ -2,7 +2,6 @@ package com.example.architecture.view;
 
 import android.arch.lifecycle.LifecycleFragment;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -86,10 +85,11 @@ public class MainActivity extends QcBaseLifeActivity {
         BaseQLifecycleFragmentList.add(RetrofitFragment.newInstance(2));
         BaseQLifecycleFragmentList.add(LiveDataFragment.newInstance(3));
         BaseQLifecycleFragmentList.add(RetrofitLiveFragment.newInstance(4));
+        BaseQLifecycleFragmentList.add(RetrofitFirebaseFragment.newInstance(5));
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private String tabTitles[] = new String[]{"LogIn", "Firebase", "Retrofit", "LiveData", "RetrofitLive"};
+        private String tabTitles[] = new String[]{"LogIn", "Firebase", "Retrofit", "LiveData", "RetrofitLive", "RetrofitFirebase"};
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);

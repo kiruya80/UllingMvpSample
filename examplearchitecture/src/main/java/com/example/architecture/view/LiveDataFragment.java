@@ -16,6 +16,7 @@ import android.view.View;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
+import com.example.architecture.common.QcDefine;
 import com.example.architecture.databinding.FragLiveDataBinding;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.LiveDataAdapter;
@@ -92,14 +93,12 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
         QcLog.e("needResetData == ");
         isLoading = false;
         page = viewStartingPageIndex;
-        setResetScrollStatus();
         if (adapter != null)
             adapter.needResetData();
-    }
-
-    private void setResetScrollStatus() {
-        if (viewBinding != null && qcEndlessScroll != null)
+        if (viewBinding != null && qcEndlessScroll != null) {
+            qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
             qcEndlessScroll.onResetStatus();
+        }
     }
 
     @Override
@@ -112,7 +111,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
         QcLog.e("needUIBinding == ");
         viewBinding = (FragLiveDataBinding) getViewBinding();
 //        viewBinding.recyclerView.setAdapter(adapter);
-        viewBinding.qcRecyclerView.setAdapter(adapter, viewBinding.tvEmpty);
+        viewBinding.qcRecyclerView.setAdapter(adapter, QcDefine.PAGE_SIZE, viewBinding.tvEmpty);
         qcEndlessScroll = viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener();
         qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
         qcEndlessScroll.onResetStatus();
@@ -191,7 +190,7 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
                 if (allUsers == null) {
                     return;
                 }
-                adapter.addAll((ArrayList<User>) allUsers);
+                adapter.addList((ArrayList<User>) allUsers);
             }
         });
     }

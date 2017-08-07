@@ -5,13 +5,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.ulling.lib.core.entities.QcBaseItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnswersResponse extends QcBaseItem {
 
     @SerializedName("items")
     @Expose
-    private List<ItemResponse> itemResponses = null;
+    private List<ItemResponse> itemResponses = new ArrayList<>();
     @SerializedName("has_more")
     @Expose
     private Boolean hasMore;
@@ -57,7 +58,8 @@ public class AnswersResponse extends QcBaseItem {
     @Override
     public String toString() {
         return "SOAnswersResponse{" +
-                "items=" + itemResponses +
+                "type=" + type +
+                ", items=" + itemResponses +
                 ", hasMore=" + hasMore +
                 ", quotaMax=" + quotaMax +
                 ", quotaRemaining=" + quotaRemaining +

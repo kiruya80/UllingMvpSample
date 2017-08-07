@@ -20,6 +20,7 @@ import android.view.View;
 import com.example.architecture.QUllingApplication;
 import com.example.architecture.R;
 import com.example.architecture.common.ApiUrl;
+import com.example.architecture.common.QcDefine;
 import com.example.architecture.databinding.FragFireDatabaseBinding;
 import com.example.architecture.entities.room.User;
 import com.example.architecture.view.adapter.FireDatabaseAdapter;
@@ -58,9 +59,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     private static final String UID_KEY = "uid";
     private FragFireDatabaseBinding viewBinding;
     private FireDatabaseViewModel viewModel;
-    private String userId;
-    private int nThreads = 2;
-    //    private FirebaseDatabase firebaseDatabase;
+
     private DatabaseReference databaseReference;
     private ChildEventListener childEventListener;
     private ValueEventListener valueEventListener;
@@ -102,7 +101,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     protected void optGetArgument(Bundle savedInstanceState) {
         super.optGetArgument(savedInstanceState);
         QcLog.e("optGetArgument == ");
-        userId = getArguments().getString(UID_KEY);
+//        userId = getArguments().getString(UID_KEY);
     }
 
     @Override
@@ -128,15 +127,14 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
         QcLog.e("needResetData == ");
         isLoading = false;
         page = viewStartingPageIndex;
-        setResetScrollStatus();
-      if (adapter != null)
+        if (adapter != null)
             adapter.needResetData();
+        if (viewBinding != null && qcEndlessScroll != null) {
+            qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
+            qcEndlessScroll.onResetStatus();
+        }
     }
 
-    private void setResetScrollStatus() {
-        if (viewBinding != null && qcEndlessScroll != null)
-            qcEndlessScroll.onResetStatus();
-    }
     @Override
     public void needInitViewModel() {
         QcLog.e("needInitViewModel == ");
@@ -146,7 +144,7 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     protected void needUIBinding() {
         QcLog.e("needUIBinding == ");
         viewBinding = (FragFireDatabaseBinding) getViewBinding();
-        viewBinding.qcRecyclerView.setAdapter(adapter, viewBinding.tvEmpty);
+        viewBinding.qcRecyclerView.setAdapter(adapter, QcDefine.PAGE_SIZE, viewBinding.tvEmpty);
         qcEndlessScroll = viewBinding.qcRecyclerView.getEndlessRecyclerScrollListener();
         qcEndlessScroll.onStartingPageIndex(viewStartingPageIndex);
         qcEndlessScroll.onResetStatus();
