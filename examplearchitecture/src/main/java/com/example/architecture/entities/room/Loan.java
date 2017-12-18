@@ -22,6 +22,7 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
+import android.support.annotation.NonNull;
 
 import com.example.architecture.localdb.DateConverter;
 import com.ulling.lib.core.entities.QcBaseItem;
@@ -41,7 +42,7 @@ import java.util.Date;
 public class Loan  extends QcBaseItem {
     // Fields can be public or private with getters and setters.
 
-    @PrimaryKey
+    @PrimaryKey @NonNull
     public String id;
     public Date startTime;
     public Date endTime;

@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 
 import com.ulling.lib.core.entities.QcBaseItem;
 
@@ -68,7 +69,7 @@ public class User extends QcBaseItem {
 //    @PrimaryKey(autoGenerate = true)
 //    private int slNo;
 
-    @PrimaryKey
+    @PrimaryKey @NonNull
     public String id;
     public String name;
     @ColumnInfo(name = "last_name") // DB저장되는 필드명
