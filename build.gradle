@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         // Add this line
         classpath 'com.google.gms:google-services:3.1.0'
 
@@ -31,11 +31,11 @@ task clean(type: Delete) {
 
 
 ext {
-    buildToolsVersion = "26.0.0"
-    supportLibVersion = "25.3.1"
+//    buildToolsVersion = "26.1.0"
+    supportLibVersion = "26.1.0"
     runnerVersion = "0.5"
     rulesVersion = "0.5"
     espressoVersion = "2.2.2"
-    archLifecycleVersion = "1.0.0-alpha1"
-    archRoomVersion = "1.0.0-alpha1"
+    archLifecycleVersion = "1.0.0"
+    archRoomVersion = "1.0.0"
 }

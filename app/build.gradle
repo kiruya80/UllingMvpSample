@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
   compileSdkVersion 26
-  buildToolsVersion "25.0.2"
+  buildToolsVersion '26.0.2'
   defaultConfig {
     applicationId "com.ulling.ullingmvpsample"
     minSdkVersion 23
@@ -43,5 +43,5 @@ dependencies {
    * JodaTime
    */
   compile 'joda-time:joda-time:2.9.4'
-  compile 'com.google.code.gson:gson:2.2.4'
+  compile 'com.google.code.gson:gson:2.8.1'
 }
