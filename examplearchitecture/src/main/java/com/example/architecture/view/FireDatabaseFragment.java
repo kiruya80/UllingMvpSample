@@ -55,6 +55,7 @@ import java.util.Random;
  */
 public class FireDatabaseFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
     private QUllingApplication qApp;
     private static final String UID_KEY = "uid";
     private FragFireDatabaseBinding viewBinding;
@@ -95,6 +96,11 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_fire_database;
+    }
+
+    @Override
+    protected void onDestroyToUser() {
+
     }
 
     @Override
@@ -210,14 +216,13 @@ public class FireDatabaseFragment extends QcBaseShowLifeFragement implements Swi
     }
 
     @Override
-    public void needShowToUser() {
-        QcLog.e("needShowToUser == ");
-//        for (DataSnapshot messageData : dataSnapshot.getChildren()) {
-//            String msg = messageData.getValue().toString();
-//            dataAdapter.add(msg);
-//        }
-//        getSingleAllData();
+    protected void needOnShowToUser() {
+        QcLog.e("needOnShowToUser == ");
         subscribeFirebaseDatabase();
+    }
+
+    @Override
+    protected void needOnHiddenToUser() {
     }
 
     private void subscribeFirebaseDatabase() {

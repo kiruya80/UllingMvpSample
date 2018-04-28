@@ -53,6 +53,7 @@ import java.util.List;
  * http://www.zoftino.com/android-persistence-library-room
  */
 public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
+    public static String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
     private QUllingApplication qApp;
     private FragRetrofitLiveBinding viewBinding;
     private RetrofitLiveViewModel viewModel;
@@ -88,6 +89,11 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_retrofit_live;
+    }
+
+    @Override
+    protected void onDestroyToUser() {
+
     }
 
     @Override
@@ -217,9 +223,14 @@ public class RetrofitLiveFragment extends QcBaseShowLifeFragement implements Swi
     }
 
     @Override
-    public void needShowToUser() {
-        QcLog.e("needShowToUser == ");
+    protected void needOnShowToUser() {
+        QcLog.e("needOnShowToUser == ");
         observerAllAnswer(viewModel.getAllAnswersFromRoom());
+    }
+
+    @Override
+    protected void needOnHiddenToUser() {
+
     }
 
     private void observerAllAnswer(LiveData<List<Answer>> answers) {

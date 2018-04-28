@@ -53,6 +53,7 @@ import java.util.List;
  */
 public class RetrofitFirebaseFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
     private QUllingApplication qApp;
     private FragRetrofitFirebaseBinding viewBinding;
     private RetrofitFirebaseViewModel viewModel;
@@ -98,6 +99,11 @@ public class RetrofitFirebaseFragment extends QcBaseShowLifeFragement implements
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_retrofit_firebase;
+    }
+
+    @Override
+    protected void onDestroyToUser() {
+
     }
 
     @Override
@@ -342,13 +348,15 @@ public class RetrofitFirebaseFragment extends QcBaseShowLifeFragement implements
 //        if (databaseReference != null)
 //            databaseReference.addValueEventListener(valueEventListener);
     }
-
     @Override
-    public void needShowToUser() {
-        QcLog.e("needShowToUser == ");
+    protected void needOnShowToUser() {
+        QcLog.e("needOnShowToUser == ");
         observerAnswersLiveData(viewModel.getAnswersList());
     }
 
+    @Override
+    protected void needOnHiddenToUser() {
+    }
     // https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
 
     /**

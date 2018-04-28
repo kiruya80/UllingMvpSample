@@ -20,8 +20,9 @@ import com.ulling.lib.core.util.QcLog;
 public abstract class QcBaseLifeFragment extends LifecycleFragment {
     public Context qCon;
     public String APP_NAME;
+    public int sectionPosition = 0;
+    public static final String ARG_SECTION_POSITION = "ARG_SECTION_POSITION";
     public boolean fragStrt = false;
-    //    public String TAG = getClass().getSimpleName();
 
     /**
      * 리줌에서 애니메이션을 시작할지 결정하는 플래그
@@ -178,7 +179,6 @@ public abstract class QcBaseLifeFragment extends LifecycleFragment {
         needInitToOnCreate();
         needResetData();
     }
-
 
     /**
      * Layout을 inflater을하여 View작업을 하는곳이다.

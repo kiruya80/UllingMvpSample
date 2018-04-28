@@ -38,6 +38,7 @@ import java.util.Random;
  */
 public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
     private QUllingApplication qApp;
     private FragLiveDataBinding viewBinding;
     private static final String UID_KEY = "uid";
@@ -176,9 +177,18 @@ public class LiveDataFragment extends QcBaseShowLifeFragement implements SwipeRe
     }
 
     @Override
-    public void needShowToUser() {
-        QcLog.e("needShowToUser == ");
+    protected void needOnShowToUser() {
+        QcLog.e("needOnShowToUser == ");
         observerUserListResults(viewModel.getAllUsers());
+    }
+
+    @Override
+    protected void needOnHiddenToUser() {
+    }
+
+    @Override
+    protected void onDestroyToUser() {
+
     }
 
     private void observerUserListResults(LiveData<List<User>> userLive) {

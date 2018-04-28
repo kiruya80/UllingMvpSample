@@ -53,6 +53,7 @@ import com.ulling.lib.core.viewutil.recyclerView.EndlessRecyclerScrollListener;
  */
 public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
     private QUllingApplication qApp;
     private FragRetrofitBinding viewBinding;
     private RetrofitViewModel viewModel;
@@ -90,6 +91,11 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_retrofit;
+    }
+
+    @Override
+    protected void onDestroyToUser() {
+
     }
 
     @Override
@@ -289,11 +295,15 @@ public class RetrofitFragment extends QcBaseShowLifeFragement implements SwipeRe
     }
 
     @Override
-    public void needShowToUser() {
-        QcLog.e("needShowToUser == ");
+    protected void needOnShowToUser() {
+        QcLog.e("needOnShowToUser == ");
         observerAnswersLiveData(viewModel.getAnswersFromRemoteResponse());
     }
 
+    @Override
+    protected void needOnHiddenToUser() {
+
+    }
     // https://code.tutsplus.com/tutorials/getting-started-with-retrofit-2--cms-27792
 
     /**

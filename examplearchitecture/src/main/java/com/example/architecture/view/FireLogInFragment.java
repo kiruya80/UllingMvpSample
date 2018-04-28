@@ -33,6 +33,7 @@ import com.ulling.lib.core.util.QcLog;
  * http://yookn.tistory.com/244
  */
 public class FireLogInFragment extends QcBaseShowLifeFragement {
+    public static String ARG_SECTION_NUMBER = "ARG_SECTION_NUMBER";
     private QUllingApplication qApp;
     private FragFireLoginBinding viewBinding;
     private static final String UID_KEY = "uid";
@@ -62,6 +63,12 @@ public class FireLogInFragment extends QcBaseShowLifeFragement {
     @Override
     protected int needGetLayoutId() {
         return R.layout.frag_fire_login;
+    }
+
+
+    @Override
+    protected void onDestroyToUser() {
+
     }
 
     @Override
@@ -130,10 +137,13 @@ public class FireLogInFragment extends QcBaseShowLifeFragement {
         QcLog.e("subscribeUiLoans == ");
     }
 
+    @Override
+    protected void needOnShowToUser() {
+        QcLog.e("needOnShowToUser == ");
+    }
 
     @Override
-    public void needShowToUser() {
-        QcLog.e("needShowToUser == ");
+    protected void needOnHiddenToUser() {
     }
 
 }
